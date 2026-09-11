@@ -16,7 +16,7 @@ function RouteComponent() {
   const { user, logout, login, register } = useAuth();
   const navigate = useNavigate();
   const [signInForm, setSignInForm] = useState({ email: "", password: "" });
-  const [signUpForm, setSignUpForm] = useState({ username: "", email: "", password: "" });
+  const [signUpForm, setSignUpForm] = useState({ username: "", email: "", password: "", password_confirm: "" });
 
   if (user) {
     return (
@@ -42,9 +42,7 @@ function RouteComponent() {
 
   const handle = async (fn: () => Promise<void>, message: string) => {
     try {
-      console.log("About to execute function");
       await fn();
-      console.log("Function executed successfully");
       void navigate({ to: "/decks" });
     } catch (error) {
       console.error("Error occurred:", error instanceof Error ? error.message : "Something went wrong");
@@ -105,7 +103,6 @@ function RouteComponent() {
             className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
-              console.log("Form submitted with data:", signUpForm);
               handle(() => register(signUpForm), "Account created");
             }}
           >
@@ -135,6 +132,17 @@ function RouteComponent() {
                 autoComplete="new-password"
                 value={signUpForm.password}
                 onChange={(e) => setSignUpForm((f) => ({ ...f, password: e.target.value }))}
+              />
+              <p className="text-xs text-muted-foreground">At least 6 characters.</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signup-password">Confirm Password</Label>
+              <Input
+                id="signup-confirm-password"
+                type="password"
+                autoComplete="new-password"
+                value={signUpForm.password_confirm}
+                onChange={(e) => setSignUpForm((f) => ({ ...f, password_confirm: e.target.value }))}
               />
               <p className="text-xs text-muted-foreground">At least 6 characters.</p>
             </div>

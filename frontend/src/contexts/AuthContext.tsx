@@ -73,7 +73,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }, []);
 
     const register = useCallback(async (payload: RegisterPayload) => {
-        console.log("Registering user with payload:", payload); // Debug log
         const nextUser = await registerRequest(payload);
         setUser(nextUser);
     }, []);
