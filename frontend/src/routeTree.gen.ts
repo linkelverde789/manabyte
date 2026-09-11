@@ -82,18 +82,18 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/search' | '/collection' | '/decks/$deckId' | '/decks/'
+  '/' | '/auth' | '/search' | '/collection' | '/decks/$deckId' | '/decks/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/auth' | '/search' | '/collection' | '/decks/$deckId' | '/decks'
   id:
-    | '__root__'
-    | '/'
-    | '/_authenticated'
-    | '/auth'
-    | '/search'
-    | '/_authenticated/collection'
-    | '/_authenticated/decks/$deckId'
-    | '/_authenticated/decks/'
+  | '__root__'
+  | '/'
+  | '/_authenticated'
+  | '/auth'
+  | '/search'
+  | '/_authenticated/collection'
+  | '/_authenticated/decks/$deckId'
+  | '/_authenticated/decks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
