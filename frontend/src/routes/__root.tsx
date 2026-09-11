@@ -12,6 +12,7 @@ import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { SiteHeader } from '#/components/ui/header'
+import { AuthProvider } from '#/contexts/AuthContext'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -73,9 +74,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <AuthProvider>
       <SiteHeader />
       <main>{children}</main>
-    </>
+    </AuthProvider>
   )
 }
