@@ -11,6 +11,7 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import { SiteHeader } from '#/components/ui/header'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -47,7 +48,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <RootLayout>
+          {children}
+        </RootLayout>
+
         <TanStackDevtools
           config={{
             position: 'bottom-right',
@@ -60,8 +64,18 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             TanStackQueryDevtools,
           ]}
         />
+
         <Scripts />
       </body>
     </html>
+  )
+}
+
+function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <SiteHeader />
+      <main>{children}</main>
+    </>
   )
 }
