@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Boxes, Layers, Library, LogIn, Search, UserRound } from "lucide-react";
 
-//import { useAuth } from "@/lib/auth";
+import { useAuth } from "#/contexts/AuthContext";
 
 const links = [
     { to: "/search", label: "Search", icon: Search },
@@ -10,8 +10,7 @@ const links = [
 ] as const;
 
 export function SiteHeader() {
-    //const { user } = useAuth();
-    const user = null
+    const { user } = useAuth();
 
     return (
         <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur">
@@ -38,7 +37,7 @@ export function SiteHeader() {
                         activeProps={{ className: "bg-muted text-foreground" }}
                     >
                         {user ? <UserRound className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
-                        <span className="hidden sm:inline">{user ? user.name : "Sign in"}</span>
+                        <span className="hidden sm:inline">{user ? user.username : "Sign in"}</span>
                     </Link>
                 </nav>
             </div>

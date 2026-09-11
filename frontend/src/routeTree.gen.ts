@@ -10,15 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as DecksIndexRouteImport } from './routes/decks.index'
-import { Route as DecksDeckIdRouteImport } from './routes/decks.$deckId'
+import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated.collection'
+import { Route as AuthenticatedDecksIndexRouteImport } from './routes/_authenticated.decks.index'
+import { Route as AuthenticatedDecksDeckIdRouteImport } from './routes/_authenticated.decks.$deckId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -26,75 +31,76 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CollectionRoute = CollectionRouteImport.update({
-  id: '/collection',
-  path: '/collection',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DecksIndexRoute = DecksIndexRouteImport.update({
+const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDecksIndexRoute = AuthenticatedDecksIndexRouteImport.update({
   id: '/decks/',
   path: '/decks/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const DecksDeckIdRoute = DecksDeckIdRouteImport.update({
-  id: '/decks/$deckId',
-  path: '/decks/$deckId',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AuthenticatedDecksDeckIdRoute =
+  AuthenticatedDecksDeckIdRouteImport.update({
+    id: '/decks/$deckId',
+    path: '/decks/$deckId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/collection': typeof CollectionRoute
   '/search': typeof SearchRoute
-  '/decks/$deckId': typeof DecksDeckIdRoute
-  '/decks/': typeof DecksIndexRoute
+  '/collection': typeof AuthenticatedCollectionRoute
+  '/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
+  '/decks/': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/collection': typeof CollectionRoute
   '/search': typeof SearchRoute
-  '/decks/$deckId': typeof DecksDeckIdRoute
-  '/decks': typeof DecksIndexRoute
+  '/collection': typeof AuthenticatedCollectionRoute
+  '/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
+  '/decks': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/collection': typeof CollectionRoute
   '/search': typeof SearchRoute
-  '/decks/$deckId': typeof DecksDeckIdRoute
-  '/decks/': typeof DecksIndexRoute
+  '/_authenticated/collection': typeof AuthenticatedCollectionRoute
+  '/_authenticated/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
+  '/_authenticated/decks/': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/collection' | '/search' | '/decks/$deckId' | '/decks/'
+    '/' | '/auth' | '/search' | '/collection' | '/decks/$deckId' | '/decks/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/collection' | '/search' | '/decks/$deckId' | '/decks'
+  to: '/' | '/auth' | '/search' | '/collection' | '/decks/$deckId' | '/decks'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/auth'
-    | '/collection'
     | '/search'
-    | '/decks/$deckId'
-    | '/decks/'
+    | '/_authenticated/collection'
+    | '/_authenticated/decks/$deckId'
+    | '/_authenticated/decks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  CollectionRoute: typeof CollectionRoute
   SearchRoute: typeof SearchRoute
-  DecksDeckIdRoute: typeof DecksDeckIdRoute
-  DecksIndexRoute: typeof DecksIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -106,18 +112,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/collection': {
-      id: '/collection'
-      path: '/collection'
-      fullPath: '/collection'
-      preLoaderRoute: typeof CollectionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -127,30 +133,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/decks/': {
-      id: '/decks/'
+    '/_authenticated/collection': {
+      id: '/_authenticated/collection'
+      path: '/collection'
+      fullPath: '/collection'
+      preLoaderRoute: typeof AuthenticatedCollectionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/decks/': {
+      id: '/_authenticated/decks/'
       path: '/decks'
       fullPath: '/decks/'
-      preLoaderRoute: typeof DecksIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedDecksIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/decks/$deckId': {
-      id: '/decks/$deckId'
+    '/_authenticated/decks/$deckId': {
+      id: '/_authenticated/decks/$deckId'
       path: '/decks/$deckId'
       fullPath: '/decks/$deckId'
-      preLoaderRoute: typeof DecksDeckIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedDecksDeckIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
+  AuthenticatedDecksDeckIdRoute: typeof AuthenticatedDecksDeckIdRoute
+  AuthenticatedDecksIndexRoute: typeof AuthenticatedDecksIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
+  AuthenticatedDecksDeckIdRoute: AuthenticatedDecksDeckIdRoute,
+  AuthenticatedDecksIndexRoute: AuthenticatedDecksIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  CollectionRoute: CollectionRoute,
   SearchRoute: SearchRoute,
-  DecksDeckIdRoute: DecksDeckIdRoute,
-  DecksIndexRoute: DecksIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
