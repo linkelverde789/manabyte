@@ -21,3 +21,4 @@ from django.urls import include, path
 urlpatterns = [path("admin/", admin.site.urls)]
 
 urlpatterns += [path("api/auth/", include("users.urls"))]
+urlpatterns += [path("api/deck/", include("deck.urls"))]
