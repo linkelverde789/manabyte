@@ -30,6 +30,4 @@ export interface ScryfallCard {
     }>;
 }
 
-export interface ScryfallCards {
-    cards: ScryfallCard[]
-}
+export type ScryfallCards = ScryfallCard[]
