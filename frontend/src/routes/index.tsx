@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Layers, Library, Search, Sparkles } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import type { ScryfallCard } from "#/types/scryfall";
-import { useScryfall } from "#/hooks/use-scryfall";
+
+import { useAuth } from "#/contexts/AuthContext";
+import UserInfo from "#/components/index/userInfo";
+import AnonymousInfo from "#/components/index/anonymousInfo";
+import GeneralInfo from "#/components/index/generalInfo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,71 +26,24 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function formatCardReference(card?: ScryfallCard) {
-  if (!card) return 'Lightning Bolt(STA) 42'
 
-  return `${card.name} (${card.set.toUpperCase()}) ${card.collector_number}`
-}
 
 function Index() {
 
-  const { data: card } =
-    useScryfall<ScryfallCard>('/cards/random')
+
+
+  const { user } = useAuth();
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
-      <section className="space-y-6">
-        <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs uppercase tracking-widest text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-primary" /> Powered by Scryfall
-        </span>
-        <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
-          Build decks and track every card you own.
-        </h1>
-        <p className="max-w-2xl text-muted-foreground">
-          Paste a decklist like <code className="text-foreground">4 {formatCardReference(card)} </code>{" "}
-          or search card by card. Expand any card to pick its showcase, borderless or promo style —
-          you can own the same card in as many versions as you like.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild size="lg">
-            <Link to="/decks">
-              <Layers className="mr-2 h-4 w-4" /> My decks
-            </Link>
-          </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link to="/search">
-              <Search className="mr-2 h-4 w-4" /> Search cards
-            </Link>
-          </Button>
-        </div>
-      </section>
 
-      <section className="mt-16 grid gap-4 sm:grid-cols-3">
-        <Link
-          to="/decks"
-          className="rounded-xl border border-border bg-card p-6 transition hover:border-primary/50"
-        >
-          <Layers className="h-5 w-5 text-primary" />
-          <div className="mt-3 text-3xl font-semibold">{0}</div>
-          <div className="text-sm text-muted-foreground">decks saved</div>
-        </Link>
-        <Link
-          to="/collection"
-          className="rounded-xl border border-border bg-card p-6 transition hover:border-primary/50"
-        >
-          <Library className="h-5 w-5 text-primary" />
-          <div className="mt-3 text-3xl font-semibold">{0}</div>
-          <div className="text-sm text-muted-foreground">cards in your collection</div>
-        </Link>
-        <Link
-          to="/search"
-          className="rounded-xl border border-border bg-card p-6 transition hover:border-primary/50"
-        >
-          <Search className="h-5 w-5 text-primary" />
-          <div className="mt-3 text-3xl font-semibold">All sets</div>
-          <div className="text-sm text-muted-foreground">searchable printings</div>
-        </Link>
-      </section>
+      <GeneralInfo userLogged={!!user} />
+
+      {user ? <UserInfo deckCount={0} collectionItem={0} /> : <AnonymousInfo />}
     </div>
   );
 }
+
+
+
+
