@@ -17,5 +17,12 @@ def test_list_user_decks(user, auth_client):
 
 
 @pytest.mark.django_db
-def test_retrieve_user_deck():
-    pass
+def test_retrieve_user_deck(user, auth_client):
+    deck_one = Deck.objects.create(name="Deck 1", user=user, format="Commander")
+    deck_two = Deck.objects.create(name="Deck 2", user=user, format="Modern")
+
+    res = auth_client.get(reverse("deck-detail", kwargs={"pk": deck_one.id}))
+    assert res.data["id"] == deck_one.id
+
+    res = auth_client.get(reverse("deck-detail", kwargs={"pk": deck_two.id}))
+    assert res.data["id"] == deck_two.id
