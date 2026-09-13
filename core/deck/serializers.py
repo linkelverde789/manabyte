@@ -16,6 +16,6 @@ class DeckResponseSerializer(serializers.Serializer):
 
 class DeckCardResponseSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    scryfall_id = serializers.IntegerField()
+    scryfall_id = serializers.UUIDField()
     quantity = serializers.IntegerField()
     zone = serializers.CharField()

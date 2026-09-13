@@ -1,5 +1,6 @@
 # Create your views here.
 
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
@@ -28,7 +29,21 @@ class UserDeckView(ViewSet):
         return Response(DeckResponseSerializer(deck, context={"request": request}).data)
 
     def create(self, request):
+        user = request.user
+
+        deck = Deck.objects.create(
+            name=request.data["name"], format=request.data["format"], user=user
+        )
+
+        return Response(DeckResponseSerializer(deck, context={"request": request}).data)
+
+    def update(self, request):
         pass
+
+    def destroy(self, request, pk):
+        Deck.objects.filter(id=pk, user=request.user).first().delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class DeckCardsView(ViewSet):
@@ -38,7 +53,7 @@ class DeckCardsView(ViewSet):
 
         user = request.user
         deck = Deck.objects.filter(id=deck_id, user=user).first()
-        cards = DeckCard.objects.filter(deck=deck)
+        cards = DeckCard.objects.filter(deck=deck).order_by("id")
         return Response(
             DeckCardResponseSerializer(
                 cards, many=True, context={"request": request}
@@ -55,3 +70,20 @@ class DeckCardsView(ViewSet):
             quantity=request.data["quantity"],
             zone=request.data["zone"],
         )
+
+        cards = DeckCard.objects.filter(deck=deck).order_by("id")
+
+        return Response(
+            DeckCardResponseSerializer(
+                cards, many=True, context={"request": request}
+            ).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    def update(self, request, pk):
+        pass
+
+    def destroy(self, request, pk, deck_id=None):
+        deck = Deck.objects.filter(user=request.user, id=deck_id).first()
+        DeckCard.objects.filter(id=pk, deck=deck).first().delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
