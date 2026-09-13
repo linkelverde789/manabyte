@@ -45,6 +45,26 @@ def test_create_card(user, auth_client):
 
 
 @pytest.mark.django_db
+def test_create_card_bulk(user, auth_client):
+    deck = Deck.objects.create(name="Deck 1", user=user, format="Commander")
+    cards = []
+    for item in range(10):
+        cards.append(
+            {"scryfall_id": uuid.uuid4(), "quantity": item, "zone": "mainboard"}
+        )
+
+    res = auth_client.post(
+        reverse("card-bulk-create", kwargs={"deck_id": deck.id}), cards, format="json"
+    )
+
+    assert res.status_code == HTTP_201_CREATED
+
+    res = auth_client.get(reverse("card-list", kwargs={"deck_id": deck.id}))
+
+    assert len(res.data) == 10
+
+
+@pytest.mark.django_db
 def test_delete_card(user, auth_client):
     deck = Deck.objects.create(name="Deck 1", user=user, format="Commander")
     card = DeckCard.objects.create(

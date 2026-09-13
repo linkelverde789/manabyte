@@ -1,6 +1,7 @@
 # Create your views here.
 
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
@@ -76,6 +77,36 @@ class DeckCardsView(ViewSet):
         return Response(
             DeckCardResponseSerializer(
                 cards, many=True, context={"request": request}
+            ).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(detail=True, methods=["post"], url_path="bulk-create")
+    def bulk_create(self, request, deck_id=None):
+        user = request.user
+
+        deck = Deck.objects.filter(user=user, id=deck_id).first()
+
+        cards_data = request.data
+
+        cards = [
+            DeckCard(
+                scryfall_id=card["scryfall_id"],
+                deck=deck,
+                quantity=card["quantity"],
+                zone=card["zone"],
+            )
+            for card in cards_data
+        ]
+        DeckCard.objects.bulk_create(cards)
+
+        cards = DeckCard.objects.filter(deck=deck).order_by("id")
+
+        return Response(
+            DeckCardResponseSerializer(
+                cards,
+                many=True,
+                context={"request": request},
             ).data,
             status=status.HTTP_201_CREATED,
         )

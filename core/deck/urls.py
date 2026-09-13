@@ -18,6 +18,15 @@ urlpatterns = router.urls + [
         name="card-list",
     ),
     path(
+        "<int:deck_id>/cards/bulk/",
+        DeckCardsView.as_view(
+            {
+                "post": "bulk_create",
+            }
+        ),
+        name="card-bulk-create",
+    ),
+    path(
         "<int:deck_id>/cards/<int:pk>/",
         DeckCardsView.as_view(
             {
