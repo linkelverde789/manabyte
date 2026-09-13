@@ -70,7 +70,6 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        print(serializer.validated_data["username"])
         user = User.objects.create_user(
             username=serializer.validated_data["username"],
             email=serializer.validated_data["email"],
