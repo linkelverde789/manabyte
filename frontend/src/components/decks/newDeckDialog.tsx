@@ -53,7 +53,7 @@ export default function NewDeckDialog() {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Create a deck</DialogTitle>
-                    <DialogDescription>Pick a format and which sections it should have.</DialogDescription>
+                    <DialogDescription>Choose a name and pick a format.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                     <div className="space-y-2">
@@ -62,19 +62,19 @@ export default function NewDeckDialog() {
                             id="deck-name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="Gondor tokens"
+                            placeholder="There's the Door"
                         />
                     </div>
                     <div className="space-y-2">
                         <Label>Format</Label>
-                        <Select value={format} onValueChange={(v) => setFormat(v as DeckFormat)}>
+                        <Select value={format} onValueChange={(value) => setFormat(value as DeckFormat)}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                {DECK_FORMATS.map((f) => (
-                                    <SelectItem key={f} value={f}>
-                                        {f}
+                                {DECK_FORMATS.map((format) => (
+                                    <SelectItem key={format} value={format}>
+                                        {format}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
