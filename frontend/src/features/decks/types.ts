@@ -1,0 +1,21 @@
+export interface Deck {
+    id: number
+    name: string
+    format: string
+    card_count: string
+    folder: Folder | null
+}
+
+export interface Folder {
+    id: number
+    name: string
+}
+
+export interface CollectionItem {
+    id: number
+    scryfall_id: string
+    quantity: number
+    foil: boolean
+    language: string
+    condition: string
+}
