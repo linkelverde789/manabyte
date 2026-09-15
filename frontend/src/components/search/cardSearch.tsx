@@ -1,9 +1,9 @@
 import { Loader2, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
-import { useScryfall } from "#/hooks/use-scryfall";
-import type { ScryfallCard, ScryfallCards } from "#/types/scryfall";
 import SearchResults from "../index/searchResult";
+import type { ScryfallCard } from "#/features/scryfall/types";
+import { useSearchCard } from "#/features/scryfall/hooks";
 
 export default function CardSearch({ autoFocus }: {
     autoFocus?: boolean | undefined;
@@ -17,7 +17,7 @@ export default function CardSearch({ autoFocus }: {
         return () => clearTimeout(t)
     }, [text])
 
-    const { data: results, isFetching } = useScryfall<{ data: ScryfallCards }>(`/cards/search?q=${encodeURIComponent(debounced)}&unique=true&order=name&include_extras=false`)
+    const { data: results, isLoading } = useSearchCard(debounced)
 
     return (
         <div className="space-y-4">
@@ -30,12 +30,12 @@ export default function CardSearch({ autoFocus }: {
                     placeholder="Search cards by name, e.g. Lightning Bolt"
                     className="h-12 pl-10 text-base"
                 />
-                {isFetching && (
+                {isLoading && (
                     <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
                 )}
             </div>
 
-            {debounced.length >= 2 && !isFetching && (results?.data?.length ?? 0) === 0 && (
+            {debounced.length >= 2 && !isLoading && (results?.data.length ?? 0) === 0 && (
                 <p className="text-sm text-muted-foreground">No cards found for “{debounced}”.</p>
             )}
 

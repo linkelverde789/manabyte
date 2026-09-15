@@ -1,4 +1,4 @@
-import { api } from "../../api/client";
+import { api } from "../../api/manabyte";
 import type { CreateDeckCardData, DeckCard } from "./types";
 
 
