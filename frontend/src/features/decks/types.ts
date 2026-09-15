@@ -6,6 +6,11 @@ export interface Deck {
     folder: Folder | null
 }
 
+export interface CreateDeckData {
+    name: string
+    format: string
+}
+
 export interface Folder {
     id: number
     name: string
