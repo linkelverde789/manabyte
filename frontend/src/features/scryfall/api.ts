@@ -1,10 +1,10 @@
 import { api } from "#/api/scryfall"
-import type { ScryfallCard, ScryfallSearchResult } from "./types"
+import type { ScryfallCard, ScryfallResult } from "./types"
 
 
 
 export function searchCard(text: string) {
-    return api<ScryfallSearchResult>(`/cards/search?q=${encodeURIComponent(text)}&unique=true&order=name&include_extras=false`)
+    return api<ScryfallResult>(`/cards/search?q=${encodeURIComponent(text)}&unique=true&order=name&include_extras=false`)
 }
 
 export function randomCard() {
@@ -21,6 +21,6 @@ export interface ScryfallCollectionIdentifier {
 }
 
 export function loadCollection(identifiers: ScryfallCollectionIdentifier[]) {
-    return api<ScryfallCard[]>(`/cards/collection`, { method: "POST", body: JSON.stringify({ "identifiers": identifiers }) })
+    return api<ScryfallResult>(`/cards/collection`, { method: "POST", body: JSON.stringify({ "identifiers": identifiers }) })
 
 }

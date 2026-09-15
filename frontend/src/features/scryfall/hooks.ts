@@ -36,6 +36,7 @@ export function useLoadCollection() {
         },
         onError: (error) => {
             console.error("ERROR", error)
-        }
+        },
+
     })
 }

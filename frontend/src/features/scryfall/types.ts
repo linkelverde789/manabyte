@@ -30,6 +30,6 @@ export interface ScryfallCard {
     }>;
 }
 
-export interface ScryfallSearchResult {
+export interface ScryfallResult {
     data: ScryfallCard[]
 }
