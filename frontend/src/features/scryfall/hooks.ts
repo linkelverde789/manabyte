@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { loadCollection, loadSingleCard, randomCard, searchCard, searchCardFuzzy, type ScryfallCollectionIdentifier } from "./api";
+import { loadCollection, loadSingleCard, randomCard, searchCard, searchCardFuzzy, searchCardStyles, type ScryfallCollectionIdentifier } from "./api";
 import type { ScryfallCard } from "./types";
 
 export function useSearchCard(text: string) {
@@ -64,6 +64,14 @@ export function useSearchCardFuzzy(text: string) {
     return useQuery({
         queryKey: ["search-fuzzy", text],
         queryFn: () => searchCardFuzzy(text),
+        enabled: text.length > 2
+    })
+}
+
+export function useSearchCardStyles(text: string){
+    return useQuery({
+        queryKey: ["search-styles", text],
+        queryFn: () => searchCardStyles(text),
         enabled: text.length > 2
     })
 }

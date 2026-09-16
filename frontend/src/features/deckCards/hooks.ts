@@ -54,7 +54,6 @@ export function usePartialUpdateDeckCard(
             cardId: number | string;
             data: PartialUpdateDeckCardData;
         }) => {
-            console.log("data?: ", data)
             return partialUpdateDeckCard(deckId, cardId, data);
         },
 

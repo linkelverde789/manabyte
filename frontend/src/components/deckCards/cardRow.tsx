@@ -1,45 +1,45 @@
-import ManaCost from '#/components/search/manaCost'
-import { Button } from '#/components/ui/button'
+import ManaCost from "#/components/search/manaCost";
+import { Button } from "#/components/ui/button";
 import {
     useDeleteDeckCard,
     usePartialUpdateDeckCard,
-} from '#/features/deckCards/hooks'
-import type { DeckCard } from '#/features/deckCards/types'
-import type { ScryfallCard } from '#/features/scryfall/types'
-import { cn } from '#/lib/utils'
-import { Layers, Minus, Plus, Trash2 } from 'lucide-react'
-import { useState } from 'react'
-import { CardImage } from './cardImage'
+} from "#/features/deckCards/hooks";
+import type { DeckCard } from "#/features/deckCards/types";
+import type { ScryfallCard } from "#/features/scryfall/types";
+import { cn } from "#/lib/utils";
+import { Layers, Minus, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { CardImage } from "./cardImage";
+import StylePicker from "./stylePicker";
 
 export default function CardRow({
     card,
     dataCard,
     deckId,
 }: {
-    card: ScryfallCard
-    dataCard: DeckCard
-    deckId: number | string
+    card: ScryfallCard;
+    dataCard: DeckCard;
+    deckId: number | string;
 }) {
-    const [openStyles, setOpenStyles] = useState(false)
+    const [openStyles, setOpenStyles] = useState(false);
 
-    const deleteCard = useDeleteDeckCard(deckId)
-    const updateCard = usePartialUpdateDeckCard(deckId)
+    const deleteCard = useDeleteDeckCard(deckId);
+    const updateCard = usePartialUpdateDeckCard(deckId);
 
-    const isUpdating =
-        deleteCard.isPending || updateCard.isPending
+    const isUpdating = deleteCard.isPending || updateCard.isPending;
 
     function handleUpdate(quantity: number) {
         if (isUpdating) {
-            return
+            return;
         }
 
         if (quantity < 1) {
-            deleteCard.mutate(dataCard.id)
-            return
+            deleteCard.mutate(dataCard.id);
+            return;
         }
 
         if (quantity === dataCard.quantity) {
-            return
+            return;
         }
 
         updateCard.mutate({
@@ -47,24 +47,24 @@ export default function CardRow({
             data: {
                 quantity,
             },
-        })
+        });
     }
 
     function handleDelete() {
         if (isUpdating) {
-            return
+            return;
         }
 
-        deleteCard.mutate(dataCard.id)
+        deleteCard.mutate(dataCard.id);
     }
 
     return (
         <div className="space-y-2">
             <div
                 className={cn(
-                    'flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2',
-                    'transition-colors hover:bg-muted/30',
-                    isUpdating && 'pointer-events-none opacity-60',
+                    "flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2",
+                    "transition-colors hover:bg-muted/30",
+                    isUpdating && "pointer-events-none opacity-60",
                 )}
             >
                 <div className="w-10 shrink-0">
@@ -81,9 +81,7 @@ export default function CardRow({
                             {card.name}
                         </span>
 
-                        {card.mana_cost && (
-                            <ManaCost cost={card.mana_cost} />
-                        )}
+                        {card.mana_cost && <ManaCost cost={card.mana_cost} />}
                     </div>
 
                     <div className="text-xs uppercase text-muted-foreground">
@@ -101,7 +99,7 @@ export default function CardRow({
                 >
                     <Layers className="mr-1 h-3.5 w-3.5" />
 
-                    {openStyles ? 'Hide' : 'Styles'}
+                    {openStyles ? "Hide" : "Styles"}
                 </Button>
 
                 <div className="flex shrink-0 items-center gap-1">
@@ -110,9 +108,7 @@ export default function CardRow({
                         size="icon"
                         variant="outline"
                         className="h-7 w-7"
-                        onClick={() =>
-                            handleUpdate(dataCard.quantity - 1)
-                        }
+                        onClick={() => handleUpdate(dataCard.quantity - 1)}
                         disabled={isUpdating}
                         aria-label={`Remove one ${card.name} `}
                     >
@@ -131,9 +127,7 @@ export default function CardRow({
                         size="icon"
                         variant="outline"
                         className="h-7 w-7"
-                        onClick={() =>
-                            handleUpdate(dataCard.quantity + 1)
-                        }
+                        onClick={() => handleUpdate(dataCard.quantity + 1)}
                         disabled={isUpdating}
                         aria-label={`Add one ${card.name} `}
                     >
@@ -160,12 +154,15 @@ export default function CardRow({
                         Style picker coming soon.
                     </div>
 
-                    {/*
-              TODO: Stylepicker
-  
-            */}
+                    {openStyles && (
+                        <StylePicker
+                            deckId={deckId}
+                            card={card}
+                            originalCard={dataCard}
+                        />
+                    )}
                 </div>
             )}
         </div>
-    )
+    );
 }

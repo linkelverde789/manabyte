@@ -32,3 +32,7 @@ export function loadCollection(identifiers: ScryfallCollectionIdentifier[]) {
 export function searchCardFuzzy(text: string) {
     return api<ScryfallCard>(`/cards/named?fuzzy=${encodeURIComponent(text)}`)
 }
+
+export function searchCardStyles(text: string){
+    return api<ScryfallResult>(`/cards/search?q=${encodeURIComponent(text)}&unique=prints&order=released&dir=desc`)
+}
