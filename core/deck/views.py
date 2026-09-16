@@ -94,7 +94,7 @@ class DeckCardsView(ViewSet):
                 scryfall_id=card["scryfall_id"],
                 deck=deck,
                 quantity=card["quantity"],
-                zone=card["zone"],
+                zone=card.get("zone", "mainboard"),
             )
             for card in cards_data
         ]

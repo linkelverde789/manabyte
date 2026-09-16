@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { loadCollection, loadSingleCard, randomCard, searchCard, searchCardFuzzy, type ScryfallCollectionIdentifier } from "./api";
+import type { ScryfallCard } from "./types";
 
 export function useSearchCard(text: string) {
 
@@ -28,16 +29,34 @@ export function useLoadCollection() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: (data: ScryfallCollectionIdentifier[]) => loadCollection(data),
+        mutationFn: async (
+            identifiers: ScryfallCollectionIdentifier[],
+        ) => {
+            const BATCH_SIZE = 75
+            const cards: ScryfallCard[] = []
+
+            for (let i = 0; i < identifiers.length; i += BATCH_SIZE) {
+                const batch = identifiers.slice(i, i + BATCH_SIZE)
+
+                const result = await loadCollection(batch)
+
+                cards.push(...result.data)
+            }
+
+            return {
+                data: cards,
+            }
+        },
+
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["scryfall-load-collection"]
+                queryKey: ["scryfall-load-collection"],
             })
         },
+
         onError: (error) => {
             console.error("ERROR", error)
         },
-
     })
 }
 

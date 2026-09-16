@@ -17,7 +17,11 @@ export function loadSingleCard(scryfallId: string) {
 }
 
 export interface ScryfallCollectionIdentifier {
-    id: string
+    id?: string
+    name?: string
+    set?: string
+    collector_number?: number | string
+
 }
 
 export function loadCollection(identifiers: ScryfallCollectionIdentifier[]) {

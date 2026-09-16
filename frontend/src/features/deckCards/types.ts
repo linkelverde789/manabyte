@@ -8,5 +8,5 @@ export interface DeckCard {
 export interface CreateDeckCardData {
     scryfall_id: string
     quantity: number
-    zone: string
+    zone?: string
 }

@@ -5,10 +5,14 @@ import EmptyDeck from '#/components/deckCards/emptyDeck'
 import { CardRowSkeleton, DeckHeaderSkeleton } from '#/components/deckCards/skeletons'
 
 import {
+  loadCollection,
+  searchCardFuzzy,
+} from '#/features/scryfall/api'
+import {
+  useBulkCreateDeckCard,
   useDeckCards,
 } from '#/features/deckCards/hooks'
 
-import type { DeckCard } from '#/features/deckCards/types'
 
 import { useDeck } from '#/features/decks/hooks'
 
@@ -18,9 +22,12 @@ import type { ScryfallCard } from '#/features/scryfall/types'
 
 import { createFileRoute, Link } from '@tanstack/react-router'
 
-import { ArrowLeft } from 'lucide-react'
+import {
+  ArrowLeft
+} from 'lucide-react'
 
 import { memo, useEffect, useMemo, useState } from 'react'
+import { ImportDialog } from '#/components/deckCards/importDialog'
 
 export const Route = createFileRoute('/_authenticated/decks/$deckId')({
   component: RouteComponent,
@@ -39,6 +46,7 @@ function RouteComponent() {
     isPending: isLoadingCollection,
     reset: resetCollection,
   } = useLoadCollection()
+  const { mutateAsync: bulkCreateDeckCard } = useBulkCreateDeckCard(deckId)
 
   const [collection, setCollection] = useState<
     Record<string, ScryfallCard>
@@ -137,9 +145,26 @@ function RouteComponent() {
             </>
           )}
         </div>
+        <div className="flex flex-wrap items-end justify-between gap-4">
 
-        {/* TODO: Import dialogs */}
+          <ImportDialog
+            title={`Paste a list into ${deck?.name}`}
+            description="Import cards from a decklist. One card per line."
+            confirmLabel="Add to deck"
+            onConfirm={async (rows) => {
+              const data = rows.map((row) => ({
+                scryfall_id: row.card.id,
+                quantity: row.quantity,
+              }))
+
+              await bulkCreateDeckCard(data)
+            }}
+          />
+
+
+        </div>
       </div>
+
 
       {isLoading && (
         <div className="space-y-2">
