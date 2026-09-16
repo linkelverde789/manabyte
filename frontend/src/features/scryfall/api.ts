@@ -24,3 +24,7 @@ export function loadCollection(identifiers: ScryfallCollectionIdentifier[]) {
     return api<ScryfallResult>(`/cards/collection`, { method: "POST", body: JSON.stringify({ "identifiers": identifiers }) })
 
 }
+
+export function searchCardFuzzy(text: string) {
+    return api<ScryfallCard>(`/cards/named?fuzzy=${encodeURIComponent(text)}`)
+}

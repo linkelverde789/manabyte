@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { loadCollection, loadSingleCard, randomCard, searchCard, type ScryfallCollectionIdentifier } from "./api";
+import { loadCollection, loadSingleCard, randomCard, searchCard, searchCardFuzzy, type ScryfallCollectionIdentifier } from "./api";
 
 export function useSearchCard(text: string) {
 
@@ -38,5 +38,13 @@ export function useLoadCollection() {
             console.error("ERROR", error)
         },
 
+    })
+}
+
+export function useSearchCardFuzzy(text: string) {
+    return useQuery({
+        queryKey: ["search-fuzzy", text],
+        queryFn: () => searchCardFuzzy(text),
+        enabled: text.length > 2
     })
 }
