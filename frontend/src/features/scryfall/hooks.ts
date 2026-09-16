@@ -72,6 +72,6 @@ export function useSearchCardStyles(text: string){
     return useQuery({
         queryKey: ["search-styles", text],
         queryFn: () => searchCardStyles(text),
-        enabled: text.length > 2
+        enabled: text.length > 2 && !!text
     })
 }

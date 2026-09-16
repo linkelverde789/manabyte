@@ -17,6 +17,9 @@ export function useCreateDeckCard(deckId: number | string) {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["cards", deckId]
+            }),
+            queryClient.invalidateQueries({
+                queryKey: ["deck", deckId]
             })
         },
         onError: (error) => {
@@ -33,6 +36,9 @@ export function useBulkCreateDeckCard(deckId: number | string) {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["cards", deckId]
+            }),
+            queryClient.invalidateQueries({
+                queryKey: ["deck", deckId]
             })
         },
         onError: (error) => {
@@ -60,7 +66,10 @@ export function usePartialUpdateDeckCard(
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["cards", deckId],
-            });
+            }),
+            queryClient.invalidateQueries({
+                queryKey: ["deck", deckId]
+            })
         },
 
         onError: (error) => {
@@ -76,6 +85,9 @@ export function useDeleteDeckCard(deckId: number | string) {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["cards", deckId]
+            }),
+            queryClient.invalidateQueries({
+                queryKey: ["deck", deckId]
             })
         },
         onError: (error) => {

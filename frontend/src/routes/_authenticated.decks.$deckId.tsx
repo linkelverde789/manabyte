@@ -24,6 +24,8 @@ import { ArrowLeft } from "lucide-react";
 
 import { memo, useEffect, useMemo, useState } from "react";
 import { ImportDialog } from "#/components/deckCards/importDialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "#/components/ui/tabs";
+import CardSearch from "#/components/deckCards/cardSearch";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   component: RouteComponent,
@@ -35,6 +37,8 @@ function RouteComponent() {
   const { data: deck, isLoading: isLoadingDeck } = useDeck(deckId);
 
   const { data: cards, isLoading: isLoadingCards } = useDeckCards(deckId);
+
+  const [tab, setTab] = useState<"main" | "search">("main");
 
   const {
     mutate: loadCollection,
@@ -139,6 +143,7 @@ function RouteComponent() {
             </>
           )}
         </div>
+
         <div className="flex flex-wrap items-end justify-between gap-4">
           <ImportDialog
             title={`Paste a list into ${deck?.name}`}
@@ -156,28 +161,48 @@ function RouteComponent() {
         </div>
       </div>
 
-      {isLoading && (
-        <div className="space-y-2">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <CardRowSkeleton key={index} />
-          ))}
-        </div>
-      )}
+      <Tabs
+        value={tab}
+        onValueChange={(value) => {
+          setTab(value as "main" | "search");
+        }}
+      >
+        <TabsList className="flex-wrap">
+          <TabsTrigger value="main">
+            Main deck (
+            {cards?.reduce((sum, card) => sum + card.quantity, 0) ?? 0})
+          </TabsTrigger>
 
-      {!isLoading && deckRows.length === 0 && <EmptyDeck />}
+          <TabsTrigger value="search">Search cards</TabsTrigger>
+        </TabsList>
+        <TabsContent value="main" className="mt-6">
+          {isLoading && (
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <CardRowSkeleton key={index} />
+              ))}
+            </div>
+          )}
 
-      {!isLoading && deckRows.length > 0 && (
-        <div className="space-y-2">
-          {deckRows.map(({ card, dataCard }) => (
-            <MemoizedCardRow
-              key={dataCard.id}
-              card={card}
-              dataCard={dataCard}
-              deckId={deckId}
-            />
-          ))}
-        </div>
-      )}
+          {!isLoading && deckRows.length === 0 && <EmptyDeck />}
+
+          {!isLoading && deckRows.length > 0 && (
+            <div className="space-y-2">
+              {deckRows.map(({ card, dataCard }) => (
+                <MemoizedCardRow
+                  key={dataCard.id}
+                  card={card}
+                  dataCard={dataCard}
+                  deckId={deckId}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+        <TabsContent value="search" className="mt-6">
+          <CardSearch deckId={deckId} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

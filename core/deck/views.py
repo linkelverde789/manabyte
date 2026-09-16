@@ -69,7 +69,7 @@ class DeckCardsView(ViewSet):
             scryfall_id=request.data["scryfall_id"],
             deck=deck,
             quantity=request.data["quantity"],
-            zone=request.data["zone"],
+            zone=request.data.get("zone", "mainboard"),
         )
 
         cards = DeckCard.objects.filter(deck=deck).order_by("id")
