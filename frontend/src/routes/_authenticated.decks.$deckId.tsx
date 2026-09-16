@@ -1,16 +1,26 @@
 import CardRow from '#/components/deckCards/cardRow'
+
 import EmptyDeck from '#/components/deckCards/emptyDeck'
+
 import { CardRowSkeleton, DeckHeaderSkeleton } from '#/components/deckCards/skeletons'
+
 import {
   useDeckCards,
 } from '#/features/deckCards/hooks'
+
 import type { DeckCard } from '#/features/deckCards/types'
+
 import { useDeck } from '#/features/decks/hooks'
+
 import { useLoadCollection } from '#/features/scryfall/hooks'
+
 import type { ScryfallCard } from '#/features/scryfall/types'
+
 import { createFileRoute, Link } from '@tanstack/react-router'
+
 import { ArrowLeft } from 'lucide-react'
-import { useEffect, useMemo } from 'react'
+
+import { memo, useEffect, useMemo, useState } from 'react'
 
 export const Route = createFileRoute('/_authenticated/decks/$deckId')({
   component: RouteComponent,
@@ -20,6 +30,7 @@ function RouteComponent() {
   const { deckId } = Route.useParams()
 
   const { data: deck, isLoading: isLoadingDeck } = useDeck(deckId)
+
   const { data: cards, isLoading: isLoadingCards } = useDeckCards(deckId)
 
   const {
@@ -29,61 +40,71 @@ function RouteComponent() {
     reset: resetCollection,
   } = useLoadCollection()
 
-  const preparedIds = useMemo(
-    () =>
-      cards?.map((card) => ({
-        id: card.scryfall_id,
-      })) ?? [],
-    [cards],
-  )
+  const [collection, setCollection] = useState<
+    Record<string, ScryfallCard>
+  >({})
+
+  const missingIds = useMemo(() => {
+    return (
+      cards
+        ?.map((card) => card.scryfall_id)
+        .filter((id) => !collection[id])
+        .map((id) => ({ id })) ?? []
+    )
+  }, [cards, collection])
 
   useEffect(() => {
-    if (preparedIds.length === 0) {
-      resetCollection()
+    if (missingIds.length === 0) {
       return
     }
 
-    loadCollection(preparedIds)
-  }, [preparedIds, loadCollection, resetCollection])
+    loadCollection(missingIds)
+  }, [missingIds, loadCollection])
 
-  const deckCardsByScryfallId = useMemo(() => {
-    const map = new Map<string, DeckCard>()
+  useEffect(() => {
+    if (!results?.data) {
+      return
+    }
 
-    cards?.forEach((card) => {
-      map.set(card.scryfall_id, card)
+    setCollection((previous) => {
+      const next = { ...previous }
+
+      for (const card of results.data) {
+        next[card.id] = card
+      }
+
+      return next
     })
 
-    return map
-  }, [cards])
+    resetCollection()
+  }, [results, resetCollection])
+
+
 
   const deckRows = useMemo(() => {
     return (
-      results?.data
-        .map((card) => {
-          const dataCard = deckCardsByScryfallId.get(card.id)
+      cards?.flatMap((dataCard) => {
+        const card = collection[dataCard.scryfall_id]
 
-          if (!dataCard) {
-            return null
-          }
+        if (!card) {
+          return []
+        }
 
-          return {
+        return [
+          {
             card,
             dataCard,
-          }
-        })
-        .filter(
-          (
-            row,
-          ): row is {
-            card: ScryfallCard
-            dataCard: DeckCard
-          } => row !== null,
-        ) ?? []
+          },
+        ]
+      }) ?? []
     )
-  }, [results, deckCardsByScryfallId])
+  }, [cards, collection])
 
   const isLoading =
-    isLoadingDeck || isLoadingCards || isLoadingCollection
+    isLoadingDeck ||
+    isLoadingCards ||
+    isLoadingCollection ||
+    missingIds.length > 0
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-10">
@@ -135,7 +156,7 @@ function RouteComponent() {
       {!isLoading && deckRows.length > 0 && (
         <div className="space-y-2">
           {deckRows.map(({ card, dataCard }) => (
-            <CardRow
+            <MemoizedCardRow
               key={dataCard.id}
               card={card}
               dataCard={dataCard}
@@ -147,3 +168,5 @@ function RouteComponent() {
     </div>
   )
 }
+
+const MemoizedCardRow = memo(CardRow)

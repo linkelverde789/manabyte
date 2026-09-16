@@ -30,7 +30,8 @@ urlpatterns = router.urls + [
         "<int:deck_id>/cards/<int:pk>/",
         DeckCardsView.as_view(
             {
-                "put": "update",
+                # "put": "update",
+                "patch": "partial_update",
                 "delete": "destroy",
             }
         ),

@@ -111,8 +111,26 @@ class DeckCardsView(ViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    def update(self, request, pk):
-        pass
+    # def update(self, request, pk, deck_id=None):
+    #    pass
+
+    def partial_update(self, request, pk, deck_id=None):
+        deck = Deck.objects.filter(user=request.user, id=deck_id).first()
+        data = request.data
+
+        card = DeckCard.objects.filter(deck=deck, id=pk).first()
+
+        if "quantity" in data:
+            card.quantity = data["quantity"]
+
+        if "scryfall_id" in data:
+            card.scryfall_id = data["scryfall_id"]
+
+        card.save()
+
+        return Response(
+            DeckCardResponseSerializer(card, context={"request": request}).data
+        )
 
     def destroy(self, request, pk, deck_id=None):
         deck = Deck.objects.filter(user=request.user, id=deck_id).first()
