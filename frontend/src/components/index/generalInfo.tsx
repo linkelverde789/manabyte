@@ -2,9 +2,9 @@ import { Layers, Search, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
+import { useRandomCard } from "#/features/scryfall/hooks";
+import type { ScryfallCard } from "#/features/scryfall/types";
 
-import type { ScryfallCard } from "#/types/scryfall";
-import { useScryfall } from "#/hooks/use-scryfall";
 
 function formatCardReference(card?: ScryfallCard) {
     if (!card) return 'Lightning Bolt(STA) 42'
@@ -15,8 +15,7 @@ function formatCardReference(card?: ScryfallCard) {
 export default function GeneralInfo(props: { userLogged: boolean }) {
 
 
-    const { data: card } =
-        useScryfall<ScryfallCard>('/cards/random')
+    const { data: card } = useRandomCard()
 
     return <section className="space-y-6">
         <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs uppercase tracking-widest text-muted-foreground">

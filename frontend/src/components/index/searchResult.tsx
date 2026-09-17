@@ -1,7 +1,7 @@
-import type { ScryfallCard, ScryfallCards } from "#/types/scryfall";
+import type { ScryfallCard } from "#/features/scryfall/types";
 import ManaCost from "../search/manaCost";
 
-export default function SearchResults({ cards, onPicked }: { cards?: ScryfallCards, onPicked: (card: ScryfallCard) => void }) {
+export default function SearchResults({ cards, onPicked }: { cards?: ScryfallCard[], onPicked: (card: ScryfallCard) => void }) {
     return cards?.map((card) => (
         <button
             key={card.id}

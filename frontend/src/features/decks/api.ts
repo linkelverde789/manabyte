@@ -1,9 +1,13 @@
-import { api } from "../../api/client";
+import { api } from "../../api/manabyte";
 
 import type { Deck, CreateDeckData } from "./types";
 
 export function getDecks() {
     return api<Deck[]>("/deck/");
+}
+
+export function getDeck(deckId: number | string) {
+    return api<Deck>(`/deck/${deckId}/`);
 }
 
 export function createDeck(data: CreateDeckData) {
@@ -13,7 +17,7 @@ export function createDeck(data: CreateDeckData) {
     });
 }
 
-export function deleteDeck(deckId: number) {
+export function deleteDeck(deckId: number | string) {
     return api<number>(`/deck/${deckId}/`, {
         method: "DELETE",
     })

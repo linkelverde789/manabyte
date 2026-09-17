@@ -65,6 +65,31 @@ def test_create_card_bulk(user, auth_client):
 
 
 @pytest.mark.django_db
+def test_partial_update_card(user, auth_client):
+    deck = Deck.objects.create(name="Deck 1", user=user, format="Commander")
+    card = DeckCard.objects.create(
+        scryfall_id=uuid.uuid4(), deck=deck, zone="mainboard", quantity=1
+    )
+
+    updated_scryfall_id = uuid.uuid4()
+
+    res = auth_client.patch(
+        reverse("card-detail", kwargs={"deck_id": deck.id, "pk": card.id}),
+        {"quantity": 99, "scryfall_id": updated_scryfall_id},
+        format="json",
+    )
+
+    assert res.status_code == HTTP_200_OK
+    assert res.data["quantity"] == 99
+    assert res.data["scryfall_id"] == str(updated_scryfall_id)
+
+    card.refresh_from_db()
+
+    assert card.quantity == 99
+    assert card.scryfall_id == updated_scryfall_id
+
+
+@pytest.mark.django_db
 def test_delete_card(user, auth_client):
     deck = Deck.objects.create(name="Deck 1", user=user, format="Commander")
     card = DeckCard.objects.create(
