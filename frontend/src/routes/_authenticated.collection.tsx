@@ -1,4 +1,7 @@
 import CardRow from "#/components/collection/cardRow";
+import CardSearch from "#/components/deckCards/cardSearch";
+import EmptyDeck from "#/components/deckCards/emptyDeck";
+import { CardRowSkeleton } from "#/components/deckCards/skeletons";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import {
@@ -8,7 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#/components/ui/select";
-import { useGetCollectionItems } from "#/features/collection/hooks";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
+import {
+  useCreateCollectionItem,
+  useGetCollectionItems,
+} from "#/features/collection/hooks";
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import type { ScryfallCard } from "#/features/scryfall/types";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -19,18 +26,35 @@ export const Route = createFileRoute("/_authenticated/collection")({
 });
 
 function RouteComponent() {
-  const { data: collectionItems } = useGetCollectionItems();
+  const { data: collectionItems, isLoading } = useGetCollectionItems();
 
   const [collection, setCollection] = useState<Record<string, ScryfallCard>>(
     {},
   );
-  const [term, setTerm] = useState<string>("");
-  const [debounced, setDebounced] = useState<string>("");
+
+  const [term, setTerm] = useState("");
+  const [debounced, setDebounced] = useState("");
+  const [tab, setTab] = useState<"main" | "search">("main");
 
   useEffect(() => {
-    const t = setTimeout(() => setDebounced(term.trim()), 350);
-    return () => clearTimeout(t);
+    const timeout = setTimeout(() => {
+      setDebounced(term.trim());
+    }, 350);
+
+    return () => clearTimeout(timeout);
   }, [term]);
+
+  const createCollectionItem = useCreateCollectionItem();
+
+  function handleCreate(scryfall_id: string, quantity: number) {
+    createCollectionItem.mutate({
+      scryfall_id,
+      quantity,
+      foil: true,
+      language: "es",
+      condition: "MN",
+    });
+  }
 
   const {
     mutate: loadCollection,
@@ -55,10 +79,6 @@ function RouteComponent() {
     loadCollection(missingIds);
   }, [missingIds, loadCollection]);
 
-  const total = collectionItems
-    ?.map((item) => item.quantity)
-    .reduce((acc, value) => acc + value, 0);
-
   useEffect(() => {
     if (!results?.data) {
       return;
@@ -77,8 +97,12 @@ function RouteComponent() {
     resetCollection();
   }, [results, resetCollection]);
 
+  const total =
+    collectionItems?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
+
   const deckRows = useMemo(() => {
     const query = debounced.toLowerCase();
+
     return (
       collectionItems?.flatMap((dataCard) => {
         const card = collection[dataCard.scryfall_id];
@@ -112,65 +136,79 @@ function RouteComponent() {
           <h1 className="text-3xl font-semibold tracking-tight">
             My collection
           </h1>
+
           <p className="mt-1 text-sm text-muted-foreground">
-            {total} cards · {collectionItems?.length} entries
+            {total} cards · {collectionItems?.length ?? 0} entries
           </p>
         </div>
+
         <div className="flex flex-wrap gap-2">
-          {/* <ImportDialog
-            title="Paste cards into your collection"
-            description="One card per line, e.g. 4 Cuerno de Gondor (LTR) 240"
-            confirmLabel="Add to collection"
-            onConfirm={(imported) =>
-              imported.forEach((r) =>
-                addToCollection({
-                  card: r.card,
-                  qty: r.qty,
-                  foil: false,
-                  condition: "NM",
-                  notes: "",
-                }),
-              )
-            }
-          /> */}
           <Button asChild>
             <Link to="/search">Search cards</Link>
           </Button>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <Input
-          value={term}
-          onChange={(e) => setTerm(e.target.value)}
-          placeholder="Filter by name or set"
-          className="max-w-xs"
-        />
-        <Select>
-          <SelectTrigger className="w-44">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="recent">Recently added</SelectItem>
-            <SelectItem value="name">Name</SelectItem>
-            <SelectItem value="qty">Quantity</SelectItem>
-            <SelectItem value="set">Set</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Tabs
+        value={tab}
+        onValueChange={(value) => {
+          setTab(value as "main" | "search");
+        }}
+      >
+        <TabsList className="flex-wrap">
+          <TabsTrigger value="main">Main deck ({total})</TabsTrigger>
 
-      {deckRows.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-          Nothing here yet. Paste a list or search for cards to start your
-          collection.
-        </p>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {deckRows.map(({ card, dataCard }) => (
-            <MemoizedCardRow dataCard={dataCard} card={card} />
-          ))}
-        </div>
-      )}
+          <TabsTrigger value="search">Search cards</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="main" className="mt-6 space-y-6">
+          <div className="flex flex-wrap gap-3">
+            <Input
+              value={term}
+              onChange={(event) => setTerm(event.target.value)}
+              placeholder="Filter by name or set"
+              className="max-w-xs"
+            />
+
+            <Select defaultValue="recent">
+              <SelectTrigger className="w-44">
+                <SelectValue />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="recent">Recently added</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
+                <SelectItem value="qty">Quantity</SelectItem>
+                <SelectItem value="set">Set</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {isLoading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <CardRowSkeleton key={index} />
+              ))}
+            </div>
+          ) : deckRows.length === 0 ? (
+            <EmptyDeck />
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {deckRows.map(({ card, dataCard }) => (
+                <MemoizedCardRow
+                  key={dataCard.id}
+                  card={card}
+                  dataCard={dataCard}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="search" className="mt-6">
+          <CardSearch onCreate={handleCreate} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

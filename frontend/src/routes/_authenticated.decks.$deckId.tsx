@@ -9,6 +9,7 @@ import {
 
 import {
   useBulkCreateDeckCard,
+  useCreateDeckCard,
   useDeckCards,
 } from "#/features/deckCards/hooks";
 
@@ -37,6 +38,12 @@ function RouteComponent() {
   const { data: deck, isLoading: isLoadingDeck } = useDeck(deckId);
 
   const { data: cards, isLoading: isLoadingCards } = useDeckCards(deckId);
+
+  const createDeckCard = useCreateDeckCard(deckId);
+
+  function handleCreate(scryfall_id: string, quantity: number) {
+    createDeckCard.mutate({ scryfall_id, quantity });
+  }
 
   const [tab, setTab] = useState<"main" | "search">("main");
 
@@ -200,7 +207,7 @@ function RouteComponent() {
           )}
         </TabsContent>
         <TabsContent value="search" className="mt-6">
-          <CardSearch deckId={deckId} />
+          <CardSearch onCreate={handleCreate} />
         </TabsContent>
       </Tabs>
     </div>
