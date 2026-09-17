@@ -68,8 +68,34 @@ class CollectionItemView(ViewSet):
             status=HTTP_201_CREATED,
         )
 
-    def update(self, request, pk):
-        pass
+    def partial_update(self, request, pk):
+        user = request.user
+        data = request.data
+
+        collectionItem = CollectionItem.objects.filter(id=pk, user=user).first()
+
+        if "scryfall_id" in data:
+            collectionItem.scryfall_id = data["scryfall_id"]
+
+        if "quantity" in data:
+            collectionItem.quantity = data["quantity"]
+
+        if "foil" in data:
+            collectionItem.foil = data["foil"]
+
+        if "language" in data:
+            collectionItem.language = data["language"]
+
+        if "condition" in data:
+            collectionItem.condition = data["condition"]
+
+        collectionItem.save()
+
+        return Response(
+            CollectionItemResponseSerializer(
+                collectionItem, context={"request": request}
+            ).data
+        )
 
     def destroy(self, request, pk):
         CollectionItem.objects.filter(id=pk, user=request.user).first().delete()

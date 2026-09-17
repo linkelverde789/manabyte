@@ -28,7 +28,14 @@ export default function CardRow({
 
     const isUpdating = deleteCard.isPending || updateCard.isPending;
 
-    function handleUpdate(quantity: number) {
+    function handleUpdate(scryfall_id: string, cardId: string | number) {
+        updateCard.mutate({
+            cardId: cardId,
+            data: { scryfall_id: scryfall_id },
+        });
+    }
+
+    function handleUpdateQuantity(quantity: number) {
         if (isUpdating) {
             return;
         }
@@ -108,7 +115,9 @@ export default function CardRow({
                         size="icon"
                         variant="outline"
                         className="h-7 w-7"
-                        onClick={() => handleUpdate(dataCard.quantity - 1)}
+                        onClick={() =>
+                            handleUpdateQuantity(dataCard.quantity - 1)
+                        }
                         disabled={isUpdating}
                         aria-label={`Remove one ${card.name} `}
                     >
@@ -127,7 +136,9 @@ export default function CardRow({
                         size="icon"
                         variant="outline"
                         className="h-7 w-7"
-                        onClick={() => handleUpdate(dataCard.quantity + 1)}
+                        onClick={() =>
+                            handleUpdateQuantity(dataCard.quantity + 1)
+                        }
                         disabled={isUpdating}
                         aria-label={`Add one ${card.name} `}
                     >
@@ -151,16 +162,14 @@ export default function CardRow({
             {openStyles && (
                 <div className="ml-13 rounded-lg border border-border bg-muted/20 p-3">
                     <div className="text-xs text-muted-foreground">
-                        Style picker coming soon.
+                        {openStyles && (
+                            <StylePicker
+                                card={card}
+                                dataCardId={dataCard.id}
+                                onUpdated={handleUpdate}
+                            />
+                        )}
                     </div>
-
-                    {openStyles && (
-                        <StylePicker
-                            deckId={deckId}
-                            card={card}
-                            originalCard={dataCard}
-                        />
-                    )}
                 </div>
             )}
         </div>
