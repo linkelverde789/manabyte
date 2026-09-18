@@ -15,19 +15,18 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "../ui/input";
 import { Layers, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
-import { useCreateDeckCard } from "#/features/deckCards/hooks";
 import { cn } from "#/lib/utils";
 
 export function AddCardDialog({
     card,
     open,
     onOpenChange,
-    deckId,
+    onCreate,
 }: {
     card: ScryfallCard | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    deckId: string | number;
+    onCreate: (scryfall_id: string, quantity: number) => void;
 }) {
     const [selected, setSelected] = useState<ScryfallCard | null>(card);
     const [showStyles, setShowStyles] = useState(false);
@@ -37,16 +36,16 @@ export function AddCardDialog({
         setSelected(card);
         setShowStyles(false);
         setQuantity(1);
-    }, [card, deckId]);
+    }, [card]);
 
     const { data: printings, isLoading } = useSearchCardStyles(
         selected?.name ?? "",
     );
-    const createCard = useCreateDeckCard(deckId);
+
     if (!card || !selected) return null;
 
     function submit() {
-        createCard.mutate({ scryfall_id: selected?.id!, quantity: quantity });
+        onCreate(selected?.id!, quantity);
         setSelected(card);
         setShowStyles(false);
         setQuantity(1);

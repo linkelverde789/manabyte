@@ -1,26 +1,27 @@
-import NewDeckDialog from '#/components/decks/newDeckDialog';
-import { Button } from '#/components/ui/button';
-import { useDecks, useDeleteDeck } from '#/features/decks/hooks';
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { Layers, Trash2 } from 'lucide-react';
+import NewDeckDialog from "#/components/decks/newDeckDialog";
+import { Button } from "#/components/ui/button";
+import { useDecks, useDeleteDeck } from "#/features/decks/hooks";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Layers, Trash2 } from "lucide-react";
 
-export const Route = createFileRoute('/_authenticated/decks/')({
+export const Route = createFileRoute("/_authenticated/decks/")({
   component: RouteComponent,
-})
-
+});
 
 function RouteComponent() {
-  const { data: decks } = useDecks()
+  const { data: decks } = useDecks();
 
-  const deleteDeck = useDeleteDeck()
+  const deleteDeck = useDeleteDeck();
   function handleDeleteDeck(deckId: number) {
-    deleteDeck.mutate(deckId)
+    deleteDeck.mutate(deckId);
   }
 
   if (!decks) {
-    return <div>
-      No hay nada
-    </div>
+    return (
+      <p className="rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+        No decks yet. Create one, then paste a list or search cards to fill it.
+      </p>
+    );
   }
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
@@ -36,7 +37,8 @@ function RouteComponent() {
 
       {decks.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-          No decks yet. Create one, then paste a list or search cards to fill it.
+          No decks yet. Create one, then paste a list or search cards to fill
+          it.
         </p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -56,8 +58,9 @@ function RouteComponent() {
                     <Layers className="h-3.5 w-3.5" /> {deck.format}
                   </div>
                   <div className="text-lg font-semibold">{deck.name}</div>
-                  <div className="text-sm text-muted-foreground">{total} cards</div>
-
+                  <div className="text-sm text-muted-foreground">
+                    {total} cards
+                  </div>
                 </Link>
                 <Button
                   size="icon"
@@ -73,5 +76,5 @@ function RouteComponent() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -9,11 +9,11 @@ import ManaCost from "../search/manaCost";
 import { AddCardDialog } from "./addCardDialog";
 
 export default function CardSearch({
-    deckId,
+    onCreate,
     placeholder = "Search cards by name, e.g. Lightning Bolt",
     autoFocus,
 }: {
-    deckId: string | number;
+    onCreate: (scryfall_id: string, quantity: number) => void;
     placeholder?: string;
     autoFocus?: boolean | undefined;
 }) {
@@ -81,7 +81,7 @@ export default function CardSearch({
                 card={picked}
                 open={!!picked}
                 onOpenChange={(open) => !open && setPicked(null)}
-                deckId={deckId}
+                onCreate={onCreate}
             />
         </div>
     );

@@ -3,21 +3,17 @@ import type { ScryfallCard } from "#/features/scryfall/types";
 import { cn } from "#/lib/utils";
 import { Loader2 } from "lucide-react";
 import { CardImage } from "./cardImage";
-import { usePartialUpdateDeckCard } from "#/features/deckCards/hooks";
-import type { DeckCard } from "#/features/deckCards/types";
 
 export default function StylePicker({
-    deckId,
     card,
-    originalCard,
+    dataCardId,
+    onUpdated,
 }: {
-    deckId: string | number;
     card: ScryfallCard;
-    originalCard: DeckCard;
+    dataCardId: string | number;
+    onUpdated: (scryfall_id: string, cardId: string | number) => void;
 }) {
     const { data: printings, isLoading } = useSearchCardStyles(card.name);
-
-    const partialUpdateCard = usePartialUpdateDeckCard(deckId);
 
     return (
         <div className="col-span-full space-y-2 rounded-lg bg-muted/30 p-3">
@@ -32,12 +28,7 @@ export default function StylePicker({
                     <button
                         key={printing.id}
                         type="button"
-                        onClick={() =>
-                            partialUpdateCard.mutate({
-                                cardId: originalCard.id,
-                                data: { scryfall_id: printing.id },
-                            })
-                        }
+                        onClick={() => onUpdated(printing.id, dataCardId)}
                         className={cn(
                             "space-y-1 rounded-lg p-1 text-left transition",
                             printing.id === card.id

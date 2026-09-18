@@ -1,3 +1,4 @@
+from statistics import quantiles
 from uuid import uuid4
 
 import pytest
@@ -42,6 +43,47 @@ def test_bulk_create_collection_item(auth_client):
     assert res.status_code == HTTP_201_CREATED
 
     assert len(res.data) == 10
+
+
+@pytest.mark.django_db
+def test_partial_update_collection_item(user, auth_client):
+    original_uuid = uuid4()
+    collectionItem = CollectionItem.objects.create(
+        user=user,
+        scryfall_id=original_uuid,
+        quantity=1,
+        language="en",
+        foil=False,
+        condition="PSA 1",
+    )
+
+    data = {
+        "scryfall_id": uuid4(),
+        "quantity": 999,
+        "language": "es",
+        "foil": True,
+        "condition": "PSA 10",
+    }
+
+    res = auth_client.patch(
+        reverse("collection-detail", kwargs={"pk": collectionItem.id}),
+        data,
+        format="json",
+    )
+
+    assert res.data["scryfall_id"] != str(collectionItem.scryfall_id)
+    assert res.data["quantity"] != collectionItem.quantity
+    assert res.data["language"] != collectionItem.language
+    assert res.data["foil"] != collectionItem.foil
+    assert res.data["condition"] != collectionItem.condition
+
+    collectionItem.refresh_from_db()
+
+    assert res.data["scryfall_id"] == str(collectionItem.scryfall_id)
+    assert res.data["quantity"] == collectionItem.quantity
+    assert res.data["language"] == collectionItem.language
+    assert res.data["foil"] == collectionItem.foil
+    assert res.data["condition"] == collectionItem.condition
 
 
 @pytest.mark.django_db

@@ -15,12 +15,3 @@ export interface Folder {
     id: number
     name: string
 }
-
-export interface CollectionItem {
-    id: number
-    scryfall_id: string
-    quantity: number
-    foil: boolean
-    language: string
-    condition: string
-}
