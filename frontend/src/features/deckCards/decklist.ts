@@ -13,21 +13,23 @@ export function parseDecklist(text: string): ParsedLine[] {
         .split("\n")
         .map((line) => line.trim())
         .filter(Boolean)
+    
 
     for (const raw of lines) {
         const match = raw.match(
-            /^(\d+)\s+(.+?)(?:\s+\(([A-Za-z0-9]+)\)\s+(\S+))?$/
+            /^(?:(\d+)\s+)?(.+?)(?:\s+\(([A-Za-z0-9]+)\)\s+(\S+))?$/
         )
 
         if (!match) {
             continue
         }
 
+
         const [, quantity, name, set, collectorNumber] = match
 
         result.push({
             raw,
-            quantity: Number(quantity),
+            quantity: quantity ? Number(quantity) : 1,
             name: name.trim(),
             set: set?.toLowerCase(),
             collectorNumber,
