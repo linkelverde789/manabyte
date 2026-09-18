@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createCollectionItem, deleteCollectionItem, getCollectionItems, partialUpdateCollectionItem } from "./api";
+import { bulkCreateCollectionItem, createCollectionItem, deleteCollectionItem, getCollectionItems, partialUpdateCollectionItem } from "./api";
 import type { CreateCollectionItemData, PartialUpdateCollectionItemData } from "./types";
 
 
@@ -8,6 +8,21 @@ export function useGetCollectionItems(){
         queryKey: ["collection"],
         queryFn: getCollectionItems,
     });
+}
+
+export function useBulkCreateCollectionItem(){
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (data: CreateCollectionItemData[]) => bulkCreateCollectionItem(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["collection"]
+            })
+        },
+        onError: (error) => {
+            console.error("ERROR", error)
+        }
+    })
 }
 
 export function useCreateCollectionItem(){

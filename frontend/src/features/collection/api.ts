@@ -10,6 +10,11 @@ export function createCollectionItem(data: CreateCollectionItemData){
     return api<CollectionItem>("/collection/",{method: "POST", body: JSON.stringify(data)} )
 }
 
+export function bulkCreateCollectionItem(data: CreateCollectionItemData[]){
+    return api<CollectionItem[]>("/collection/bulk/",{method: "POST", body: JSON.stringify(data)} )
+
+}
+
 export function partialUpdateCollectionItem(cardId: number|string, data: PartialUpdateCollectionItemData){
     return api<CollectionItem>(`/collection/${cardId}/`,{method: "PATCH", body: JSON.stringify(data)} )
 }

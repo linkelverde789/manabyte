@@ -42,7 +42,7 @@ class CollectionItemView(ViewSet):
             status=HTTP_201_CREATED,
         )
 
-    @action(detail=False, methods=["post"], url_path="bulk-create")
+    @action(detail=False, methods=["post"], url_path="bulk")
     def bulk_create(self, request):
         user = request.user
         data = request.data

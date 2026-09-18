@@ -1,6 +1,7 @@
 import CardRow from "#/components/collection/cardRow";
 import CardSearch from "#/components/deckCards/cardSearch";
 import EmptyDeck from "#/components/deckCards/emptyDeck";
+import { ImportDialog } from "#/components/deckCards/importDialog";
 import { CardRowSkeleton } from "#/components/deckCards/skeletons";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
@@ -13,6 +14,7 @@ import {
 } from "#/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
 import {
+  useBulkCreateCollectionItem,
   useCreateCollectionItem,
   useGetCollectionItems,
 } from "#/features/collection/hooks";
@@ -31,6 +33,9 @@ function RouteComponent() {
   const [collection, setCollection] = useState<Record<string, ScryfallCard>>(
     {},
   );
+
+  const { mutateAsync: bulkCreateCollectionItem } =
+    useBulkCreateCollectionItem();
 
   const [term, setTerm] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -142,10 +147,23 @@ function RouteComponent() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button asChild>
-            <Link to="/search">Search cards</Link>
-          </Button>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <ImportDialog
+            title={`Paste a list into collection`}
+            description="Import cards from a decklist. One card per line."
+            confirmLabel="Add to collection"
+            onConfirm={async (rows) => {
+              const data = rows.map((row) => ({
+                scryfall_id: row.card.id,
+                quantity: row.quantity,
+                foil: false,
+                language: "en",
+                condition: "MN",
+              }));
+
+              await bulkCreateCollectionItem(data);
+            }}
+          />
         </div>
       </div>
 
