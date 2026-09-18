@@ -3,8 +3,6 @@ import type { ScryfallCard } from "#/features/scryfall/types";
 import { cn } from "#/lib/utils";
 import { Loader2 } from "lucide-react";
 import { CardImage } from "./cardImage";
-import { usePartialUpdateDeckCard } from "#/features/deckCards/hooks";
-import type { DeckCard } from "#/features/deckCards/types";
 
 export default function StylePicker({
     card,

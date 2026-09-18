@@ -160,7 +160,7 @@ export default function CardRow({
             </div>
 
             {openStyles && (
-                <div className="ml-13 rounded-lg border border-border bg-muted/20 p-3">
+                <div className="rounded-lg border border-border bg-muted/20 p-3">
                     <div className="text-xs text-muted-foreground">
                         {openStyles && (
                             <StylePicker

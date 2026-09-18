@@ -21,9 +21,6 @@ export interface PartialUpdateDeckCardData {
 }
 
 export function partialUpdateDeckCard(deckId: number | string, cardId: number | string, data: PartialUpdateDeckCardData) {
-    console.log("prueba: ", data)
-    console.log("deckId: ", deckId)
-    console.log("cardId: ", cardId)
 
     return api<DeckCard>(`/deck/${deckId}/cards/${cardId}/`, { method: "PATCH", body: JSON.stringify(data) });
 
