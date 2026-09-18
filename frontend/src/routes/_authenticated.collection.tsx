@@ -3,7 +3,6 @@ import CardSearch from "#/components/deckCards/cardSearch";
 import EmptyDeck from "#/components/deckCards/emptyDeck";
 import { ImportDialog } from "#/components/deckCards/importDialog";
 import { CardRowSkeleton } from "#/components/deckCards/skeletons";
-import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import {
   Select,
@@ -20,7 +19,7 @@ import {
 } from "#/features/collection/hooks";
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import type { ScryfallCard } from "#/features/scryfall/types";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { memo, useEffect, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/collection")({
@@ -33,6 +32,8 @@ function RouteComponent() {
   const [collection, setCollection] = useState<Record<string, ScryfallCard>>(
     {},
   );
+
+  const [sort, setSort] = useState<string>("recent");
 
   const { mutateAsync: bulkCreateCollectionItem } =
     useBulkCreateCollectionItem();
@@ -55,8 +56,8 @@ function RouteComponent() {
     createCollectionItem.mutate({
       scryfall_id,
       quantity,
-      foil: true,
-      language: "es",
+      foil: false,
+      language: "en",
       condition: "MN",
     });
   }
@@ -108,7 +109,7 @@ function RouteComponent() {
   const deckRows = useMemo(() => {
     const query = debounced.toLowerCase();
 
-    return (
+    const rows =
       collectionItems?.flatMap((dataCard) => {
         const card = collection[dataCard.scryfall_id];
 
@@ -130,9 +131,20 @@ function RouteComponent() {
             dataCard,
           },
         ];
-      }) ?? []
-    );
-  }, [collectionItems, collection, debounced]);
+      }) ?? [];
+
+    return rows.sort((a, b) => {
+      if (sort === "name") {
+        return a.card.name.localeCompare(b.card.name);
+      }
+
+      if (sort === "quantity") {
+        return b.dataCard.quantity - a.dataCard.quantity;
+      }
+
+      return 0;
+    });
+  }, [collectionItems, collection, debounced, sort]);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
@@ -188,7 +200,11 @@ function RouteComponent() {
               className="max-w-xs"
             />
 
-            <Select defaultValue="recent">
+            <Select
+              defaultValue="recent"
+              value={sort}
+              onValueChange={(value) => setSort(value)}
+            >
               <SelectTrigger className="w-44">
                 <SelectValue />
               </SelectTrigger>
@@ -196,8 +212,7 @@ function RouteComponent() {
               <SelectContent>
                 <SelectItem value="recent">Recently added</SelectItem>
                 <SelectItem value="name">Name</SelectItem>
-                <SelectItem value="qty">Quantity</SelectItem>
-                <SelectItem value="set">Set</SelectItem>
+                <SelectItem value="quantity">Quantity</SelectItem>
               </SelectContent>
             </Select>
           </div>
