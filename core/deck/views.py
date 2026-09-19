@@ -70,6 +70,7 @@ class DeckCardsView(ViewSet):
             deck=deck,
             quantity=request.data["quantity"],
             zone=request.data.get("zone", "mainboard"),
+            folder_id=request.data.get("folder_id", None),
         )
 
         cards = DeckCard.objects.filter(deck=deck).order_by("id")

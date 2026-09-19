@@ -16,8 +16,7 @@ export interface CreateCollectionItemData {
   foil: boolean;
   condition: string;
   language: string;
-  folder?: number;
-  folderId?: string | number;
+  folder_id?: string | number;
 }
 
 export interface PartialUpdateCollectionItemData {
@@ -26,7 +25,7 @@ export interface PartialUpdateCollectionItemData {
   foil?: boolean;
   condition?: string;
   language?: string;
-  folder?: number;
+  folder_id?: number;
 }
 
 export interface FilterCollectionParams {

@@ -1,7 +1,8 @@
 export interface Folder {
   id: number;
   name: string;
-  type?: FolderFormat;
+  type: FolderFormat;
+  card_count: number;
 }
 
 export interface CreateFolderData {

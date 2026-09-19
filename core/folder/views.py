@@ -36,7 +36,11 @@ class UserFolderView(ViewSet):
         user = request.user
         data = request.data
 
-        folder = Folder.objects.create(user=user, name=data["name"], type=data["type"])
+        folder = Folder.objects.create(
+            user=user,
+            name=data["name"],
+            type=data["type"],
+        )
 
         return Response(
             FolderResponseSerializer(folder, context={"request": request}).data,

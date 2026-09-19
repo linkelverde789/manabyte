@@ -40,6 +40,7 @@ class CollectionItemView(ViewSet):
             foil=data["foil"],
             language=data["language"],
             condition=data["condition"],
+            folder_id=data.get("folder_id", None),
         )
 
         return Response(
@@ -62,6 +63,7 @@ class CollectionItemView(ViewSet):
                 foil=item["foil"],
                 language=item["language"],
                 condition=item["condition"],
+                folder_id=item.get("folder_id", None),
             )
             for item in data
         ]

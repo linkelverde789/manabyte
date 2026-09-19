@@ -65,6 +65,7 @@ function RouteComponent() {
       foil: false,
       language: "en",
       condition: "MN",
+      folder_id: folderId,
     });
   }
 
@@ -153,6 +154,22 @@ function RouteComponent() {
     });
   }, [collectionItems, collection, debounced, sort]);
 
+  const totalPrice = useMemo(() => {
+    return (
+      collectionItems?.reduce((total, dataCard) => {
+        const card = collection[dataCard.scryfall_id];
+
+        if (!card) {
+          return total;
+        }
+
+        const price = Number(card.prices?.usd ?? 0);
+
+        return total + price * dataCard.quantity;
+      }, 0) ?? 0
+    );
+  }, [collectionItems, collection]);
+
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -161,6 +178,10 @@ function RouteComponent() {
             {/*My collection - {folder?.name}*/}
             {folder?.name}
           </h1>
+
+          {/* TODO: Refactor this
+          <h2>${totalPrice.toFixed(2)}</h2>
+          */}
 
           <p className="mt-1 text-sm text-muted-foreground">
             {total} cards · {collectionItems?.length ?? 0} entries
@@ -177,8 +198,9 @@ function RouteComponent() {
                 scryfall_id: row.card.id,
                 quantity: row.quantity,
                 foil: false,
-                language: "en",
+                language: row.card.lang,
                 condition: "MN",
+                folder_id: folderId,
               }));
 
               await bulkCreateCollectionItem(data);

@@ -1,5 +1,4 @@
 import NewFolderDialog from "#/components/collection/newFolderDialog";
-import NewDeckDialog from "#/components/decks/newDeckDialog";
 import { Button } from "#/components/ui/button";
 import { useDeleteFolder, useListFolders } from "#/features/folders/hooks";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -40,10 +39,12 @@ function RouteComponent() {
               >
                 <div className="flex items-center gap-2 text-xs tracking-wide text-muted-foreground">
                   <Folder />
-                  {"Collection"}
+                  Collection
                 </div>
                 <div className="text-lg font-semibold">{folder.name}</div>
-                <div className="text-sm text-muted-foreground">{12} cards</div>
+                <div className="text-sm text-muted-foreground">
+                  {folder.card_count} cards
+                </div>
               </Link>
               <Button
                 size="icon"
