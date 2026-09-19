@@ -1,7 +1,14 @@
 import type { ScryfallCard } from "#/features/scryfall/types";
 import type { CollectionItem } from "#/features/collection/types";
 
-import { Layers, Minus, Pencil, Plus, Sparkles, Trash2 } from "lucide-react";
+import {
+    DollarSign,
+    Minus,
+    Pencil,
+    Plus,
+    Sparkles,
+    Trash2,
+} from "lucide-react";
 import { useState } from "react";
 
 import { CardImage } from "../deckCards/cardImage";
@@ -50,6 +57,10 @@ export default function CardRow({
             },
         });
     }
+
+    console.log(
+        `Card: ${card.name} price: ${card.prices?.usd} price: ${card.prices?.usd_foil}`,
+    );
 
     return (
         <>
@@ -124,6 +135,12 @@ export default function CardRow({
                             <Plus className="h-3.5 w-3.5" />
                         </Button>
 
+                        {dataCard.foil ? (
+                            <ShowPrice price={card.prices?.usd_foil} />
+                        ) : (
+                            <ShowPrice price={card.prices?.usd} />
+                        )}
+
                         <Button
                             size="icon"
                             variant="ghost"
@@ -146,5 +163,18 @@ export default function CardRow({
                 onUpdate={handleUpdate}
             />
         </>
+    );
+}
+
+export function ShowPrice({ price }: { price: string | null | undefined }) {
+    if (!price || price === "") {
+        return null;
+    }
+
+    return (
+        <div className="ml-2 inline-flex items-center gap-1 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+            <DollarSign className="h-3.5 w-3.5" />
+            <span>{price}</span>
+        </div>
     );
 }
