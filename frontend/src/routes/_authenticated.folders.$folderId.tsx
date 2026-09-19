@@ -27,18 +27,23 @@ export const Route = createFileRoute("/_authenticated/folders/$folderId")({
 });
 
 function RouteComponent() {
-  const {folderId} = Route.useParams()
-  const { data: collectionItems, isLoading } = useGetCollectionItems({folderId});
+  const { folderId } = Route.useParams();
+  const { data: collectionItems, isLoading } = useGetCollectionItems({
+    folderId,
+  });
+  const { mutateAsync: bulkCreateCollectionItem } =
+    useBulkCreateCollectionItem();
+  const createCollectionItem = useCreateCollectionItem();
 
   const [collection, setCollection] = useState<Record<string, ScryfallCard>>(
     {},
   );
-
+  const {
+    mutate: loadCollection,
+    data: results,
+    reset: resetCollection,
+  } = useLoadCollection();
   const [sort, setSort] = useState<string>("recent");
-
-  const { mutateAsync: bulkCreateCollectionItem } =
-    useBulkCreateCollectionItem();
-
   const [term, setTerm] = useState("");
   const [debounced, setDebounced] = useState("");
   const [tab, setTab] = useState<"main" | "search">("main");
@@ -51,8 +56,6 @@ function RouteComponent() {
     return () => clearTimeout(timeout);
   }, [term]);
 
-  const createCollectionItem = useCreateCollectionItem();
-
   function handleCreate(scryfall_id: string, quantity: number) {
     createCollectionItem.mutate({
       scryfall_id,
@@ -62,12 +65,6 @@ function RouteComponent() {
       condition: "MN",
     });
   }
-
-  const {
-    mutate: loadCollection,
-    data: results,
-    reset: resetCollection,
-  } = useLoadCollection();
 
   const missingIds = useMemo(() => {
     return (

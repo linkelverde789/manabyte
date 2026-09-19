@@ -1,3 +1,4 @@
+import NewFolderDialog from "#/components/collection/newFolderDialog";
 import NewDeckDialog from "#/components/decks/newDeckDialog";
 import { Button } from "#/components/ui/button";
 import { useDeleteFolder, useListFolders } from "#/features/folders/hooks";
@@ -23,7 +24,7 @@ function RouteComponent() {
             {folders?.length} folders.
           </p>
         </div>
-        <NewDeckDialog />
+        <NewFolderDialog />
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {folders?.map((folder) => {

@@ -16,9 +16,7 @@ class CollectionItemView(ViewSet):
 
         params = request.query_params
 
-        collection_items = CollectionItem.objects.filter(user=user)
-
-        print(f"Params: {params.get('folder_id')}")
+        collection_items = CollectionItem.objects.filter(user=user).order_by("-id")
 
         if "folder_id" in params:
             collection_items = collection_items.filter(
