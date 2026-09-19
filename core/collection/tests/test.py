@@ -1,4 +1,3 @@
-from statistics import quantiles
 from uuid import uuid4
 
 import pytest
