@@ -5,7 +5,7 @@ export function listFolders() {
   return api<Folder[]>("/folder/");
 }
 export function getFolder(folderId: string | number) {
-  return api<Folder>(`/folder/${folderId}}`);
+  return api<Folder>(`/folder/${folderId}/`);
 }
 export function createFolder(data: CreateFolderData) {
   return api<Folder>(`/folder/`, {
