@@ -16,6 +16,7 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated.collection'
 import { Route as AuthenticatedDecksIndexRouteImport } from './routes/_authenticated.decks.index'
 import { Route as AuthenticatedDecksDeckIdRouteImport } from './routes/_authenticated.decks.$deckId'
+import { Route as AuthenticatedFoldersFolderIdRouteImport } from './routes/_authenticated.folders.$folderId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,12 @@ const AuthenticatedDecksDeckIdRoute =
     path: '/decks/$deckId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedFoldersFolderIdRoute =
+  AuthenticatedFoldersFolderIdRouteImport.update({
+    id: '/folders/$folderId',
+    path: '/folders/$folderId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
+  '/folders/$folderId': typeof AuthenticatedFoldersFolderIdRoute
   '/decks/': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRoutesByTo {
@@ -67,6 +75,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
+  '/folders/$folderId': typeof AuthenticatedFoldersFolderIdRoute
   '/decks': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRoutesById {
@@ -77,14 +86,28 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
+  '/_authenticated/folders/$folderId': typeof AuthenticatedFoldersFolderIdRoute
   '/_authenticated/decks/': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/search' | '/collection' | '/decks/$deckId' | '/decks/'
+    | '/'
+    | '/auth'
+    | '/search'
+    | '/collection'
+    | '/decks/$deckId'
+    | '/folders/$folderId'
+    | '/decks/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/search' | '/collection' | '/decks/$deckId' | '/decks'
+  to:
+    | '/'
+    | '/auth'
+    | '/search'
+    | '/collection'
+    | '/decks/$deckId'
+    | '/folders/$folderId'
+    | '/decks'
   id:
     | '__root__'
     | '/'
@@ -93,6 +116,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/_authenticated/collection'
     | '/_authenticated/decks/$deckId'
+    | '/_authenticated/folders/$folderId'
     | '/_authenticated/decks/'
   fileRoutesById: FileRoutesById
 }
@@ -154,18 +178,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDecksDeckIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/folders/$folderId': {
+      id: '/_authenticated/folders/$folderId'
+      path: '/folders/$folderId'
+      fullPath: '/folders/$folderId'
+      preLoaderRoute: typeof AuthenticatedFoldersFolderIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedDecksDeckIdRoute: typeof AuthenticatedDecksDeckIdRoute
+  AuthenticatedFoldersFolderIdRoute: typeof AuthenticatedFoldersFolderIdRoute
   AuthenticatedDecksIndexRoute: typeof AuthenticatedDecksIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedDecksDeckIdRoute: AuthenticatedDecksDeckIdRoute,
+  AuthenticatedFoldersFolderIdRoute: AuthenticatedFoldersFolderIdRoute,
   AuthenticatedDecksIndexRoute: AuthenticatedDecksIndexRoute,
 }
 

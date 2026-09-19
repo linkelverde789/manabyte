@@ -1,27 +1,33 @@
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs';
-import { useAuth } from '#/contexts/AuthContext';
-import { Label } from '@radix-ui/react-label';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { LogIn, UserPlus } from 'lucide-react';
-import { useState } from 'react';
+import { Button } from "#/components/ui/button";
+import { Input } from "#/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
+import { useAuth } from "#/contexts/AuthContext";
+import { Label } from "@radix-ui/react-label";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { LogIn, UserPlus } from "lucide-react";
+import { useState } from "react";
 
-export const Route = createFileRoute('/auth')({
+export const Route = createFileRoute("/auth")({
   component: RouteComponent,
-})
-
+});
 
 function RouteComponent() {
   const { user, logout, login, register } = useAuth();
   const navigate = useNavigate();
   const [signInForm, setSignInForm] = useState({ email: "", password: "" });
-  const [signUpForm, setSignUpForm] = useState({ username: "", email: "", password: "", password_confirm: "" });
+  const [signUpForm, setSignUpForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    password_confirm: "",
+  });
 
   if (user) {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight">Hi, {user.username}</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Hi, {user.username}
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">{user.email}</p>
         <div className="mt-8 flex justify-center gap-3">
           <Button asChild>
@@ -45,7 +51,10 @@ function RouteComponent() {
       await fn();
       void navigate({ to: "/decks" });
     } catch (error) {
-      console.error("Error occurred:", error instanceof Error ? error.message : "Something went wrong");
+      console.error(
+        "Error occurred:",
+        error instanceof Error ? error.message : "Something went wrong",
+      );
       console.error("Error object:", error);
     }
   };
@@ -53,10 +62,6 @@ function RouteComponent() {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="text-3xl font-semibold tracking-tight">Your account</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Work in progress: accounts are stored only in this browser, so they don't sync between
-        devices yet.
-      </p>
 
       <Tabs defaultValue="signin" className="mt-8">
         <TabsList className="grid w-full grid-cols-2">
@@ -79,7 +84,9 @@ function RouteComponent() {
                 type="email"
                 autoComplete="email"
                 value={signInForm.email}
-                onChange={(e) => setSignInForm((f) => ({ ...f, email: e.target.value }))}
+                onChange={(e) =>
+                  setSignInForm((f) => ({ ...f, email: e.target.value }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -89,7 +96,9 @@ function RouteComponent() {
                 type="password"
                 autoComplete="current-password"
                 value={signInForm.password}
-                onChange={(e) => setSignInForm((f) => ({ ...f, password: e.target.value }))}
+                onChange={(e) =>
+                  setSignInForm((f) => ({ ...f, password: e.target.value }))
+                }
               />
             </div>
             <Button type="submit" className="w-full">
@@ -111,7 +120,9 @@ function RouteComponent() {
               <Input
                 id="signup-name"
                 value={signUpForm.username}
-                onChange={(e) => setSignUpForm((f) => ({ ...f, username: e.target.value }))}
+                onChange={(e) =>
+                  setSignUpForm((f) => ({ ...f, username: e.target.value }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -121,7 +132,9 @@ function RouteComponent() {
                 type="email"
                 autoComplete="email"
                 value={signUpForm.email}
-                onChange={(e) => setSignUpForm((f) => ({ ...f, email: e.target.value }))}
+                onChange={(e) =>
+                  setSignUpForm((f) => ({ ...f, email: e.target.value }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -131,9 +144,13 @@ function RouteComponent() {
                 type="password"
                 autoComplete="new-password"
                 value={signUpForm.password}
-                onChange={(e) => setSignUpForm((f) => ({ ...f, password: e.target.value }))}
+                onChange={(e) =>
+                  setSignUpForm((f) => ({ ...f, password: e.target.value }))
+                }
               />
-              <p className="text-xs text-muted-foreground">At least 6 characters.</p>
+              <p className="text-xs text-muted-foreground">
+                At least 6 characters.
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="signup-password">Confirm Password</Label>
@@ -142,9 +159,16 @@ function RouteComponent() {
                 type="password"
                 autoComplete="new-password"
                 value={signUpForm.password_confirm}
-                onChange={(e) => setSignUpForm((f) => ({ ...f, password_confirm: e.target.value }))}
+                onChange={(e) =>
+                  setSignUpForm((f) => ({
+                    ...f,
+                    password_confirm: e.target.value,
+                  }))
+                }
               />
-              <p className="text-xs text-muted-foreground">At least 6 characters.</p>
+              <p className="text-xs text-muted-foreground">
+                At least 6 characters.
+              </p>
             </div>
             <Button type="submit" className="w-full">
               <UserPlus className="mr-2 h-4 w-4" /> Create account

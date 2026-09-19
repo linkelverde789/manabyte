@@ -14,7 +14,14 @@ class CollectionItemView(ViewSet):
     def list(self, request):
         user = request.user
 
-        collection_items = CollectionItem.objects.filter(user=user)
+        params = request.query_params
+
+        collection_items = CollectionItem.objects.filter(user=user).order_by("-id")
+
+        if "folder_id" in params:
+            collection_items = collection_items.filter(
+                folder_id=params.get("folder_id")
+            )
 
         return Response(
             CollectionItemResponseSerializer(

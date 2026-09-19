@@ -1,150 +1,17 @@
-import CardRow from "#/components/collection/cardRow";
-import CardSearch from "#/components/deckCards/cardSearch";
-import EmptyDeck from "#/components/deckCards/emptyDeck";
-import { ImportDialog } from "#/components/deckCards/importDialog";
-import { CardRowSkeleton } from "#/components/deckCards/skeletons";
-import { Input } from "#/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "#/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
-import {
-  useBulkCreateCollectionItem,
-  useCreateCollectionItem,
-  useGetCollectionItems,
-} from "#/features/collection/hooks";
-import { useLoadCollection } from "#/features/scryfall/hooks";
-import type { ScryfallCard } from "#/features/scryfall/types";
-import { createFileRoute } from "@tanstack/react-router";
-import { memo, useEffect, useMemo, useState } from "react";
+import NewFolderDialog from "#/components/collection/newFolderDialog";
+import NewDeckDialog from "#/components/decks/newDeckDialog";
+import { Button } from "#/components/ui/button";
+import { useDeleteFolder, useListFolders } from "#/features/folders/hooks";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Folder, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/collection")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { data: collectionItems, isLoading } = useGetCollectionItems();
-
-  const [collection, setCollection] = useState<Record<string, ScryfallCard>>(
-    {},
-  );
-
-  const [sort, setSort] = useState<string>("recent");
-
-  const { mutateAsync: bulkCreateCollectionItem } =
-    useBulkCreateCollectionItem();
-
-  const [term, setTerm] = useState("");
-  const [debounced, setDebounced] = useState("");
-  const [tab, setTab] = useState<"main" | "search">("main");
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebounced(term.trim());
-    }, 350);
-
-    return () => clearTimeout(timeout);
-  }, [term]);
-
-  const createCollectionItem = useCreateCollectionItem();
-
-  function handleCreate(scryfall_id: string, quantity: number) {
-    createCollectionItem.mutate({
-      scryfall_id,
-      quantity,
-      foil: false,
-      language: "en",
-      condition: "MN",
-    });
-  }
-
-  const {
-    mutate: loadCollection,
-    data: results,
-    reset: resetCollection,
-  } = useLoadCollection();
-
-  const missingIds = useMemo(() => {
-    return (
-      collectionItems
-        ?.map((card) => card.scryfall_id)
-        .filter((id) => !collection[id])
-        .map((id) => ({ id })) ?? []
-    );
-  }, [collectionItems, collection]);
-
-  useEffect(() => {
-    if (missingIds.length === 0) {
-      return;
-    }
-
-    loadCollection(missingIds);
-  }, [missingIds, loadCollection]);
-
-  useEffect(() => {
-    if (!results?.data) {
-      return;
-    }
-
-    setCollection((previous) => {
-      const next = { ...previous };
-
-      for (const card of results.data) {
-        next[card.id] = card;
-      }
-
-      return next;
-    });
-
-    resetCollection();
-  }, [results, resetCollection]);
-
-  const total =
-    collectionItems?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
-
-  const deckRows = useMemo(() => {
-    const query = debounced.toLowerCase();
-
-    const rows =
-      collectionItems?.flatMap((dataCard) => {
-        const card = collection[dataCard.scryfall_id];
-
-        if (!card) {
-          return [];
-        }
-
-        const matches =
-          card.name.toLowerCase().includes(query) ||
-          card.set_name.toLowerCase().includes(query);
-
-        if (!matches) {
-          return [];
-        }
-
-        return [
-          {
-            card,
-            dataCard,
-          },
-        ];
-      }) ?? [];
-
-    return rows.sort((a, b) => {
-      if (sort === "name") {
-        return a.card.name.localeCompare(b.card.name);
-      }
-
-      if (sort === "quantity") {
-        return b.dataCard.quantity - a.dataCard.quantity;
-      }
-
-      return 0;
-    });
-  }, [collectionItems, collection, debounced, sort]);
+  const { data: folders } = useListFolders();
+  const deleteFolder = useDeleteFolder();
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
@@ -153,97 +20,43 @@ function RouteComponent() {
           <h1 className="text-3xl font-semibold tracking-tight">
             My collection
           </h1>
-
           <p className="mt-1 text-sm text-muted-foreground">
-            {total} cards · {collectionItems?.length ?? 0} entries
+            {folders?.length} folders.
           </p>
         </div>
-
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <ImportDialog
-            title={`Paste a list into collection`}
-            description="Import cards from a decklist. One card per line."
-            confirmLabel="Add to collection"
-            onConfirm={async (rows) => {
-              const data = rows.map((row) => ({
-                scryfall_id: row.card.id,
-                quantity: row.quantity,
-                foil: false,
-                language: "en",
-                condition: "MN",
-              }));
-
-              await bulkCreateCollectionItem(data);
-            }}
-          />
-        </div>
+        <NewFolderDialog />
       </div>
-
-      <Tabs
-        value={tab}
-        onValueChange={(value) => {
-          setTab(value as "main" | "search");
-        }}
-      >
-        <TabsList className="flex-wrap">
-          <TabsTrigger value="main">Main deck ({total})</TabsTrigger>
-
-          <TabsTrigger value="search">Search cards</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="main" className="mt-6 space-y-6">
-          <div className="flex flex-wrap gap-3">
-            <Input
-              value={term}
-              onChange={(event) => setTerm(event.target.value)}
-              placeholder="Filter by name or set"
-              className="max-w-xs"
-            />
-
-            <Select
-              defaultValue="recent"
-              value={sort}
-              onValueChange={(value) => setSort(value)}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {folders?.map((folder) => {
+          return (
+            <div
+              key={folder.id}
+              className="group relative rounded-xl border border-border bg-card p-4 shadow-sm transition hover:border-primary/50"
             >
-              <SelectTrigger className="w-44">
-                <SelectValue />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="recent">Recently added</SelectItem>
-                <SelectItem value="name">Name</SelectItem>
-                <SelectItem value="quantity">Quantity</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {isLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <CardRowSkeleton key={index} />
-              ))}
+              <Link
+                to="/folders/$folderId"
+                params={{ folderId: folder.id.toLocaleString() }}
+                className="block space-y-2 pr-8"
+              >
+                <div className="flex items-center gap-2 text-xs tracking-wide text-muted-foreground">
+                  <Folder />
+                  {"Collection"}
+                </div>
+                <div className="text-lg font-semibold">{folder.name}</div>
+                <div className="text-sm text-muted-foreground">{12} cards</div>
+              </Link>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute right-2 top-2 h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={() => deleteFolder.mutate(folder.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
-          ) : deckRows.length === 0 ? (
-            <EmptyDeck />
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {deckRows.map(({ card, dataCard }) => (
-                <MemoizedCardRow
-                  key={dataCard.id}
-                  card={card}
-                  dataCard={dataCard}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="search" className="mt-6">
-          <CardSearch onCreate={handleCreate} />
-        </TabsContent>
-      </Tabs>
+          );
+        })}
+      </div>
     </div>
   );
 }
-
-const MemoizedCardRow = memo(CardRow);
