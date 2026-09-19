@@ -3,55 +3,52 @@ import { createDeck, deleteDeck, getDeck, getDecks } from "./api";
 import type { CreateDeckData } from "./types";
 
 export function useDecks() {
-    return useQuery({
-        queryKey: ["decks"],
-        queryFn: getDecks,
-    });
+  return useQuery({
+    queryKey: ["decks"],
+    queryFn: getDecks,
+  });
 }
 
 export function useDeck(deckId: number | string) {
-    return useQuery({
-        queryKey: ["deck", deckId],
-        queryFn: () => getDeck(deckId),
-    })
+  return useQuery({
+    queryKey: ["deck", deckId],
+    queryFn: () => getDeck(deckId),
+  });
 }
 
 export function useCreateDeck() {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (data: CreateDeckData) => createDeck(data),
+  return useMutation({
+    mutationFn: (data: CreateDeckData) => createDeck(data),
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["decks"],
-            });
-        },
-        onError: (error) => {
-            console.error("ERROR", error);
-        },
-    });
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["decks"],
+      });
+    },
+    onError: (error) => {
+      console.error("ERROR", error);
+    },
+  });
 }
 
 export function useDeleteDeck() {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (deckId: number) => {
+  return useMutation({
+    mutationFn: (deckId: number) => {
+      return deleteDeck(deckId);
+    },
 
-            return deleteDeck(deckId);
-        },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["decks"],
+      });
+    },
 
-        onSuccess: () => {
-
-            queryClient.invalidateQueries({
-                queryKey: ["decks"],
-            });
-
-        },
-
-        onError: (error) => {
-            console.error("ERROR", error);
-        },
-    });
+    onError: (error) => {
+      console.error("ERROR", error);
+    },
+  });
 }

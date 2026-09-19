@@ -1,3 +1,5 @@
+import type { Folder } from "../folders/types"
+
 export interface Deck {
     id: number
     name: string
@@ -9,9 +11,4 @@ export interface Deck {
 export interface CreateDeckData {
     name: string
     format: string
-}
-
-export interface Folder {
-    id: number
-    name: string
 }
