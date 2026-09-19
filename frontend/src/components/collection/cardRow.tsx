@@ -2,12 +2,12 @@ import type { ScryfallCard } from "#/features/scryfall/types";
 import type { CollectionItem } from "#/features/collection/types";
 
 import {
-    DollarSign,
-    Minus,
-    Pencil,
-    Plus,
-    Sparkles,
-    Trash2,
+  DollarSign,
+  Minus,
+  Pencil,
+  Plus,
+  Sparkles,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -16,165 +16,141 @@ import ManaCost from "../search/manaCost";
 import { Button } from "../ui/button";
 
 import {
-    useDeleteCollectionItem,
-    usePartialUpdateCollectionItem,
+  useDeleteCollectionItem,
+  usePartialUpdateCollectionItem,
 } from "#/features/collection/hooks";
 
 import {
-    EditCardDialog,
-    type UpdateCardData,
+  EditCardDialog,
+  type UpdateCardData,
 } from "../deckCards/editCardDialog";
+import ShowPrice from "./showPrice";
 
 export default function CardRow({
-    dataCard,
-    card,
+  dataCard,
+  card,
 }: {
-    dataCard: CollectionItem;
-    card: ScryfallCard;
+  dataCard: CollectionItem;
+  card: ScryfallCard;
 }) {
-    const partialUpdateCollectorItem = usePartialUpdateCollectionItem();
+  const partialUpdateCollectorItem = usePartialUpdateCollectionItem();
 
-    const deleteCollectorItem = useDeleteCollectionItem();
+  const deleteCollectorItem = useDeleteCollectionItem();
 
-    const [openEdit, setOpenEdit] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
-    function handleQuantity(quantity: number) {
-        if (quantity < 1) {
-            deleteCollectorItem.mutate(dataCard.id);
-        } else {
-            partialUpdateCollectorItem.mutate({
-                cardId: dataCard.id,
-                data: { quantity },
-            });
-        }
+  function handleQuantity(quantity: number) {
+    if (quantity < 1) {
+      deleteCollectorItem.mutate(dataCard.id);
+    } else {
+      partialUpdateCollectorItem.mutate({
+        cardId: dataCard.id,
+        data: { quantity },
+      });
     }
+  }
 
-    function handleUpdate(data: UpdateCardData) {
-        partialUpdateCollectorItem.mutate({
-            cardId: dataCard.id,
-            data: {
-                ...data,
-            },
-        });
-    }
+  function handleUpdate(data: UpdateCardData) {
+    partialUpdateCollectorItem.mutate({
+      cardId: dataCard.id,
+      data: {
+        ...data,
+      },
+    });
+  }
 
-    console.log(
-        `Card: ${card.name} price: ${card.prices?.usd} price: ${card.prices?.usd_foil}`,
-    );
-
-    return (
-        <>
-            <div className="flex gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
-                <div className="w-20 shrink-0">
-                    <CardImage src={card.image_uris?.normal} alt={card.name} />
-                </div>
-
-                <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex items-start justify-between gap-2">
-                        <div className="line-clamp-2 text-sm font-medium">
-                            {card.name}
-                        </div>
-
-                        <ManaCost cost={card.mana_cost} />
-                    </div>
-
-                    <div className="text-xs text-muted-foreground">
-                        {card.set_name.length > 20
-                            ? `${card.set_name.slice(0, 20)}...`
-                            : card.set_name}{" "}
-                        ({card.set.toUpperCase()}) #{card.collector_number}
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <span className="rounded bg-muted px-1.5 py-0.5">
-                            {dataCard.condition}
-                        </span>
-
-                        {dataCard.foil && (
-                            <span className="flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-primary">
-                                <Sparkles className="h-3 w-3" />
-                                Foil
-                            </span>
-                        )}
-
-                        <Button
-                            type="button"
-                            size="sm"
-                            variant="ghost"
-                            className="text-xs text-muted-foreground"
-                            onClick={() => setOpenEdit(true)}
-                        >
-                            <Pencil className="mr-1 h-3.5 w-3.5" />
-                            Edit
-                        </Button>
-                    </div>
-                    <div className="flex items-center gap-1 pt-1">
-                        <Button
-                            size="icon"
-                            variant="outline"
-                            className="h-7 w-7"
-                            onClick={() =>
-                                handleQuantity(dataCard.quantity - 1)
-                            }
-                        >
-                            <Minus className="h-3.5 w-3.5" />
-                        </Button>
-
-                        <span className="w-8 text-center text-sm font-medium">
-                            {dataCard.quantity}
-                        </span>
-
-                        <Button
-                            size="icon"
-                            variant="outline"
-                            className="h-7 w-7"
-                            onClick={() =>
-                                handleQuantity(dataCard.quantity + 1)
-                            }
-                        >
-                            <Plus className="h-3.5 w-3.5" />
-                        </Button>
-
-                        {dataCard.foil ? (
-                            <ShowPrice price={card.prices?.usd_foil} />
-                        ) : (
-                            <ShowPrice price={card.prices?.usd} />
-                        )}
-
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            className="ml-auto h-7 w-7 text-muted-foreground hover:text-destructive"
-                            onClick={() =>
-                                deleteCollectorItem.mutate(dataCard.id)
-                            }
-                        >
-                            <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                    </div>
-                </div>
-            </div>
-
-            <EditCardDialog
-                card={card}
-                dataCard={dataCard}
-                open={openEdit}
-                onOpenChange={setOpenEdit}
-                onUpdate={handleUpdate}
-            />
-        </>
-    );
-}
-
-export function ShowPrice({ price }: { price: string | null | undefined }) {
-    if (!price || price === "") {
-        return null;
-    }
-
-    return (
-        <div className="ml-2 inline-flex items-center gap-1 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-            <DollarSign className="h-3.5 w-3.5" />
-            <span>{price}</span>
+  return (
+    <>
+      <div className="flex gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
+        <div className="w-20 shrink-0">
+          <CardImage src={card.image_uris?.normal} alt={card.name} />
         </div>
-    );
+
+        <div className="min-w-0 flex-1 space-y-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="line-clamp-2 text-sm font-medium">{card.name}</div>
+
+            <ManaCost cost={card.mana_cost} />
+          </div>
+
+          <div className="text-xs text-muted-foreground">
+            {card.set_name.length > 20
+              ? `${card.set_name.slice(0, 20)}...`
+              : card.set_name}{" "}
+            ({card.set.toUpperCase()}) #{card.collector_number}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="rounded bg-muted px-1.5 py-0.5">
+              {dataCard.condition}
+            </span>
+
+            {dataCard.foil && (
+              <span className="flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-primary">
+                <Sparkles className="h-3 w-3" />
+                Foil
+              </span>
+            )}
+
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="text-xs text-muted-foreground"
+              onClick={() => setOpenEdit(true)}
+            >
+              <Pencil className="mr-1 h-3.5 w-3.5" />
+              Edit
+            </Button>
+          </div>
+          <div className="flex items-center gap-1 pt-1">
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-7 w-7"
+              onClick={() => handleQuantity(dataCard.quantity - 1)}
+            >
+              <Minus className="h-3.5 w-3.5" />
+            </Button>
+
+            <span className="w-8 text-center text-sm font-medium">
+              {dataCard.quantity}
+            </span>
+
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-7 w-7"
+              onClick={() => handleQuantity(dataCard.quantity + 1)}
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </Button>
+
+            {dataCard.foil ? (
+              <ShowPrice price={card.prices?.usd_foil} />
+            ) : (
+              <ShowPrice price={card.prices?.usd} />
+            )}
+
+            <Button
+              size="icon"
+              variant="ghost"
+              className="ml-auto h-7 w-7 text-muted-foreground hover:text-destructive"
+              onClick={() => deleteCollectorItem.mutate(dataCard.id)}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <EditCardDialog
+        card={card}
+        dataCard={dataCard}
+        open={openEdit}
+        onOpenChange={setOpenEdit}
+        onUpdate={handleUpdate}
+      />
+    </>
+  );
 }

@@ -17,6 +17,7 @@ import {
   useCreateCollectionItem,
   useGetCollectionItems,
 } from "#/features/collection/hooks";
+import { useGetFolder } from "#/features/folders/hooks";
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import type { ScryfallCard } from "#/features/scryfall/types";
 import { createFileRoute } from "@tanstack/react-router";
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/folders/$folderId")({
 
 function RouteComponent() {
   const { folderId } = Route.useParams();
+  const { data: folder } = useGetFolder(folderId);
   const { data: collectionItems, isLoading } = useGetCollectionItems({
     folderId,
   });
@@ -140,6 +142,13 @@ function RouteComponent() {
         return b.dataCard.quantity - a.dataCard.quantity;
       }
 
+      if (sort === "price") {
+        const priceA = Number(a.card.prices?.usd ?? 0);
+        const priceB = Number(b.card.prices?.usd ?? 0);
+
+        return priceB - priceA;
+      }
+
       return 0;
     });
   }, [collectionItems, collection, debounced, sort]);
@@ -149,7 +158,8 @@ function RouteComponent() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">
-            My collection
+            {/*My collection - {folder?.name}*/}
+            {folder?.name}
           </h1>
 
           <p className="mt-1 text-sm text-muted-foreground">
@@ -184,7 +194,7 @@ function RouteComponent() {
         }}
       >
         <TabsList className="flex-wrap">
-          <TabsTrigger value="main">Main deck ({total})</TabsTrigger>
+          <TabsTrigger value="main">Folder ({total})</TabsTrigger>
 
           <TabsTrigger value="search">Search cards</TabsTrigger>
         </TabsList>
@@ -211,6 +221,7 @@ function RouteComponent() {
                 <SelectItem value="recent">Recently added</SelectItem>
                 <SelectItem value="name">Name</SelectItem>
                 <SelectItem value="quantity">Quantity</SelectItem>
+                <SelectItem value="price">Price</SelectItem>
               </SelectContent>
             </Select>
           </div>
