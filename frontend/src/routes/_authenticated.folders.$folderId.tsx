@@ -151,8 +151,12 @@ function RouteComponent() {
       }
 
       if (sort === "price") {
-        const priceA = Number(a.card.prices?.usd ?? 0);
-        const priceB = Number(b.card.prices?.usd ?? 0);
+        const priceA = Number(
+          (a.dataCard.foil ? a.card.prices?.usd_foil : a.card.prices?.usd) ?? 0,
+        );
+        const priceB = Number(
+          (b.dataCard.foil ? b.card.prices?.usd_foil : b.card.prices?.usd) ?? 0,
+        );
 
         return priceB - priceA;
       }
