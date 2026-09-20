@@ -31,9 +31,12 @@ class UserDeckView(ViewSet):
 
     def create(self, request):
         user = request.user
-
+        data = request.data
         deck = Deck.objects.create(
-            name=request.data["name"], format=request.data["format"], user=user
+            name=data["name"],
+            format=data["format"],
+            user=user,
+            folder_id=data.get("folder_id", None),
         )
 
         return Response(DeckResponseSerializer(deck, context={"request": request}).data)
@@ -65,12 +68,16 @@ class DeckCardsView(ViewSet):
         user = request.user
         deck = Deck.objects.filter(id=deck_id, user=user).first()
 
+        data = request.data
+
+        print(data)
+
         DeckCard.objects.create(
-            scryfall_id=request.data["scryfall_id"],
+            scryfall_id=data["scryfall_id"],
             deck=deck,
-            quantity=request.data["quantity"],
-            zone=request.data.get("zone", "mainboard"),
-            folder_id=request.data.get("folder_id", None),
+            quantity=data["quantity"],
+            zone=data.get("zone", "mainboard"),
+            folder_id=data.get("folder_id", None),
         )
 
         cards = DeckCard.objects.filter(deck=deck).order_by("id")

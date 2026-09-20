@@ -3,6 +3,7 @@ import CardSearch from "#/components/deckCards/cardSearch";
 import EmptyDeck from "#/components/deckCards/emptyDeck";
 import { ImportDialog } from "#/components/deckCards/importDialog";
 import { CardRowSkeleton } from "#/components/deckCards/skeletons";
+import { Checkbox } from "#/components/ui/CheckBox";
 import { Input } from "#/components/ui/input";
 import {
   Select,
@@ -17,10 +18,14 @@ import {
   useCreateCollectionItem,
   useGetCollectionItems,
 } from "#/features/collection/hooks";
-import type { CreateCollectionItemData } from "#/features/collection/types";
+import type {
+  CollectionItem,
+  CreateCollectionItemData,
+} from "#/features/collection/types";
 import { useGetFolder } from "#/features/folders/hooks";
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import type { ScryfallCard } from "#/features/scryfall/types";
+import { groupCardsByTypeCollection } from "#/tmp/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { memo, useEffect, useMemo, useState } from "react";
 
@@ -31,6 +36,7 @@ export const Route = createFileRoute("/_authenticated/folders/$folderId")({
 function RouteComponent() {
   const { folderId } = Route.useParams();
   const { data: folder } = useGetFolder(folderId);
+  const [groupByType, setGroupByType] = useState(true);
   const { data: collectionItems, isLoading } = useGetCollectionItems({
     folderId,
   });
@@ -247,6 +253,22 @@ function RouteComponent() {
                 <SelectItem value="price">Price</SelectItem>
               </SelectContent>
             </Select>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="group-by-type"
+                checked={groupByType}
+                onCheckedChange={(checked) => setGroupByType(!!checked)}
+              />
+              <label
+                htmlFor="group-by-type"
+                className="text-sm 
+font-medium leading-none peer-disabled:cursor-not-allowed 
+peer-disabled:opacity-70"
+              >
+                Group by type
+              </label>
+            </div>
           </div>
 
           {isLoading ? (
@@ -257,6 +279,8 @@ function RouteComponent() {
             </div>
           ) : deckRows.length === 0 ? (
             <EmptyDeck />
+          ) : groupByType ? (
+            <RenderGroupedCards data={deckRows} />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {deckRows.map(({ card, dataCard }) => (
@@ -274,6 +298,33 @@ function RouteComponent() {
           <CardSearch onCreate={handleCreate} />
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+function RenderGroupedCards({
+  data,
+}: {
+  data: { card: ScryfallCard; dataCard: CollectionItem }[];
+}) {
+  const grouped = groupCardsByTypeCollection(data);
+
+  return (
+    <div className="space-y-6">
+      {Object.entries(grouped).map(([type, rows]) => (
+        <div key={type}>
+          <h2 className="text-lg font-semibold mb-2">{type}</h2>
+          <div className="space-y-2">
+            {rows.map(({ card, dataCard }) => (
+              <MemoizedCardRow
+                key={dataCard.id}
+                card={card}
+                dataCard={dataCard}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
