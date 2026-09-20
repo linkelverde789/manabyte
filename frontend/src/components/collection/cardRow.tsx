@@ -1,14 +1,7 @@
 import type { ScryfallCard } from "#/features/scryfall/types";
 import type { CollectionItem } from "#/features/collection/types";
 
-import {
-  DollarSign,
-  Minus,
-  Pencil,
-  Plus,
-  Sparkles,
-  Trash2,
-} from "lucide-react";
+import { Minus, Pencil, Plus, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { CardImage } from "../deckCards/cardImage";
@@ -74,10 +67,10 @@ export default function CardRow({
           </div>
 
           <div className="text-xs text-muted-foreground">
-            {card.set_name.length > 20
-              ? `${card.set_name.slice(0, 20)}...`
+            {card.set_name!.length > 20
+              ? `${card.set_name!.slice(0, 20)}...`
               : card.set_name}{" "}
-            ({card.set.toUpperCase()}) #{card.collector_number}
+            ({card.set!.toUpperCase()}) #{card.collector_number}
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">

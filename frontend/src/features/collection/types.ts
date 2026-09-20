@@ -1,11 +1,14 @@
 import type { CreateDeckCardData } from "../deckCards/types";
 import type { Folder } from "../folders/types";
 
-export interface CollectionItem {
+export interface DataCard {
   id: number;
-  folder: Folder | null;
   scryfall_id: string;
   quantity: number;
+}
+
+export interface CollectionItem extends DataCard {
+  folder: Folder | null;
   foil: boolean;
   language: string;
   condition: string;
