@@ -1,7 +1,6 @@
-export interface DeckCard {
-  id: number;
-  scryfall_id: string;
-  quantity: number;
+import type { DataCard } from "../collection/types";
+
+export interface DeckCard extends DataCard {
   zone: string;
 }
 

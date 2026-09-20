@@ -28,7 +28,7 @@ import { ImportDialog } from "#/components/deckCards/importDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "#/components/ui/tabs";
 import CardSearch from "#/components/deckCards/cardSearch";
 import type { CreateDeckCardData } from "#/features/deckCards/types";
-import { groupCardsByType } from "#/tmp/utils";
+import { groupCardsByType } from "#/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   component: RouteComponent,

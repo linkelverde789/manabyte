@@ -25,7 +25,7 @@ import type {
 import { useGetFolder } from "#/features/folders/hooks";
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import type { ScryfallCard } from "#/features/scryfall/types";
-import { groupCardsByTypeCollection } from "#/tmp/utils";
+import { groupCardsByType } from "#/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { memo, useEffect, useMemo, useState } from "react";
 
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/folders/$folderId")({
 function RouteComponent() {
   const { folderId } = Route.useParams();
   const { data: folder } = useGetFolder(folderId);
-  const [groupByType, setGroupByType] = useState(true);
+  const [groupByType, setGroupByType] = useState(false);
   const { data: collectionItems, isLoading } = useGetCollectionItems({
     folderId,
   });
@@ -307,7 +307,7 @@ function RenderGroupedCards({
 }: {
   data: { card: ScryfallCard; dataCard: CollectionItem }[];
 }) {
-  const grouped = groupCardsByTypeCollection(data);
+  const grouped = groupCardsByType(data);
 
   return (
     <div className="space-y-6">
