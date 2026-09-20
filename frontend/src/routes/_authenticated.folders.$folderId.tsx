@@ -17,6 +17,7 @@ import {
   useCreateCollectionItem,
   useGetCollectionItems,
 } from "#/features/collection/hooks";
+import type { CreateCollectionItemData } from "#/features/collection/types";
 import { useGetFolder } from "#/features/folders/hooks";
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import type { ScryfallCard } from "#/features/scryfall/types";
@@ -58,12 +59,12 @@ function RouteComponent() {
     return () => clearTimeout(timeout);
   }, [term]);
 
-  function handleCreate(scryfall_id: string, quantity: number) {
+  function handleCreate(data: CreateCollectionItemData) {
     createCollectionItem.mutate({
-      scryfall_id,
-      quantity,
-      foil: false,
-      language: "en",
+      scryfall_id: data.scryfall_id,
+      quantity: data.quantity,
+      foil: data.foil,
+      language: data.language,
       condition: "MN",
       folder_id: folderId,
     });
@@ -120,7 +121,7 @@ function RouteComponent() {
 
         const matches =
           card.name.toLowerCase().includes(query) ||
-          card.set_name.toLowerCase().includes(query);
+          card.set_name?.toLowerCase().includes(query);
 
         if (!matches) {
           return [];
@@ -154,7 +155,7 @@ function RouteComponent() {
     });
   }, [collectionItems, collection, debounced, sort]);
 
-  const totalPrice = useMemo(() => {
+  /* const totalPrice = useMemo(() => {
     return (
       collectionItems?.reduce((total, dataCard) => {
         const card = collection[dataCard.scryfall_id];
@@ -168,7 +169,7 @@ function RouteComponent() {
         return total + price * dataCard.quantity;
       }, 0) ?? 0
     );
-  }, [collectionItems, collection]);
+  }, [collectionItems, collection]); */
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
@@ -197,7 +198,7 @@ function RouteComponent() {
               const data = rows.map((row) => ({
                 scryfall_id: row.card.id,
                 quantity: row.quantity,
-                foil: false,
+                foil: row.card.foil === true && row.card.nonfoil !== true,
                 language: row.card.lang,
                 condition: "MN",
                 folder_id: folderId,
