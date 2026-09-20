@@ -27,6 +27,7 @@ import { memo, useEffect, useMemo, useState } from "react";
 import { ImportDialog } from "#/components/deckCards/importDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "#/components/ui/tabs";
 import CardSearch from "#/components/deckCards/cardSearch";
+import type { CreateDeckCardData } from "#/features/deckCards/types";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   component: RouteComponent,
@@ -41,8 +42,11 @@ function RouteComponent() {
 
   const createDeckCard = useCreateDeckCard(deckId);
 
-  function handleCreate(scryfall_id: string, quantity: number) {
-    createDeckCard.mutate({ scryfall_id, quantity });
+  function handleCreate(data: CreateDeckCardData) {
+    createDeckCard.mutate({
+      scryfall_id: data.scryfall_id,
+      quantity: data.quantity,
+    });
   }
 
   const [tab, setTab] = useState<"main" | "search">("main");
