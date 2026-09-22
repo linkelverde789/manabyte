@@ -56,7 +56,7 @@ export default function CardRow({
     <>
       <div className="flex gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
         <div className="w-20 shrink-0">
-          <CardImage src={card.image_uris?.normal} alt={card.name} />
+          <CardImage card={card} alt={card.name} foil={dataCard.foil} />
         </div>
 
         <div className="min-w-0 flex-1 space-y-1">

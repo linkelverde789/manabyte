@@ -107,7 +107,7 @@ export function EditCardDialog({
 
         <div className="grid gap-6 sm:grid-cols-[200px_1fr]">
           <div className="mx-auto w-full max-w-[200px]">
-            <CardImage src={cardImage(selected)} alt={selected.name} />
+            <CardImage card={selected} alt={selected.name} />
           </div>
 
           <div className="space-y-5">
@@ -200,10 +200,7 @@ export function EditCardDialog({
                       isActive ? "ring-2 ring-primary" : "hover:bg-muted/40",
                     )}
                   >
-                    <CardImage
-                      src={cardImage(printing, "small")}
-                      alt={printing.name}
-                    />
+                    <CardImage card={card} alt={printing.name} />
 
                     <div className="px-0.5 text-[10px] leading-tight text-muted-foreground">
                       <div className="font-medium text-foreground">
