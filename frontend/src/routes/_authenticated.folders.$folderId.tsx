@@ -165,7 +165,8 @@ function RouteComponent() {
     });
   }, [collectionItems, collection, debounced, sort]);
 
-  /* const totalPrice = useMemo(() => {
+  /* 
+  const totalPrice = useMemo(() => {
     return (
       collectionItems?.reduce((total, dataCard) => {
         const card = collection[dataCard.scryfall_id];
@@ -179,7 +180,8 @@ function RouteComponent() {
         return total + price * dataCard.quantity;
       }, 0) ?? 0
     );
-  }, [collectionItems, collection]); */
+  }, [collectionItems, collection]);
+  */
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">

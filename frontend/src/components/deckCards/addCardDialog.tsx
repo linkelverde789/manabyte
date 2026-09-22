@@ -75,7 +75,7 @@ export function AddCardDialog({
         </DialogHeader>
 
         <div className="grid gap-6 sm:grid-cols-[200px_1fr]">
-          <CardImage src={cardImage(selected)} alt={selected.name} />
+          <CardImage card={selected} alt={selected.name} />
 
           <div className="space-y-4">
             <div className="flex flex-wrap items-end gap-4">
@@ -131,7 +131,7 @@ export function AddCardDialog({
                       isActive ? "ring-2 ring-primary" : "hover:bg-muted/40",
                     )}
                   >
-                    <CardImage src={cardImage(p, "small")} alt={p.name} />
+                    <CardImage card={p} alt={p.name} />
                     <div className="px-0.5 text-[10px] leading-tight text-muted-foreground">
                       <div className="font-medium text-foreground">
                         {p.set?.toUpperCase()} #{p.collector_number}
