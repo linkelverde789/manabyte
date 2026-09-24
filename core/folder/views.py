@@ -1,5 +1,5 @@
 from collection.models import CollectionItem
-from deck.models import DeckCard
+from deck.models import Deck
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
@@ -53,7 +53,7 @@ class UserFolderView(ViewSet):
         folder = Folder.objects.filter(user=user, id=pk).first()
 
         if folder.type == "deck":
-            DeckCard.objects.filter(folder=folder, user=user).update(folder=None)
+            Deck.objects.filter(folder=folder, user=user).update(folder=None)
         elif folder.type == "collection":
             CollectionItem.objects.filter(folder=folder, user=user).update(folder=None)
 

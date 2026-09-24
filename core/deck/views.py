@@ -70,14 +70,11 @@ class DeckCardsView(ViewSet):
 
         data = request.data
 
-        print(data)
-
         DeckCard.objects.create(
             scryfall_id=data["scryfall_id"],
             deck=deck,
             quantity=data["quantity"],
             zone=data.get("zone", "mainboard"),
-            folder_id=data.get("folder_id", None),
         )
 
         cards = DeckCard.objects.filter(deck=deck).order_by("id")

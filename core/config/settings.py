@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "folder",
     "deck",
     "collection",
+    "stats",
 ]
 
 AUTH_USER_MODEL = "users.User"
