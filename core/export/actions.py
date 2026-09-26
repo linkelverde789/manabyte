@@ -51,7 +51,9 @@ def export_deck_to_csv(deck: Deck):
         )
 
     response = HttpResponse(output.getvalue(), content_type="text/csv")
-    response["Content-Disposition"] = f'attachment; filename="{deck.name}_deck.csv"'
+    response["Content-Disposition"] = (
+        f'attachment; filename="{deck.name.lower()}_deck.csv"'
+    )
     return response
 
 
@@ -99,7 +101,9 @@ def export_deck_to_xlsx(deck: Deck):
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response["Content-Disposition"] = f'attachment; filename="{deck.name}_deck.xlsx"'
+    response["Content-Disposition"] = (
+        f'attachment; filename="{deck.name.lower()}_deck.xlsx"'
+    )
 
     wb.save(response)
     return response
@@ -123,8 +127,6 @@ def export_folder_to_csv(folder: Folder):
     cards = list(CollectionItem.objects.filter(folder=folder).order_by("id"))
 
     scryfall_collection = ScryfallAPI.load_collection(cards=cards)
-
-    print(scryfall_collection)
 
     for deck_card in cards:
         card_data = next(
@@ -150,7 +152,9 @@ def export_folder_to_csv(folder: Folder):
         )
 
     response = HttpResponse(output.getvalue(), content_type="text/csv")
-    response["Content-Disposition"] = f'attachment; filename="{folder.name}_folder.csv"'
+    response["Content-Disposition"] = (
+        f'attachment; filename="{folder.name.lower()}_folder.csv"'
+    )
     return response
 
 
@@ -197,7 +201,7 @@ def export_folder_to_xlsx(folder: Folder):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response["Content-Disposition"] = (
-        f'attachment; filename="{folder.name}_folder.xlsx"'
+        f'attachment; filename="{folder.name.lower()}_folder.xlsx"'
     )
 
     wb.save(response)

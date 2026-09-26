@@ -39,7 +39,6 @@ class ExportFolder(APIView):
         if format_type == "csv":
             return export_folder_to_csv(folder)
         else:
-            print("esto")
             return export_folder_to_xlsx(folder)
 
 
