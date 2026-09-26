@@ -3,7 +3,14 @@ import CardSearch from "#/components/deckCards/cardSearch";
 import EmptyDeck from "#/components/deckCards/emptyDeck";
 import { ImportDialog } from "#/components/deckCards/importDialog";
 import { CardRowSkeleton } from "#/components/deckCards/skeletons";
+import { Button } from "#/components/ui/button";
 import { Checkbox } from "#/components/ui/CheckBox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "#/components/ui/dropdown";
 import { Input } from "#/components/ui/input";
 import {
   Select,
@@ -22,11 +29,14 @@ import type {
   CollectionItem,
   CreateCollectionItemData,
 } from "#/features/collection/types";
+import { useFolderExport } from "#/features/exports/hooks";
+import type { ExportFormat } from "#/features/exports/types";
 import { useGetFolder } from "#/features/folders/hooks";
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import type { ScryfallCard } from "#/features/scryfall/types";
-import { groupCardsByType } from "#/lib/utils";
+import { downloadFile, groupCardsByType } from "#/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
+import { ChevronDown, Download } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/folders/$folderId")({
@@ -36,6 +46,11 @@ export const Route = createFileRoute("/_authenticated/folders/$folderId")({
 function RouteComponent() {
   const { folderId } = Route.useParams();
   const { data: folder } = useGetFolder(folderId);
+  const [exportType, setExportType] = useState<ExportFormat | null>(null);
+  const { data: exportData } = useFolderExport({
+    folderId: folderId,
+    format: exportType,
+  });
   const [groupByType, setGroupByType] = useState(false);
   const { data: collectionItems, isLoading } = useGetCollectionItems({
     folderId,
@@ -64,6 +79,22 @@ function RouteComponent() {
 
     return () => clearTimeout(timeout);
   }, [term]);
+
+  useEffect(() => {
+    console.log(exportData);
+    console.log(exportType);
+
+    if (!exportData || !exportType) return;
+
+    console.log("pasa por aqui");
+
+    downloadFile(
+      exportData.blob,
+      exportData.filename
+        ? exportData.filename
+        : `${folder?.name}.${exportType}`,
+    );
+  }, [exportData, exportType]);
 
   function handleCreate(data: CreateCollectionItemData) {
     createCollectionItem.mutate({
@@ -261,20 +292,35 @@ function RouteComponent() {
             </Select>
 
             <div className="flex items-center space-x-2">
-              <Checkbox
-                id="group-by-type"
-                checked={groupByType}
-                onCheckedChange={(checked) => setGroupByType(!!checked)}
-              />
               <label
                 htmlFor="group-by-type"
-                className="text-sm 
-font-medium leading-none peer-disabled:cursor-not-allowed 
-peer-disabled:opacity-70"
+                className="flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm"
               >
+                <Checkbox
+                  id="group-by-type"
+                  checked={groupByType}
+                  onCheckedChange={(checked) => setGroupByType(!!checked)}
+                />
                 Group by type
               </label>
             </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <Download className="h-4 w-4" /> Export{" "}
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onSelect={() => setExportType("csv")}>
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setExportType("xlsx")}>
+                  Export as XLSX
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {isLoading ? (

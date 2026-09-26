@@ -21,14 +21,23 @@ import type { ScryfallCard } from "#/features/scryfall/types";
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download, ChevronDown } from "lucide-react";
 
 import { memo, useEffect, useMemo, useState } from "react";
 import { ImportDialog } from "#/components/deckCards/importDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "#/components/ui/tabs";
 import CardSearch from "#/components/deckCards/cardSearch";
 import type { CreateDeckCardData } from "#/features/deckCards/types";
-import { groupCardsByType } from "#/lib/utils";
+import { downloadFile, groupCardsByType } from "#/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "#/components/ui/dropdown";
+import { Button } from "#/components/ui/button";
+import { useDeckExport } from "#/features/exports/hooks";
+import type { ExportFormat } from "#/features/exports/types";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   component: RouteComponent,
@@ -37,6 +46,12 @@ export const Route = createFileRoute("/_authenticated/decks/$deckId")({
 function RouteComponent() {
   const [tab, setTab] = useState<"main" | "search">("main");
   const { deckId } = Route.useParams();
+
+  const [exportType, setExportType] = useState<ExportFormat | null>(null);
+  const { data: exportData } = useDeckExport({
+    deckId: deckId,
+    format: exportType,
+  });
 
   const { data: deck, isLoading: isLoadingDeck } = useDeck(deckId);
 
@@ -62,6 +77,15 @@ function RouteComponent() {
   const [collection, setCollection] = useState<Record<string, ScryfallCard>>(
     {},
   );
+
+  useEffect(() => {
+    if (!exportData || !exportType) return;
+
+    downloadFile(
+      exportData.blob,
+      exportData.filename ? exportData.filename : `${deck?.name}.${exportType}`,
+    );
+  }, [exportData, exportType]);
 
   const missingIds = useMemo(() => {
     return (
@@ -199,6 +223,25 @@ function RouteComponent() {
 
           {!isLoading && deckRows.length > 0 && (
             <div className="space-y-6">
+              <div className="flex flex-wrap gap-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      <Download className="h-4 w-4" /> Export{" "}
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onSelect={() => setExportType("csv")}>
+                      Export as CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setExportType("xlsx")}>
+                      Export as XLSX
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
               {Object.entries(groupCardsByType(deckRows)).map(
                 ([type, rows]) => (
                   <div key={type}>
