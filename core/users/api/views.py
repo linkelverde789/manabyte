@@ -21,15 +21,19 @@ from users.models import User
 
 
 def _auth_response(user, *, status_code, remember_me: bool = False):
+
+    tokens = tokens_for_user(user, remember_me=remember_me)
+
     response = Response(
         AuthResponseSerializer(
             {
+                "token": tokens["access"],
                 "user": {
                     "id": user.id,
                     "email": user.email,
                     "username": user.username,
                     "profile_picture": None,
-                }
+                },
             }
         ).data,
         status=status_code,
