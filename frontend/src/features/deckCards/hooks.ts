@@ -9,14 +9,14 @@ import {
 } from "./api";
 import type { CreateDeckCardData } from "./types";
 
-export function useDeckCards(deckId: string) {
+export function useDeckCards(deckId: number) {
   return useQuery({
     queryKey: ["cards", deckId],
     queryFn: () => getDeckCards(deckId),
   });
 }
 
-export function useCreateDeckCard(deckId: string) {
+export function useCreateDeckCard(deckId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -36,7 +36,7 @@ export function useCreateDeckCard(deckId: string) {
   });
 }
 
-export function useBulkCreateDeckCard(deckId: string) {
+export function useBulkCreateDeckCard(deckId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -57,7 +57,7 @@ export function useBulkCreateDeckCard(deckId: string) {
   });
 }
 
-export function usePartialUpdateDeckCard(deckId: string) {
+export function usePartialUpdateDeckCard(deckId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -65,7 +65,7 @@ export function usePartialUpdateDeckCard(deckId: string) {
       cardId,
       data,
     }: {
-      cardId: string;
+      cardId: number;
       data: PartialUpdateDeckCardData;
     }) => {
       return partialUpdateDeckCard(deckId, cardId, data);
@@ -87,10 +87,10 @@ export function usePartialUpdateDeckCard(deckId: string) {
   });
 }
 
-export function useDeleteDeckCard(deckId: string) {
+export function useDeleteDeckCard(deckId: number) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (cardId: string) => {
+    mutationFn: (cardId: number) => {
       return deleteDeckCard(deckId, cardId);
     },
     onSuccess: async () => {

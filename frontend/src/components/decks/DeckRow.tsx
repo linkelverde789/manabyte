@@ -8,7 +8,7 @@ export default function DeckRow({
   onDelete,
 }: {
   deck: Deck;
-  onDelete: (deckId: string) => void;
+  onDelete: (deckId: number) => void;
 }) {
   return (
     <div
@@ -17,7 +17,7 @@ export default function DeckRow({
     >
       <Link
         to="/decks/$deckId"
-        params={{ deckId: deck.id }}
+        params={{ deckId: deck.id.toLocaleString() }}
         className="block space-y-2 pr-8"
       >
         <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">

@@ -1,18 +1,18 @@
 import { api } from "../../api/manabyte";
 import type { CreateDeckCardData, DeckCard } from "./types";
 
-export function getDeckCards(deckId: string) {
+export function getDeckCards(deckId: number) {
   return api<DeckCard[]>(`/deck/${deckId}/cards/`);
 }
 
-export function createDeckCard(deckId: string, data: CreateDeckCardData) {
+export function createDeckCard(deckId: number, data: CreateDeckCardData) {
   return api<DeckCard>(`/deck/${deckId}/cards/`, {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-export function bulkCreateDeckCard(deckId: string, data: CreateDeckCardData[]) {
+export function bulkCreateDeckCard(deckId: number, data: CreateDeckCardData[]) {
   return api<DeckCard[]>(`/deck/${deckId}/cards/bulk/`, {
     method: "POST",
     body: JSON.stringify(data),
@@ -25,8 +25,8 @@ export interface PartialUpdateDeckCardData {
 }
 
 export function partialUpdateDeckCard(
-  deckId: string,
-  cardId: string,
+  deckId: number,
+  cardId: number,
   data: PartialUpdateDeckCardData,
 ) {
   return api<DeckCard>(`/deck/${deckId}/cards/${cardId}/`, {
@@ -35,6 +35,6 @@ export function partialUpdateDeckCard(
   });
 }
 
-export function deleteDeckCard(deckId: string, cardId: string) {
+export function deleteDeckCard(deckId: number, cardId: number) {
   return api<number>(`/deck/${deckId}/cards/${cardId}/`, { method: "DELETE" });
 }

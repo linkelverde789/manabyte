@@ -34,7 +34,7 @@ export function bulkCreateCollectionItem(data: CreateCollectionItemData[]) {
 }
 
 export function partialUpdateCollectionItem(
-  cardId: string,
+  cardId: number,
   data: PartialUpdateCollectionItemData,
 ) {
   return api<CollectionItem>(`/collection/${cardId}/`, {
@@ -43,6 +43,6 @@ export function partialUpdateCollectionItem(
   });
 }
 
-export function deleteCollectionItem(cardId: string) {
+export function deleteCollectionItem(cardId: number) {
   return api<number>(`/collection/${cardId}/`, { method: "DELETE" });
 }

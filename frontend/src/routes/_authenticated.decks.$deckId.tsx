@@ -16,13 +16,13 @@ export const Route = createFileRoute("/_authenticated/decks/$deckId")({
 });
 
 function RouteComponent() {
-  const { deckId } = Route.useParams();
+  let { deckId: id } = Route.useParams();
+
+  const deckId = parseInt(id);
 
   const { data: deck, isLoading: isLoadingDeck } = useDeck(deckId);
 
   const { mutateAsync: bulkCreateDeckCard } = useBulkCreateDeckCard(deckId);
-
-  console.log(deck);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-10">

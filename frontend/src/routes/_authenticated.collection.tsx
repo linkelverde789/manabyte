@@ -34,7 +34,7 @@ function RouteComponent() {
             >
               <Link
                 to="/folders/$folderId"
-                params={{ folderId: folder.id }}
+                params={{ folderId: folder.id.toLocaleString() }}
                 className="block space-y-2 pr-8"
               >
                 <div className="flex items-center gap-2 text-xs tracking-wide text-muted-foreground">

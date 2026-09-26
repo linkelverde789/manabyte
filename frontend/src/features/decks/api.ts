@@ -6,7 +6,7 @@ export function getDecks() {
   return api<Deck[]>("/deck/");
 }
 
-export function getDeck(deckId: string) {
+export function getDeck(deckId: number) {
   return api<Deck>(`/deck/${deckId}/`);
 }
 
@@ -17,7 +17,7 @@ export function createDeck(data: CreateDeckData) {
   });
 }
 
-export function deleteDeck(deckId: string) {
+export function deleteDeck(deckId: number) {
   return api<number>(`/deck/${deckId}/`, {
     method: "DELETE",
   });

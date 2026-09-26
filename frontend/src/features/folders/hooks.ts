@@ -9,7 +9,7 @@ export function useListFolders() {
   });
 }
 
-export function useGetFolder(folderId: string) {
+export function useGetFolder(folderId: number) {
   return useQuery({
     queryKey: ["folders", folderId],
     queryFn: () => getFolder(folderId),
@@ -38,7 +38,7 @@ export function useDeleteFolder() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (folderId: string) => deleteFolder(folderId),
+    mutationFn: (folderId: number) => deleteFolder(folderId),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

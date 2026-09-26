@@ -10,8 +10,8 @@ export default function StylePicker({
   onUpdated,
 }: {
   card: ScryfallCard;
-  dataCardId: string;
-  onUpdated: (scryfall_id: string, cardId: string) => void;
+  dataCardId: number;
+  onUpdated: (scryfall_id: string, cardId: number) => void;
 }) {
   const { data: printings, isLoading } = useSearchCardStyles(card.name);
 

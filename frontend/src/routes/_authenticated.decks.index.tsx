@@ -12,7 +12,7 @@ function RouteComponent() {
   const { data: decks } = useDecks();
 
   const deleteDeck = useDeleteDeck();
-  function handleDeleteDeck(deckId: string) {
+  function handleDeleteDeck(deckId: number) {
     deleteDeck.mutate(deckId);
   }
 

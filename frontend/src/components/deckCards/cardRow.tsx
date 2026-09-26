@@ -19,7 +19,7 @@ export default function CardRow({
 }: {
   card: ScryfallCard;
   dataCard: DeckCard;
-  deckId: number | string;
+  deckId: number;
 }) {
   const [openStyles, setOpenStyles] = useState(false);
 
@@ -28,7 +28,7 @@ export default function CardRow({
 
   const isUpdating = deleteCard.isPending || updateCard.isPending;
 
-  function handleUpdate(scryfall_id: string, cardId: string | number) {
+  function handleUpdate(scryfall_id: string, cardId: number) {
     updateCard.mutate({
       cardId: cardId,
       data: { scryfall_id: scryfall_id },
