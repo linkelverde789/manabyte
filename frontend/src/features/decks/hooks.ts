@@ -9,7 +9,7 @@ export function useDecks() {
   });
 }
 
-export function useDeck(deckId: number | string) {
+export function useDeck(deckId: number) {
   return useQuery({
     queryKey: ["deck", deckId],
     queryFn: () => getDeck(deckId),

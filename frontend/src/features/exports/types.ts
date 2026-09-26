@@ -1,10 +1,10 @@
 export interface DeckExportData {
-  deckId: number | string;
+  deckId: number;
   format: ExportFormat | null;
 }
 
 export interface FolderExportData {
-  folderId: number | string;
+  folderId: number;
   format: ExportFormat | null;
 }
 

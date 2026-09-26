@@ -1,151 +1,28 @@
-import CardRow from "#/components/deckCards/cardRow";
+import { DeckHeaderSkeleton } from "#/components/deckCards/skeletons";
 
-import EmptyDeck from "#/components/deckCards/emptyDeck";
-
-import {
-  CardRowSkeleton,
-  DeckHeaderSkeleton,
-} from "#/components/deckCards/skeletons";
-
-import {
-  useBulkCreateDeckCard,
-  useCreateDeckCard,
-  useDeckCards,
-} from "#/features/deckCards/hooks";
+import { useBulkCreateDeckCard } from "#/features/deckCards/hooks";
 
 import { useDeck } from "#/features/decks/hooks";
 
-import { useLoadCollection } from "#/features/scryfall/hooks";
-
-import type { ScryfallCard } from "#/features/scryfall/types";
-
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { ArrowLeft, Download, ChevronDown } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
-import { memo, useEffect, useMemo, useState } from "react";
 import { ImportDialog } from "#/components/deckCards/importDialog";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "#/components/ui/tabs";
-import CardSearch from "#/components/deckCards/cardSearch";
-import type { CreateDeckCardData } from "#/features/deckCards/types";
-import { downloadFile, groupCardsByType } from "#/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "#/components/ui/dropdown";
-import { Button } from "#/components/ui/button";
-import { useDeckExport } from "#/features/exports/hooks";
-import type { ExportFormat } from "#/features/exports/types";
+import DeckBody from "#/components/decks/SomeTabs";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const [tab, setTab] = useState<"main" | "search">("main");
-  const { deckId } = Route.useParams();
+  let { deckId: id } = Route.useParams();
 
-  const [exportType, setExportType] = useState<ExportFormat | null>(null);
-  const { data: exportData } = useDeckExport({
-    deckId: deckId,
-    format: exportType,
-  });
+  const deckId = parseInt(id);
 
   const { data: deck, isLoading: isLoadingDeck } = useDeck(deckId);
 
-  const { data: cards, isLoading: isLoadingCards } = useDeckCards(deckId);
-
-  const createDeckCard = useCreateDeckCard(deckId);
-
-  function handleCreate(data: CreateDeckCardData) {
-    createDeckCard.mutate({
-      scryfall_id: data.scryfall_id,
-      quantity: data.quantity,
-    });
-  }
-
-  const {
-    mutate: loadCollection,
-    data: results,
-    isPending: isLoadingCollection,
-    reset: resetCollection,
-  } = useLoadCollection();
   const { mutateAsync: bulkCreateDeckCard } = useBulkCreateDeckCard(deckId);
-
-  const [collection, setCollection] = useState<Record<string, ScryfallCard>>(
-    {},
-  );
-
-  useEffect(() => {
-    if (!exportData || !exportType) return;
-
-    downloadFile(
-      exportData.blob,
-      exportData.filename ? exportData.filename : `${deck?.name}.${exportType}`,
-    );
-  }, [exportData, exportType]);
-
-  const missingIds = useMemo(() => {
-    return (
-      cards
-        ?.map((card) => card.scryfall_id)
-        .filter((id) => !collection[id])
-        .map((id) => ({ id })) ?? []
-    );
-  }, [cards, collection]);
-
-  useEffect(() => {
-    if (missingIds.length === 0) {
-      return;
-    }
-
-    loadCollection(missingIds);
-  }, [missingIds, loadCollection]);
-
-  useEffect(() => {
-    if (!results?.data) {
-      return;
-    }
-
-    setCollection((previous) => {
-      const next = { ...previous };
-
-      for (const card of results.data) {
-        next[card.id] = card;
-      }
-
-      return next;
-    });
-
-    resetCollection();
-  }, [results, resetCollection]);
-
-  const deckRows = useMemo(() => {
-    return (
-      cards?.flatMap((dataCard) => {
-        const card = collection[dataCard.scryfall_id];
-
-        if (!card) {
-          return [];
-        }
-
-        return [
-          {
-            card,
-            dataCard,
-          },
-        ];
-      }) ?? []
-    );
-  }, [cards, collection]);
-
-  const isLoading =
-    isLoadingDeck ||
-    isLoadingCards ||
-    isLoadingCollection ||
-    missingIds.length > 0;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-10">
@@ -196,78 +73,7 @@ function RouteComponent() {
         </div>
       </div>
 
-      <Tabs
-        value={tab}
-        onValueChange={(value) => {
-          setTab(value as "main" | "search");
-        }}
-      >
-        <TabsList className="flex-wrap">
-          <TabsTrigger value="main">
-            Main deck (
-            {cards?.reduce((sum, card) => sum + card.quantity, 0) ?? 0})
-          </TabsTrigger>
-
-          <TabsTrigger value="search">Search cards</TabsTrigger>
-        </TabsList>
-        <TabsContent value="main" className="mt-6">
-          {isLoading && (
-            <div className="space-y-2">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <CardRowSkeleton key={index} />
-              ))}
-            </div>
-          )}
-
-          {!isLoading && deckRows.length === 0 && <EmptyDeck />}
-
-          {!isLoading && deckRows.length > 0 && (
-            <div className="space-y-6">
-              <div className="flex flex-wrap gap-3">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                      <Download className="h-4 w-4" /> Export{" "}
-                      <ChevronDown className="h-3.5 w-3.5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onSelect={() => setExportType("csv")}>
-                      Export as CSV
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => setExportType("xlsx")}>
-                      Export as XLSX
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              {Object.entries(groupCardsByType(deckRows)).map(
-                ([type, rows]) => (
-                  <div key={type}>
-                    <h2 className="text-lg font-semibold mb-2">{type}</h2>
-                    <div className="space-y-2">
-                      {rows.map(({ card, dataCard }) => (
-                        <MemoizedCardRow
-                          key={dataCard.id}
-                          card={card}
-                          dataCard={dataCard}
-                          deckId={deckId}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ),
-              )}
-            </div>
-          )}
-        </TabsContent>
-        <TabsContent value="search" className="mt-6">
-          <CardSearch onCreate={handleCreate} />
-        </TabsContent>
-      </Tabs>
+      {!isLoadingDeck && <DeckBody deck={deck!} />}
     </div>
   );
 }
-
-const MemoizedCardRow = memo(CardRow);

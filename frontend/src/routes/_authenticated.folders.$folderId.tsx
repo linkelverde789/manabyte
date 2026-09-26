@@ -3,14 +3,7 @@ import CardSearch from "#/components/deckCards/cardSearch";
 import EmptyDeck from "#/components/deckCards/emptyDeck";
 import { ImportDialog } from "#/components/deckCards/importDialog";
 import { CardRowSkeleton } from "#/components/deckCards/skeletons";
-import { Button } from "#/components/ui/button";
 import { Checkbox } from "#/components/ui/CheckBox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "#/components/ui/dropdown";
 import { Input } from "#/components/ui/input";
 import {
   Select,
@@ -20,6 +13,7 @@ import {
   SelectValue,
 } from "#/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
+import { Export } from "#/components/utils/Export";
 import {
   useBulkCreateCollectionItem,
   useCreateCollectionItem,
@@ -36,7 +30,6 @@ import { useLoadCollection } from "#/features/scryfall/hooks";
 import type { ScryfallCard } from "#/features/scryfall/types";
 import { downloadFile, groupCardsByType } from "#/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown, Download } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/folders/$folderId")({
@@ -44,7 +37,8 @@ export const Route = createFileRoute("/_authenticated/folders/$folderId")({
 });
 
 function RouteComponent() {
-  const { folderId } = Route.useParams();
+  const { folderId: id } = Route.useParams();
+  const folderId = parseInt(id);
   const { data: folder } = useGetFolder(folderId);
   const [exportType, setExportType] = useState<ExportFormat | null>(null);
   const { data: exportData } = useFolderExport({
@@ -305,22 +299,7 @@ function RouteComponent() {
               </label>
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Download className="h-4 w-4" /> Export{" "}
-                  <ChevronDown className="h-3.5 w-3.5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onSelect={() => setExportType("csv")}>
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setExportType("xlsx")}>
-                  Export as XLSX
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Export onExportFormatChange={(format) => setExportType(format)} />
           </div>
 
           {isLoading ? (

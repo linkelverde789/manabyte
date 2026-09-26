@@ -54,7 +54,7 @@ export default function NewDeckDialog() {
           setName("");
           navigate({
             to: "/folders/$folderId",
-            params: { folderId: folder.id.toLocaleString() },
+            params: { folderId: folder.id },
           });
         },
       },

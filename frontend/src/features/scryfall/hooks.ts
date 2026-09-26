@@ -25,7 +25,7 @@ export function useRandomCard() {
   });
 }
 
-export function useLoadSingleCard(scryfallId: string) {
+export function useLoadSingleCard(scryfallId: number) {
   return useQuery({
     queryKey: ["scryfall-load-single", scryfallId],
     queryFn: () => loadSingleCard(scryfallId),

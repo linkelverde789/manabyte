@@ -11,7 +11,7 @@ export function randomCard() {
   return api<ScryfallCard>(`/cards/random`);
 }
 
-export function loadSingleCard(scryfallId: string) {
+export function loadSingleCard(scryfallId: number) {
   return api<ScryfallCard>(`/cards/${scryfallId}`);
 }
 

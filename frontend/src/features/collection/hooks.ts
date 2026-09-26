@@ -59,7 +59,7 @@ export function usePartialUpdateCollectionItem() {
       cardId,
       data,
     }: {
-      cardId: number | string;
+      cardId: number;
       data: PartialUpdateCollectionItemData;
     }) => {
       return partialUpdateCollectionItem(cardId, data);
@@ -78,7 +78,7 @@ export function usePartialUpdateCollectionItem() {
 export function useDeleteCollectionItem() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (cardId: number | string) => {
+    mutationFn: (cardId: number) => {
       return deleteCollectionItem(cardId);
     },
     onSuccess: () => {
