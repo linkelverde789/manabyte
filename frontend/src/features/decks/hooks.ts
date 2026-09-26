@@ -9,7 +9,7 @@ export function useDecks() {
   });
 }
 
-export function useDeck(deckId: number | string) {
+export function useDeck(deckId: string) {
   return useQuery({
     queryKey: ["deck", deckId],
     queryFn: () => getDeck(deckId),
@@ -37,7 +37,7 @@ export function useDeleteDeck() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (deckId: number) => {
+    mutationFn: (deckId: string) => {
       return deleteDeck(deckId);
     },
 

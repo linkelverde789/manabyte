@@ -4,7 +4,7 @@ import type { CreateFolderData, Folder } from "./types";
 export function listFolders() {
   return api<Folder[]>("/folder/");
 }
-export function getFolder(folderId: string | number) {
+export function getFolder(folderId: string) {
   return api<Folder>(`/folder/${folderId}/`);
 }
 export function createFolder(data: CreateFolderData) {
@@ -13,6 +13,6 @@ export function createFolder(data: CreateFolderData) {
     body: JSON.stringify(data),
   });
 }
-export function deleteFolder(folderId: string | number) {
+export function deleteFolder(folderId: string) {
   return api<Folder>(`/folder/${folderId}/`, { method: "DELETE" });
 }
