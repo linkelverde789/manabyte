@@ -1,19 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 
-import FolderBody from "#/components/collection/FolderContent";
+import FolderBody from "#/components/collection/FolderBody";
 import CardSearch from "#/components/deckCards/cardSearch";
 import { ImportDialog } from "#/components/deckCards/importDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
 
 import {
   useBulkCreateCollectionItem,
+  useCollectionTotal,
   useCreateCollectionItem,
-  useGetCollectionItems,
 } from "#/features/collection/hooks";
 import { useGetFolder } from "#/features/folders/hooks";
 
 import type { CreateCollectionItemData } from "#/features/collection/types";
+import { DeckHeaderSkeleton } from "#/components/deckCards/skeletons";
 
 export const Route = createFileRoute("/_authenticated/folders/$folderId")({
   component: RouteComponent,
@@ -22,11 +23,8 @@ export const Route = createFileRoute("/_authenticated/folders/$folderId")({
 function RouteComponent() {
   const { folderId: id } = Route.useParams();
   const folderId = parseInt(id);
-  const { data: folder } = useGetFolder(folderId);
+  const { data: folder, isLoading } = useGetFolder(folderId);
 
-  const { data: collectionItems, isLoading } = useGetCollectionItems({
-    folderId,
-  });
   const { mutateAsync: bulkCreateCollectionItem } =
     useBulkCreateCollectionItem();
   const createCollectionItem = useCreateCollectionItem();
@@ -44,11 +42,10 @@ function RouteComponent() {
     });
   }
 
-  const total =
-    collectionItems?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
+  const collectionTotal = useCollectionTotal(folderId);
 
-  if (!folder) {
-    return <p>espera</p>;
+  if (isLoading) {
+    return <DeckHeaderSkeleton />;
   }
 
   return (
@@ -60,7 +57,7 @@ function RouteComponent() {
           </h1>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            {total} cards · {collectionItems?.length ?? 0} entries
+            {collectionTotal.total} cards · {collectionTotal.entries} entries
           </p>
         </div>
 
@@ -91,7 +88,7 @@ function RouteComponent() {
         </TabsList>
 
         <TabsContent value="main">
-          <FolderBody folder={folder} />
+          <FolderBody folder={folder!} />
         </TabsContent>
 
         <TabsContent value="search">

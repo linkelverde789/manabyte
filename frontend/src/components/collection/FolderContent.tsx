@@ -1,145 +1,17 @@
-import EmptyDeck from "#/components/deckCards/emptyDeck";
-import { CardRowSkeleton } from "#/components/deckCards/skeletons";
-import { Checkbox } from "#/components/ui/CheckBox";
-import { Input } from "#/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "#/components/ui/select";
-import { Export } from "#/components/utils/Export";
 import { useGetCollectionItems } from "#/features/collection/hooks";
-import { useFolderExport } from "#/features/exports/hooks";
-import type { ExportFormat } from "#/features/exports/types";
-import type { Folder } from "#/features/folders/types";
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import type { ScryfallCard } from "#/features/scryfall/types";
-import { downloadFile, groupCardsByType } from "#/lib/utils";
-import { memo, useEffect, useMemo, useState } from "react";
-import CardRow from "./cardRow";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { CardRowSkeleton } from "../deckCards/skeletons";
+import EmptyDeck from "../deckCards/emptyDeck";
+import { groupCardsByType } from "#/lib/utils";
 import type { CollectionItem } from "#/features/collection/types";
-
-export default function FolderBody({ folder }: { folder: Folder }) {
-  const [sort, setSort] = useState<string>("recent");
-  const [term, setTerm] = useState("");
-  const [debounced, setDebounced] = useState("");
-  const [groupByType, setGroupByType] = useState(false);
-  const [exportFormat, setExportFormat] = useState<ExportFormat | null>(null);
-
-  const { data: exportData } = useFolderExport({
-    folderId: folder.id,
-    format: exportFormat,
-  });
-
-  useEffect(() => {
-    if (!exportData || !exportFormat) return;
-
-    downloadFile(
-      exportData.blob,
-      exportData.filename
-        ? exportData.filename
-        : `${folder?.name}.${exportFormat}`,
-    );
-  }, [exportData, exportFormat]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebounced(term.trim());
-    }, 350);
-
-    return () => clearTimeout(timeout);
-  }, [term]);
-
-  return (
-    <div className="flex flex-wrap gap-3">
-      <SearchingOption term={term} onSearch={() => setTerm} />
-      <SortingOption sort={sort} onSort={() => setSort} />
-      <GroupingOption checked={groupByType} onCheck={() => setGroupByType} />
-      <Export onExportFormatChange={(format) => setExportFormat(format)} />
-      <FolderContent
-        folderId={folder.id}
-        term={debounced}
-        sorting={sort}
-        groupByType={groupByType}
-      />
-    </div>
-  );
-}
-
-export function SortingOption({
-  sort,
-  onSort,
-}: {
-  sort: string;
-  onSort: (sort: string) => {};
-}) {
-  return (
-    <Select
-      defaultValue="recent"
-      value={sort}
-      onValueChange={(value) => onSort(value)}
-    >
-      <SelectTrigger className="w-44">
-        <SelectValue />
-      </SelectTrigger>
-
-      <SelectContent>
-        <SelectItem value="recent">Recently added</SelectItem>
-        <SelectItem value="name">Name</SelectItem>
-        <SelectItem value="quantity">Quantity</SelectItem>
-        <SelectItem value="price">Price</SelectItem>
-      </SelectContent>
-    </Select>
-  );
-}
-
-export function SearchingOption({
-  term,
-  onSearch,
-}: {
-  term: string;
-  onSearch: (text: string) => void;
-}) {
-  return (
-    <Input
-      value={term}
-      onChange={(value) => onSearch(value.target.value)}
-      placeholder="Filter by name or set"
-      className="max-w-xs"
-    />
-  );
-}
-
-export function GroupingOption({
-  checked,
-  onCheck,
-}: {
-  checked: boolean;
-  onCheck: (checked: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center space-x-2">
-      <label
-        htmlFor="group-by-type"
-        className="flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm"
-      >
-        <Checkbox
-          id="group-by-type"
-          checked={checked}
-          onCheckedChange={(checked) => onCheck(!!checked)}
-        />
-        Group by type
-      </label>
-    </div>
-  );
-}
+import CardRow from "./cardRow";
 
 export function FolderContent({
-  term,
-  groupByType,
-  sorting,
+  term = "",
+  groupByType = false,
+  sorting = "recent",
   folderId,
 }: {
   term?: string;
@@ -155,25 +27,39 @@ export function FolderContent({
     {},
   );
 
-  const {
-    mutate: loadCollection,
-    data: results,
-    reset: resetCollection,
-  } = useLoadCollection();
+  const loadedIds = useRef(new Set<string>());
+  const loadingIds = useRef(new Set<string>());
+
+  const { mutate: loadCollection, data: results } = useLoadCollection();
 
   const missingIds = useMemo(() => {
-    return (
-      collectionItems
-        ?.map((card) => card.scryfall_id)
-        .filter((id) => !collection[id])
-        .map((id) => ({ id })) ?? []
-    );
+    if (!collectionItems) {
+      return [];
+    }
+
+    const uniqueIds = new Set(collectionItems.map((item) => item.scryfall_id));
+
+    return Array.from(uniqueIds)
+      .filter((id) => {
+        return (
+          !loadedIds.current.has(id) &&
+          !loadingIds.current.has(id) &&
+          !collection[id]
+        );
+      })
+      .map((id) => ({ id }));
   }, [collectionItems, collection]);
 
   useEffect(() => {
     if (missingIds.length === 0) {
       return;
     }
+
+    const ids = missingIds.map(({ id }) => id);
+
+    ids.forEach((id) => {
+      loadingIds.current.add(id);
+    });
 
     loadCollection(missingIds);
   }, [missingIds, loadCollection]);
@@ -188,16 +74,17 @@ export function FolderContent({
 
       for (const card of results.data) {
         next[card.id] = card;
+
+        loadedIds.current.add(card.id);
+        loadingIds.current.delete(card.id);
       }
 
       return next;
     });
-
-    resetCollection();
-  }, [results, resetCollection]);
+  }, [results]);
 
   const deckRows = useMemo(() => {
-    const query = term!.toLowerCase();
+    const query = term.trim().toLowerCase();
 
     const rows =
       collectionItems?.flatMap((dataCard) => {
@@ -207,56 +94,67 @@ export function FolderContent({
           return [];
         }
 
-        const matches =
-          card.name.toLowerCase().includes(query) ||
-          card.set_name?.toLowerCase().includes(query);
+        if (query) {
+          const matches =
+            card.name.toLowerCase().includes(query) ||
+            card.set_name?.toLowerCase().includes(query);
 
-        if (!matches) {
-          return [];
+          if (!matches) {
+            return [];
+          }
         }
 
-        return [
-          {
-            card,
-            dataCard,
-          },
-        ];
+        return [{ card, dataCard }];
       }) ?? [];
-    return rows.sort((a, b) => {
-      if (sorting === "name") {
-        return a.card.name.localeCompare(b.card.name);
+
+    return [...rows].sort((a, b) => {
+      switch (sorting) {
+        case "name":
+          return a.card.name.localeCompare(b.card.name);
+
+        case "quantity":
+          return b.dataCard.quantity - a.dataCard.quantity;
+
+        case "price": {
+          const priceA = Number(
+            (a.dataCard.foil ? a.card.prices?.usd_foil : a.card.prices?.usd) ??
+              0,
+          );
+
+          const priceB = Number(
+            (b.dataCard.foil ? b.card.prices?.usd_foil : b.card.prices?.usd) ??
+              0,
+          );
+
+          return priceB - priceA;
+        }
+
+        case "recent":
+        default:
+          return 0;
       }
-
-      if (sorting === "quantity") {
-        return b.dataCard.quantity - a.dataCard.quantity;
-      }
-
-      if (sorting === "price") {
-        const priceA = Number(
-          (a.dataCard.foil ? a.card.prices?.usd_foil : a.card.prices?.usd) ?? 0,
-        );
-        const priceB = Number(
-          (b.dataCard.foil ? b.card.prices?.usd_foil : b.card.prices?.usd) ?? 0,
-        );
-
-        return priceB - priceA;
-      }
-
-      return 0;
     });
   }, [collectionItems, collection, term, sorting]);
 
-  return isLoading ? (
-    <div className="space-y-2">
-      {Array.from({ length: 5 }).map((_, index) => (
-        <CardRowSkeleton key={index} />
-      ))}
-    </div>
-  ) : deckRows.length === 0 ? (
-    <EmptyDeck />
-  ) : groupByType ? (
-    <RenderGroupedCards data={deckRows} />
-  ) : (
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <CardRowSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
+
+  if (deckRows.length === 0) {
+    return <EmptyDeck />;
+  }
+
+  if (groupByType) {
+    return <RenderGroupedCards data={deckRows} />;
+  }
+
+  return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {deckRows.map(({ card, dataCard }) => (
         <MemoizedCardRow key={dataCard.id} card={card} dataCard={dataCard} />
