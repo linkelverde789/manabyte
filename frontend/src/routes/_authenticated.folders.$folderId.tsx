@@ -199,7 +199,9 @@ function RouteComponent() {
           const data = rows.map((row) => ({
             scryfall_id: row.card.id,
             quantity: row.quantity,
-            foil: row.card.foil === true && row.card.nonfoil !== true,
+            foil:
+              row.card.foil === true &&
+              (row.card.nonfoil !== true || row.foil === true),
             language: row.card.lang,
             condition: "MN",
             folder_id: folderId,
