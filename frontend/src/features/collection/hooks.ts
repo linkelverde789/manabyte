@@ -14,7 +14,7 @@ import type {
 
 export function useGetCollectionItems(params: FilterCollectionParams) {
   return useQuery({
-    queryKey: ["collection"],
+    queryKey: ["collection", params.folderId],
     queryFn: () => getCollectionItems(params),
   });
 }
@@ -90,4 +90,13 @@ export function useDeleteCollectionItem() {
       console.error("ERROR", error);
     },
   });
+}
+
+export function useCollectionTotal(folderId: number) {
+  const { data } = useGetCollectionItems({ folderId });
+
+  return {
+    total: data?.reduce((total, item) => total + item.quantity, 0) ?? 0,
+    entries: data?.length,
+  };
 }

@@ -39,18 +39,13 @@ export async function api<T>(
 
     let filename: string | undefined;
 
-    console.log("contentDisposition: ", contentDisposition);
-
     if (contentDisposition) {
       const match = contentDisposition.match(
         /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/,
       );
 
-      console.log("match, ", match);
-
       if (match?.[1]) {
         filename = match[1].replace(/['"]/g, "");
-        console.log("filename, ", filename);
       }
     }
 

@@ -9,7 +9,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { ImportDialog } from "#/components/deckCards/importDialog";
-import DeckBody from "#/components/decks/SomeTabs";
+import DeckBody from "#/components/decks/DeckBody";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   component: RouteComponent,
