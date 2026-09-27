@@ -8,7 +8,7 @@ class ScryfallAPI:
     HEADERS = {"Content-Type": "application/json", "User-Agent": "Manabyte/1.0"}
 
     @staticmethod
-    def load_collection(cards: [DeckCard] | [CollectionItem]):
+    def load_collection(cards: list[DeckCard] | list[CollectionItem]):
         collection = []
         for i, batch in enumerate(batch_generator(cards)):
             identifiers = []
