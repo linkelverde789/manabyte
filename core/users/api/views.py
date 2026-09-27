@@ -40,7 +40,7 @@ def _auth_response(user, *, status_code, remember_me: bool = False):
     )
     return set_auth_cookies(
         response,
-        tokens_for_user(user, remember_me=remember_me),
+        tokens,
         remember_me=remember_me,
     )
 
@@ -49,6 +49,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]  # noqa: RUF012
 
     def post(self, request):
+
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -57,13 +58,27 @@ class LoginView(APIView):
         remember_me = serializer.validated_data.get("remember_me", False)
 
         user = User.objects.filter(email__iexact=email).first()
-        if user is None or not authenticate(
-            request, username=user.username, password=password
-        ):
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        auth_user = (
+            authenticate(
+                request,
+                username=user.username,
+                password=password,
+            )
+            if user
+            else None
+        )
+
+        if auth_user is None:
+            return Response(
+                {"detail": "authenticate() returned None"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         return _auth_response(
-            user, status_code=status.HTTP_200_OK, remember_me=remember_me
+            user,
+            status_code=status.HTTP_200_OK,
+            remember_me=remember_me,
         )
 
 
