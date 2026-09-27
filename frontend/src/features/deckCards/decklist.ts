@@ -4,6 +4,7 @@ export interface ParsedLine {
   name: string;
   set?: string;
   collectorNumber?: string;
+  foil?: boolean;
 }
 
 export function parseDecklist(text: string): ParsedLine[] {
@@ -15,10 +16,15 @@ export function parseDecklist(text: string): ParsedLine[] {
     .filter(Boolean);
 
   for (const raw of lines) {
-    const match = raw.match(/^(\d+)?\s*(?:\(([^)]+)\)\s*(\S+))$/);
+    const hasFoil = raw.trim().endsWith("*");
+    const rawWithoutFoil = hasFoil
+      ? raw.trim().slice(0, -1).trim()
+      : raw.trim();
+
+    const match = rawWithoutFoil.match(/^(\d+)?\s*(?:\(([^)]+)\)\s*(\S+))$/);
 
     if (!match) {
-      const simpleMatch = raw.match(/^(\d+)?\s+(.+)$/);
+      const simpleMatch = rawWithoutFoil.match(/^(\d+)?\s+(.+)$/);
       if (simpleMatch) {
         const [, quantity, name] = simpleMatch;
         result.push({
@@ -27,14 +33,16 @@ export function parseDecklist(text: string): ParsedLine[] {
           name: name.trim(),
           set: undefined,
           collectorNumber: undefined,
+          foil: hasFoil,
         });
       } else {
         result.push({
           raw,
           quantity: 1,
-          name: raw.trim(),
+          name: rawWithoutFoil.trim(),
           set: undefined,
           collectorNumber: undefined,
+          foil: hasFoil,
         });
       }
       continue;
@@ -49,14 +57,16 @@ export function parseDecklist(text: string): ParsedLine[] {
         name: "",
         set: set.toLowerCase(),
         collectorNumber,
+        foil: hasFoil,
       });
     } else {
       result.push({
         raw,
         quantity: quantity ? Number(quantity) : 1,
-        name: raw.trim(),
+        name: rawWithoutFoil.trim(),
         set: undefined,
         collectorNumber: undefined,
+        foil: hasFoil,
       });
     }
   }

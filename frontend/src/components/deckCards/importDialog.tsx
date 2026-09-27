@@ -24,6 +24,7 @@ import { searchCardFuzzy } from "#/features/scryfall/api";
 
 interface ResolvedRow {
   quantity: number;
+  foil?: boolean;
   card: ScryfallCard;
 }
 
@@ -33,6 +34,7 @@ export interface ParsedLine {
   name: string;
   set?: string;
   collectorNumber?: string;
+  foil?: boolean;
 }
 
 export function ImportDialog({
@@ -306,6 +308,7 @@ async function resolveLines(
         resolved.push({
           quantity: line.quantity,
           card,
+          foil: line.foil,
         });
       } else {
         failed.push(line);
@@ -321,6 +324,7 @@ async function resolveLines(
         resolved.push({
           quantity: line.quantity,
           card,
+          foil: line.foil,
         });
       } else {
         failed.push(line);
