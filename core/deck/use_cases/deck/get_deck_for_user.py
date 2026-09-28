@@ -5,7 +5,7 @@ from users.models import User
 
 
 class GetDeckForUserUseCase:
-    def execute(self, pk, user=User) -> Deck | None:
+    def execute(self, pk: int, user: User) -> Deck | None:
         decks = DeckSelector.list_decks_by_user(user=user)
 
         deck = decks.filter(id=pk).first()
