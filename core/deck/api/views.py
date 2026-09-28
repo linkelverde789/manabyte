@@ -6,8 +6,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from deck.api.serializers import DeckCardResponseSerializer, DeckResponseSerializer
+from deck.dto.deck import CreateDeckInput
 from deck.models import Deck, DeckCard
-from deck.serializers import DeckCardResponseSerializer, DeckResponseSerializer
+from deck.services.deck import DeckService
+from deck.use_cases.deck.get_deck_for_user import GetDeckForUserUseCase
+from deck.use_cases.deck.list_decks_by_user import ListDecksByUserUseCase
 
 
 class UserDeckView(ViewSet):
@@ -16,7 +20,7 @@ class UserDeckView(ViewSet):
     def list(self, request):
         user = request.user
 
-        decks = Deck.objects.filter(user=user).order_by("id")
+        decks = ListDecksByUserUseCase().execute(user=user)
 
         return Response(
             DeckResponseSerializer(decks, many=True, context={"request": request}).data
@@ -25,19 +29,25 @@ class UserDeckView(ViewSet):
     def retrieve(self, request, pk):
         user = request.user
 
-        deck = Deck.objects.filter(id=pk, user=user).first()
+        deck = GetDeckForUserUseCase().execute(pk=pk, user=user)
 
         return Response(DeckResponseSerializer(deck, context={"request": request}).data)
 
     def create(self, request):
         user = request.user
         data = request.data
-        deck = Deck.objects.create(
-            name=data["name"],
-            format=data["format"],
-            user=user,
-            folder_id=data.get("folder_id", None),
-        )
+
+        folder = None
+
+        if "folder_id" in data:
+            # TODO
+            folder = None
+
+        input_deck_dto = CreateDeckInput(
+            name=data["name"], format=data["format"], folder=folder, user=user
+        ).validate()
+
+        deck = DeckService.create_deck(data=input_deck_dto)
 
         return Response(DeckResponseSerializer(deck, context={"request": request}).data)
 
@@ -45,7 +55,9 @@ class UserDeckView(ViewSet):
         pass
 
     def destroy(self, request, pk):
-        Deck.objects.filter(id=pk, user=request.user).first().delete()
+        DeckService.delete_deck(
+            GetDeckForUserUseCase().execute(pk=pk, user=request.user)
+        )
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
