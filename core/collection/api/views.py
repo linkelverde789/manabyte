@@ -1,11 +1,21 @@
+from collection.api.serializers import CollectionItemResponseSerializer
+from collection.models import CollectionItem
+from collection.use_cases.bulk_create_collection_item import (
+    BulkCreateCollectionItemUseCase,
+)
+from collection.use_cases.create_collection_item import CreateCollectionItemUseCase
+from collection.use_cases.delete_collection_item import DeleteCollectionItemUseCase
+from collection.use_cases.list_collection_item_from_folder import (
+    ListCollectionItemFromFolderUseCase,
+)
+from collection.use_cases.list_collection_item_from_user import (
+    ListCollectionItemFromUserUseCase,
+)
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from rest_framework.viewsets import ViewSet
-
-from collection.models import CollectionItem
-from collection.serializers import CollectionItemResponseSerializer
 
 
 class CollectionItemView(ViewSet):
@@ -16,12 +26,14 @@ class CollectionItemView(ViewSet):
 
         params = request.query_params
 
-        collection_items = CollectionItem.objects.filter(user=user).order_by("-id")
+        collection_items = None
 
         if "folder_id" in params:
-            collection_items = collection_items.filter(
-                folder_id=params.get("folder_id")
+            collection_items = ListCollectionItemFromFolderUseCase().execute(
+                user=user, folder_id=params["folder_id"]
             )
+        else:
+            collection_items = ListCollectionItemFromUserUseCase().execute(user=user)
 
         return Response(
             CollectionItemResponseSerializer(
@@ -33,7 +45,7 @@ class CollectionItemView(ViewSet):
         user = request.user
         data = request.data
 
-        collection_item = CollectionItem.objects.create(
+        collection_item = CreateCollectionItemUseCase().execute(
             user=user,
             scryfall_id=data["scryfall_id"],
             quantity=data["quantity"],
@@ -55,20 +67,9 @@ class CollectionItemView(ViewSet):
         user = request.user
         data = request.data
 
-        collection_items = [
-            CollectionItem(
-                user=user,
-                scryfall_id=item["scryfall_id"],
-                quantity=item["quantity"],
-                foil=item["foil"],
-                language=item["language"],
-                condition=item["condition"],
-                folder_id=item.get("folder_id", None),
-            )
-            for item in data
-        ]
-
-        result = CollectionItem.objects.bulk_create(collection_items)
+        result = BulkCreateCollectionItemUseCase().execute(
+            user=user, folder_id=data["folder_id"], items=data["items"]
+        )
 
         return Response(
             CollectionItemResponseSerializer(
@@ -107,5 +108,6 @@ class CollectionItemView(ViewSet):
         )
 
     def destroy(self, request, pk):
-        CollectionItem.objects.filter(id=pk, user=request.user).first().delete()
+        DeleteCollectionItemUseCase().execute(user=request.user, item_id=pk)
+
         return Response(status=HTTP_204_NO_CONTENT)

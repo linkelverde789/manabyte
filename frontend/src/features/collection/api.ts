@@ -1,5 +1,6 @@
 import { api } from "#/api/manabyte";
 import type {
+  BulkCreateCollectionItemData,
   CollectionItem,
   CreateCollectionItemData,
   FilterCollectionParams,
@@ -26,7 +27,7 @@ export function createCollectionItem(data: CreateCollectionItemData) {
   });
 }
 
-export function bulkCreateCollectionItem(data: CreateCollectionItemData[]) {
+export function bulkCreateCollectionItem(data: BulkCreateCollectionItemData) {
   return api<CollectionItem[]>("/collection/bulk/", {
     method: "POST",
     body: JSON.stringify(data),

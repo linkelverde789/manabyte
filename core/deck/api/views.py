@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from deck.api.serializers import DeckCardResponseSerializer, DeckResponseSerializer
-from deck.models import Deck, DeckCard
 from deck.use_cases.deck.create_deck import CreateDeckUseCase
 from deck.use_cases.deck.delete_deck import DeleteDeckUseCase
 from deck.use_cases.deck.get_deck_for_user import GetDeckForUserUseCase

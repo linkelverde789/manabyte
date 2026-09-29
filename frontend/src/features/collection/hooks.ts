@@ -7,6 +7,7 @@ import {
   partialUpdateCollectionItem,
 } from "./api";
 import type {
+  BulkCreateCollectionItemData,
   CreateCollectionItemData,
   FilterCollectionParams,
   PartialUpdateCollectionItemData,
@@ -22,7 +23,7 @@ export function useGetCollectionItems(params: FilterCollectionParams) {
 export function useBulkCreateCollectionItem() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateCollectionItemData[]) =>
+    mutationFn: (data: BulkCreateCollectionItemData) =>
       bulkCreateCollectionItem(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
