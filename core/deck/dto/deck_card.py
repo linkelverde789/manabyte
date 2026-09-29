@@ -18,6 +18,8 @@ class CreateDeckCardInput:
         if not self.scryfall_id:
             raise DeckCardException("Scryfall ID can't be empty")
 
+        print(f"Esto es lo que falla {self.quantity}")
+
         if self.quantity < 1:
             raise DeckCardException("Quantity should be higher than 1")
 

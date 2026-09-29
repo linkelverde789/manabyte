@@ -223,3 +223,7 @@ __pycache__/
 *.pyc
 
 .vscode/
+
+
+core/config/*
+core/manage.py

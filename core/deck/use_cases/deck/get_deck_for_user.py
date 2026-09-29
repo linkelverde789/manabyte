@@ -5,12 +5,10 @@ from users.models import User
 
 
 class GetDeckForUserUseCase:
-    def execute(self, pk: int, user: User) -> Deck | None:
-        decks = DeckSelector.list_decks_by_user(user=user)
-
-        deck = decks.filter(id=pk).first()
+    def execute(self, deck_id: int, user: User) -> Deck | None:
+        deck = DeckSelector.get_deck_by_user(user=user, deck_id=deck_id)
 
         if deck is None:
-            raise DeckException(f"Deck {pk} not found")
+            raise DeckException(f"Deck {deck_id} not found")
 
         return deck

@@ -1,5 +1,5 @@
 from deck.dto.deck_card import CreateDeckCardInput, UpdateDeckCardInput
-from deck.models import Deck, DeckCard
+from deck.models import DeckCard
 from django.db import transaction
 
 
@@ -18,7 +18,7 @@ class DeckCardService:
 
     @transaction.atomic
     @staticmethod
-    def bulk_create_deck_card(data: [CreateDeckCardInput]):
+    def bulk_create_deck_card(data: list[CreateDeckCardInput]):
         DeckCard.objects.bulk_create(
             [
                 DeckCard(
