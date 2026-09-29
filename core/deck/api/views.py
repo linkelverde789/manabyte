@@ -13,6 +13,9 @@ from deck.use_cases.deck.create_deck import CreateDeckUseCase
 from deck.use_cases.deck.delete_deck import DeleteDeckUseCase
 from deck.use_cases.deck.get_deck_for_user import GetDeckForUserUseCase
 from deck.use_cases.deck.list_decks_by_user import ListDecksByUserUseCase
+from deck.use_cases.deck_card.bulk_create_deck_card import (
+    BulkCreateDeckCardUseCase,
+)
 from deck.use_cases.deck_card.create_deck_card import CreateDeckCardUseCase
 from deck.use_cases.deck_card.delete_deck_card import DeleteDeckCardUseCase
 from deck.use_cases.deck_card.list_cards_from_deck import ListCardsFromDeckUseCase
@@ -101,22 +104,11 @@ class DeckCardsView(ViewSet):
     def bulk_create(self, request, deck_id=None):
         user = request.user
 
-        deck = Deck.objects.filter(user=user, id=deck_id).first()
-
         cards_data = request.data
 
-        cards = [
-            DeckCard(
-                scryfall_id=card["scryfall_id"],
-                deck=deck,
-                quantity=card["quantity"],
-                zone=card.get("zone", "mainboard"),
-            )
-            for card in cards_data
-        ]
-        DeckCard.objects.bulk_create(cards)
-
-        cards = DeckCard.objects.filter(deck=deck).order_by("id")
+        cards = BulkCreateDeckCardUseCase().execute(
+            deck_id=deck_id, user=user, data=cards_data
+        )
 
         return Response(
             DeckCardResponseSerializer(

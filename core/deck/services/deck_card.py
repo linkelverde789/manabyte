@@ -18,7 +18,7 @@ class DeckCardService:
 
     @transaction.atomic
     @staticmethod
-    def bulk_create_deck_card(data: list[CreateDeckCardInput]):
+    def bulk_create_deck_card(data: [CreateDeckCardInput]):
         DeckCard.objects.bulk_create(
             [
                 DeckCard(

@@ -50,7 +50,7 @@ def test_create_card_bulk(user, auth_client):
     cards = []
     for item in range(10):
         cards.append(
-            {"scryfall_id": uuid.uuid4(), "quantity": item, "zone": "mainboard"}
+            {"scryfall_id": uuid.uuid4(), "quantity": item + 1, "zone": "mainboard"}
         )
 
     res = auth_client.post(

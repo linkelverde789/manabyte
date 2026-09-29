@@ -18,10 +18,8 @@ class CreateDeckCardInput:
         if not self.scryfall_id:
             raise DeckCardException("Scryfall ID can't be empty")
 
-        print(f"Esto es lo que falla {self.quantity}")
-
         if self.quantity < 1:
-            raise DeckCardException("Quantity should be higher than 1")
+            raise DeckCardException("Quantity should be higher or equal than 1", "400")
 
         if not self.zone:
             raise DeckCardException("Zone can't be empty")
@@ -44,7 +42,7 @@ class UpdateDeckCardInput:
                 raise DeckCardException("Scryfall ID can't be empty")
 
         if self.quantity is not None and self.quantity < 1:
-            raise DeckCardException("Quantity should be higher than 1")
+            raise DeckCardException("Quantity should be higher or equal than 1")
 
         if self.zone is not None:
             self.zone = self.zone.strip()
