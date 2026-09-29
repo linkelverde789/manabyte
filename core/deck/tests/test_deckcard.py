@@ -22,10 +22,10 @@ def test_list_deck_cards(user, auth_client):
 
     assert res.status_code == HTTP_200_OK
     assert len(res.data) == 2
-    assert res.data[0]["scryfall_id"] == str(card_one.scryfall_id)
-    assert res.data[0]["id"] == card_one.id
-    assert res.data[1]["scryfall_id"] == str(card_two.scryfall_id)
-    assert res.data[1]["id"] == card_two.id
+    assert res.data[0]["scryfall_id"] == str(card_two.scryfall_id)
+    assert res.data[0]["id"] == card_two.id
+    assert res.data[1]["scryfall_id"] == str(card_one.scryfall_id)
+    assert res.data[1]["id"] == card_one.id
 
 
 @pytest.mark.django_db
@@ -50,7 +50,7 @@ def test_create_card_bulk(user, auth_client):
     cards = []
     for item in range(10):
         cards.append(
-            {"scryfall_id": uuid.uuid4(), "quantity": item, "zone": "mainboard"}
+            {"scryfall_id": uuid.uuid4(), "quantity": item + 1, "zone": "mainboard"}
         )
 
     res = auth_client.post(

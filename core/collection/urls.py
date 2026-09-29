@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 
-from collection.views import CollectionItemView
+from collection.api.views import CollectionItemView
 
 router = DefaultRouter()
 router.register("", CollectionItemView, basename="collection")

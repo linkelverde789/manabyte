@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from deck.views import DeckCardsView, UserDeckView
+from deck.api.views import DeckCardsView, UserDeckView
 
 router = DefaultRouter()
 router.register("", UserDeckView, basename="deck")

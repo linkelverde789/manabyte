@@ -1,12 +1,14 @@
 from collection.models import CollectionItem
 from deck.models import Deck
+from folder.api.serializers import FolderResponseSerializer
+from folder.models import Folder
+from folder.use_cases.create_folder import CreateFolderUseCase
+from folder.use_cases.get_folder_from_user import GetFolderFromUserUseCase
+from folder.use_cases.list_folders_from_user import ListFolderFromUserUseCase
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from rest_framework.viewsets import ViewSet
-
-from folder.models import Folder
-from folder.serializers import FolderResponseSerializer
 
 
 class UserFolderView(ViewSet):
@@ -15,7 +17,7 @@ class UserFolderView(ViewSet):
     def list(self, request):
         user = request.user
 
-        folders = Folder.objects.filter(user=user)
+        folders = ListFolderFromUserUseCase().execute(user=user)
 
         return Response(
             FolderResponseSerializer(
@@ -26,7 +28,7 @@ class UserFolderView(ViewSet):
     def retrieve(self, request, pk):
         user = request.user
 
-        folder = Folder.objects.filter(user=user, id=pk).first()
+        folder = GetFolderFromUserUseCase().execute(user=user, folder_id=pk)
 
         return Response(
             FolderResponseSerializer(folder, context={"request": request}).data
@@ -36,10 +38,8 @@ class UserFolderView(ViewSet):
         user = request.user
         data = request.data
 
-        folder = Folder.objects.create(
-            user=user,
-            name=data["name"],
-            type=data["type"],
+        folder = CreateFolderUseCase().execute(
+            user=user, name=data["name"], type=data["type"]
         )
 
         return Response(

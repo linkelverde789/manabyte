@@ -14,6 +14,17 @@ export interface CollectionItem extends DataCard {
   condition: string;
 }
 
+export interface BulkCreateCollectionItem extends CreateDeckCardData {
+  language: string;
+  foil: boolean;
+  condition: string;
+}
+
+export interface BulkCreateCollectionItemData {
+  items: BulkCreateCollectionItem[];
+  folder_id?: number;
+}
+
 export interface CreateCollectionItemData extends CreateDeckCardData {
   language: string;
   foil: boolean;

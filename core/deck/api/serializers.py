@@ -1,5 +1,5 @@
 from django.db.models import Sum
-from folder.serializers import FolderResponseSerializer
+from folder.api.serializers import FolderResponseSerializer
 from rest_framework import serializers
 
 

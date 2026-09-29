@@ -1,13 +1,24 @@
 # Create your views here.
 
+
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from deck.models import Deck, DeckCard
-from deck.serializers import DeckCardResponseSerializer, DeckResponseSerializer
+from deck.api.serializers import DeckCardResponseSerializer, DeckResponseSerializer
+from deck.use_cases.deck.create_deck import CreateDeckUseCase
+from deck.use_cases.deck.delete_deck import DeleteDeckUseCase
+from deck.use_cases.deck.get_deck_for_user import GetDeckForUserUseCase
+from deck.use_cases.deck.list_decks_by_user import ListDecksByUserUseCase
+from deck.use_cases.deck_card.bulk_create_deck_card import (
+    BulkCreateDeckCardUseCase,
+)
+from deck.use_cases.deck_card.create_deck_card import CreateDeckCardUseCase
+from deck.use_cases.deck_card.delete_deck_card import DeleteDeckCardUseCase
+from deck.use_cases.deck_card.list_cards_from_deck import ListCardsFromDeckUseCase
+from deck.use_cases.deck_card.update_deck_card import UpdateDeckCardUseCase
 
 
 class UserDeckView(ViewSet):
@@ -16,7 +27,7 @@ class UserDeckView(ViewSet):
     def list(self, request):
         user = request.user
 
-        decks = Deck.objects.filter(user=user).order_by("id")
+        decks = ListDecksByUserUseCase().execute(user=user)
 
         return Response(
             DeckResponseSerializer(decks, many=True, context={"request": request}).data
@@ -25,14 +36,15 @@ class UserDeckView(ViewSet):
     def retrieve(self, request, pk):
         user = request.user
 
-        deck = Deck.objects.filter(id=pk, user=user).first()
+        deck = GetDeckForUserUseCase().execute(deck_id=pk, user=user)
 
         return Response(DeckResponseSerializer(deck, context={"request": request}).data)
 
     def create(self, request):
         user = request.user
         data = request.data
-        deck = Deck.objects.create(
+
+        deck = CreateDeckUseCase.execute(
             name=data["name"],
             format=data["format"],
             user=user,
@@ -45,7 +57,7 @@ class UserDeckView(ViewSet):
         pass
 
     def destroy(self, request, pk):
-        Deck.objects.filter(id=pk, user=request.user).first().delete()
+        DeleteDeckUseCase().execute(deck_id=pk, user=request.user)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -56,8 +68,11 @@ class DeckCardsView(ViewSet):
     def list(self, request, deck_id=None):
 
         user = request.user
-        deck = Deck.objects.filter(id=deck_id, user=user).first()
-        cards = DeckCard.objects.filter(deck=deck).order_by("id")
+
+        deck = GetDeckForUserUseCase().execute(deck_id=deck_id, user=user)
+
+        cards = ListCardsFromDeckUseCase().execute(deck=deck)
+
         return Response(
             DeckCardResponseSerializer(
                 cards, many=True, context={"request": request}
@@ -66,18 +81,16 @@ class DeckCardsView(ViewSet):
 
     def create(self, request, deck_id=None):
         user = request.user
-        deck = Deck.objects.filter(id=deck_id, user=user).first()
-
         data = request.data
 
-        DeckCard.objects.create(
-            scryfall_id=data["scryfall_id"],
-            deck=deck,
-            quantity=data["quantity"],
-            zone=data.get("zone", "mainboard"),
-        )
+        deck = GetDeckForUserUseCase().execute(user=user, deck_id=deck_id)
 
-        cards = DeckCard.objects.filter(deck=deck).order_by("id")
+        cards = CreateDeckCardUseCase().execute(
+            scryfall_id=data["scryfall_id"],
+            zone=data.get("zone", "mainboard"),
+            deck=deck,
+            quantity=int(data["quantity"]),
+        )
 
         return Response(
             DeckCardResponseSerializer(
@@ -90,22 +103,11 @@ class DeckCardsView(ViewSet):
     def bulk_create(self, request, deck_id=None):
         user = request.user
 
-        deck = Deck.objects.filter(user=user, id=deck_id).first()
-
         cards_data = request.data
 
-        cards = [
-            DeckCard(
-                scryfall_id=card["scryfall_id"],
-                deck=deck,
-                quantity=card["quantity"],
-                zone=card.get("zone", "mainboard"),
-            )
-            for card in cards_data
-        ]
-        DeckCard.objects.bulk_create(cards)
-
-        cards = DeckCard.objects.filter(deck=deck).order_by("id")
+        cards = BulkCreateDeckCardUseCase().execute(
+            deck_id=deck_id, user=user, data=cards_data
+        )
 
         return Response(
             DeckCardResponseSerializer(
@@ -120,24 +122,27 @@ class DeckCardsView(ViewSet):
     #    pass
 
     def partial_update(self, request, pk, deck_id=None):
-        deck = Deck.objects.filter(user=request.user, id=deck_id).first()
+        user = request.user
         data = request.data
 
-        card = DeckCard.objects.filter(deck=deck, id=pk).first()
+        deck = GetDeckForUserUseCase().execute(user=user, deck_id=deck_id)
 
-        if "quantity" in data:
-            card.quantity = data["quantity"]
-
-        if "scryfall_id" in data:
-            card.scryfall_id = data["scryfall_id"]
-
-        card.save()
+        card = UpdateDeckCardUseCase().execute(
+            card_id=pk,
+            deck=deck,
+            scryfall_id=data.get("scryfall_id", None),
+            quantity=data.get("quantity", None),
+            zone=data.get("zone", None),
+        )
 
         return Response(
             DeckCardResponseSerializer(card, context={"request": request}).data
         )
 
     def destroy(self, request, pk, deck_id=None):
-        deck = Deck.objects.filter(user=request.user, id=deck_id).first()
-        DeckCard.objects.filter(id=pk, deck=deck).first().delete()
+        user = request.user
+
+        deck = GetDeckForUserUseCase().execute(deck_id=deck_id, user=user)
+        DeleteDeckCardUseCase().execute(deck=deck, card_id=pk)
+
         return Response(status=status.HTTP_204_NO_CONTENT)

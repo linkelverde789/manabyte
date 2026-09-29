@@ -31,14 +31,18 @@ def test_bulk_create_collection_item(auth_client):
         data.append(
             {
                 "scryfall_id": uuid4(),
-                "quantity": item,
+                "quantity": item + 1,
                 "foil": True,
                 "language": "en",
                 "condition": f"PSA {item}",
             }
         )
 
-    res = auth_client.post(reverse("collection-bulk-create"), data, format="json")
+    res = auth_client.post(
+        reverse("collection-bulk-create"),
+        {"items": data, "folder_id": None},
+        format="json",
+    )
     assert res.status_code == HTTP_201_CREATED
 
     assert len(res.data) == 10

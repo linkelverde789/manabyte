@@ -204,10 +204,9 @@ function RouteComponent() {
               (row.card.nonfoil !== true || row.foil === true),
             language: row.card.lang,
             condition: "MN",
-            folder_id: folderId,
           }));
 
-          await bulkCreateCollectionItem(data);
+          await bulkCreateCollectionItem({ items: data, folder_id: folderId });
         }}
       />
 
