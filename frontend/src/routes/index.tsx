@@ -7,25 +7,6 @@ import GeneralInfo from "#/components/index/generalInfo";
 import { useGetStats } from "#/features/stats/hooks";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "ManaByte — Magic deck & collection builder" },
-      {
-        name: "description",
-        content:
-          "Build Magic: The Gathering decks by pasting a list or searching cards, track your collection and choose any alternate printing.",
-      },
-      {
-        property: "og:title",
-        content: "ManaByte — Magic deck & collection builder",
-      },
-      {
-        property: "og:description",
-        content:
-          "Paste a decklist or search cards, pick alternate styles and track everything you own.",
-      },
-    ],
-  }),
   component: Index,
 });
 
