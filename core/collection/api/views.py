@@ -8,6 +8,9 @@ from collection.use_cases.delete_collection_item import DeleteCollectionItemUseC
 from collection.use_cases.list_collection_item_from_folder import (
     ListCollectionItemFromFolderUseCase,
 )
+from collection.use_cases.list_collection_item_from_scryfall_ids import (
+    ListCollectionItemFromScryfallIdsUseCase,
+)
 from collection.use_cases.list_collection_item_from_user import (
     ListCollectionItemFromUserUseCase,
 )
@@ -20,6 +23,21 @@ from rest_framework.viewsets import ViewSet
 
 class CollectionItemView(ViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
+
+    @action(detail=False, methods=["get"], url_path="set")
+    def set(self, request):
+
+        scryfall_ids = request.query_params.get("scryfall_ids", "").split(",")
+
+        collection_items = ListCollectionItemFromScryfallIdsUseCase().execute(
+            user=request.user, scryfall_ids=scryfall_ids
+        )
+
+        return Response(
+            CollectionItemResponseSerializer(
+                collection_items, many=True, context={"request": request}
+            ).data
+        )
 
     def list(self, request):
         user = request.user

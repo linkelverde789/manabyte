@@ -229,3 +229,26 @@ export interface ScryfallPurchaseUris {
 export interface ScryfallResult {
   data: ScryfallCard[];
 }
+
+export interface setCollection {
+  object: string;
+  total_cards: number;
+  has_more: boolean;
+  next_page: string;
+  data: ScryfallCard[];
+}
+
+export interface ScryfallSetList {
+  object: string;
+  has_more: boolean;
+  data: ScryfallSet[];
+}
+
+export interface ScryfallSet {
+  object: string;
+  id: string;
+  code: string;
+  name: string;
+  card_count: number;
+  icon_svg_uri: string;
+}
