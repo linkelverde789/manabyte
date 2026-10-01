@@ -4,6 +4,7 @@ import {
   createCollectionItem,
   deleteCollectionItem,
   getCollectionItems,
+  listCollectionItemFromSet,
   partialUpdateCollectionItem,
 } from "./api";
 import type {
@@ -100,4 +101,16 @@ export function useCollectionTotal(folderId: number) {
     total: data?.reduce((total, item) => total + item.quantity, 0) ?? 0,
     entries: data?.length,
   };
+}
+
+export function useListCollectionItemFromSet({
+  scryfallIds,
+}: {
+  scryfallIds?: string[];
+}) {
+  return useQuery({
+    queryKey: ["collection", scryfallIds],
+    queryFn: () => listCollectionItemFromSet(scryfallIds!),
+    enabled: scryfallIds !== undefined && scryfallIds.length > 0,
+  });
 }

@@ -47,3 +47,11 @@ export function partialUpdateCollectionItem(
 export function deleteCollectionItem(cardId: number) {
   return api<number>(`/collection/${cardId}/`, { method: "DELETE" });
 }
+
+export function listCollectionItemFromSet(scryfallIds: string[]) {
+  const searchParams = new URLSearchParams();
+
+  searchParams.set("scryfall_ids", scryfallIds.toString());
+
+  return api<CollectionItem[]>(`/collection/set/?${searchParams.toString()}`);
+}

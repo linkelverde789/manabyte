@@ -21,6 +21,21 @@ from rest_framework.viewsets import ViewSet
 class CollectionItemView(ViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
 
+    @action(detail=False, methods=["get"], url_path="set")
+    def set(self, request):
+
+        scryfall_ids = request.query_params.get("scryfall_ids", "").split(",")
+
+        collection_items = CollectionItem.objects.filter(
+            user=request.user, scryfall_id__in=scryfall_ids
+        )
+
+        return Response(
+            CollectionItemResponseSerializer(
+                collection_items, many=True, context={"request": request}
+            ).data
+        )
+
     def list(self, request):
         user = request.user
 

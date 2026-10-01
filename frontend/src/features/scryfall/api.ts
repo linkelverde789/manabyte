@@ -1,5 +1,11 @@
 import { api } from "#/api/scryfall";
-import type { ScryfallCard, ScryfallResult } from "./types";
+import type {
+  ScryfallCard,
+  ScryfallResult,
+  ScryfallSet,
+  ScryfallSetList,
+  setCollection,
+} from "./types";
 
 export function searchCard(text: string) {
   return api<ScryfallResult>(
@@ -37,4 +43,18 @@ export function searchCardStyles(text: string) {
   return api<ScryfallResult>(
     `/cards/search?q=${encodeURIComponent(text)}&unique=prints&order=released&dir=desc`,
   );
+}
+
+export function listSetCollection(setCode: string, page: number) {
+  return api<setCollection>(
+    `/cards/search?dir=asc&format=json&include_extras=true&include_multilingual=false&include_variations=true&order=set&page=${page}&q=set:${setCode}&unique=prints`,
+  );
+}
+
+export function getSetInformation(setCode: string) {
+  return api<ScryfallSet>(`/sets/${setCode}`);
+}
+
+export function listSets() {
+  return api<ScryfallSetList>(`/sets`);
 }
