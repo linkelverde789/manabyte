@@ -24,10 +24,10 @@ from rest_framework.viewsets import ViewSet
 class CollectionItemView(ViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
 
-    @action(detail=False, methods=["get"], url_path="set")
+    @action(detail=False, methods=["post"], url_path="set")
     def set(self, request):
 
-        scryfall_ids = request.query_params.get("scryfall_ids", "").split(",")
+        scryfall_ids = request.data.get("scryfall_ids", "").split(",")
 
         collection_items = ListCollectionItemFromScryfallIdsUseCase().execute(
             user=request.user, scryfall_ids=scryfall_ids
