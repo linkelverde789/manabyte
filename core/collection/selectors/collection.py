@@ -30,4 +30,4 @@ class CollectionSelector:
     def list_collection_item_from_scryfall_ids(user: User, scryfall_ids: list[str]):
         return CollectionItem.objects.filter(
             user=user, scryfall_id__in=scryfall_ids
-        ).order_by("-id")
+        ).distinct("scryfall_id")
