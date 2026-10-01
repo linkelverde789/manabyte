@@ -8,7 +8,7 @@ import {
   useListSetCollection,
 } from "#/features/scryfall/hooks";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/album/$setCode")({
   component: RouteComponent,
@@ -18,16 +18,18 @@ function RouteComponent() {
   const { setCode } = Route.useParams();
 
   const { data: setInformation } = useGetSetInformation(setCode);
+
   const { data: setCollection, isLoading: isSetLoading } =
     useListSetCollection(setCode);
 
-  const { data: collection, isLoading: isCollectionLoading } =
-    useListCollectionItemFromSet({
-      scryfallIds: setCollection?.map((item) => item.id),
-    });
+  const scryfallIds = setCollection?.map((item) => item.id);
+
+  const { data: collection = [], isLoading: isCollectionLoading } =
+    useListCollectionItemFromSet(scryfallIds);
 
   const [page, setPage] = useState(1);
-  if (isSetLoading || isCollectionLoading || !setCollection || !collection) {
+
+  if (isSetLoading || isCollectionLoading || !setCollection) {
     return <SetAlbumSkeleton />;
   }
 

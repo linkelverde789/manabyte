@@ -159,7 +159,7 @@ def test_list_collection_item_from_scryfall_ids(user, auth_client):
 
     CollectionItem.objects.bulk_create(collection_items)
 
-    res = auth_client.get(
+    res = auth_client.post(
         reverse("collection-set"),
         {
             "scryfall_ids": ",".join(
@@ -175,7 +175,7 @@ def test_list_collection_item_from_scryfall_ids(user, auth_client):
     assert res.status_code == HTTP_200_OK
     assert len(res.data) == 2
 
-    res = auth_client.get(
+    res = auth_client.post(
         reverse("collection-set"),
         {
             "scryfall_ids": ",".join(
@@ -191,7 +191,7 @@ def test_list_collection_item_from_scryfall_ids(user, auth_client):
     assert res.status_code == HTTP_200_OK
     assert len(res.data) == 1
 
-    res = auth_client.get(
+    res = auth_client.post(
         reverse("collection-set"),
         {
             "scryfall_ids": ",".join(

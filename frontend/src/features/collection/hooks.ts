@@ -103,14 +103,10 @@ export function useCollectionTotal(folderId: number) {
   };
 }
 
-export function useListCollectionItemFromSet({
-  scryfallIds,
-}: {
-  scryfallIds?: string[];
-}) {
+export function useListCollectionItemFromSet(scryfallIds?: string[]) {
   return useQuery({
-    queryKey: ["collection", scryfallIds],
+    queryKey: ["collection", "set", scryfallIds],
     queryFn: () => listCollectionItemFromSet(scryfallIds!),
-    enabled: scryfallIds !== undefined && scryfallIds.length > 0,
+    enabled: !!scryfallIds?.length,
   });
 }

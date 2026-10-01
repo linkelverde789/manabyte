@@ -49,9 +49,10 @@ export function deleteCollectionItem(cardId: number) {
 }
 
 export function listCollectionItemFromSet(scryfallIds: string[]) {
-  const searchParams = new URLSearchParams();
-
-  searchParams.set("scryfall_ids", scryfallIds.toString());
-
-  return api<CollectionItem[]>(`/collection/set/?${searchParams.toString()}`);
+  return api<CollectionItem[]>(`/collection/set/`, {
+    method: "POST",
+    body: JSON.stringify({
+      scryfall_ids: scryfallIds.join(","),
+    }),
+  });
 }
