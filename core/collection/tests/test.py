@@ -139,3 +139,70 @@ def test_destroy_collection_item(user, auth_client):
 
     assert res.status_code == HTTP_200_OK
     assert len(res.data) == 0
+
+
+@pytest.mark.django_db
+def test_list_collection_item_from_scryfall_ids(user, auth_client):
+    collection_items = []
+
+    for item in range(10):
+        collection_items.append(
+            CollectionItem(
+                scryfall_id=uuid4(),
+                quantity=item + 1,
+                foil=True,
+                language="en",
+                condition=f"PSA {item}",
+                user=user,
+            )
+        )
+
+    CollectionItem.objects.bulk_create(collection_items)
+
+    res = auth_client.get(
+        reverse("collection-set"),
+        {
+            "scryfall_ids": ",".join(
+                [
+                    str(collection_items[0].scryfall_id),
+                    str(collection_items[1].scryfall_id),
+                ]
+            ),
+        },
+        format="json",
+    )
+
+    assert res.status_code == HTTP_200_OK
+    assert len(res.data) == 2
+
+    res = auth_client.get(
+        reverse("collection-set"),
+        {
+            "scryfall_ids": ",".join(
+                [
+                    str(collection_items[2].scryfall_id),
+                    str(uuid4()),
+                ]
+            ),
+        },
+        format="json",
+    )
+
+    assert res.status_code == HTTP_200_OK
+    assert len(res.data) == 1
+
+    res = auth_client.get(
+        reverse("collection-set"),
+        {
+            "scryfall_ids": ",".join(
+                [
+                    str(uuid4()),
+                    str(uuid4()),
+                ]
+            ),
+        },
+        format="json",
+    )
+
+    assert res.status_code == HTTP_200_OK
+    assert len(res.data) == 0

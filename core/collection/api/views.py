@@ -8,6 +8,9 @@ from collection.use_cases.delete_collection_item import DeleteCollectionItemUseC
 from collection.use_cases.list_collection_item_from_folder import (
     ListCollectionItemFromFolderUseCase,
 )
+from collection.use_cases.list_collection_item_from_scryfall_ids import (
+    ListCollectionItemFromScryfallIdsUseCase,
+)
 from collection.use_cases.list_collection_item_from_user import (
     ListCollectionItemFromUserUseCase,
 )
@@ -26,8 +29,8 @@ class CollectionItemView(ViewSet):
 
         scryfall_ids = request.query_params.get("scryfall_ids", "").split(",")
 
-        collection_items = CollectionItem.objects.filter(
-            user=request.user, scryfall_id__in=scryfall_ids
+        collection_items = ListCollectionItemFromScryfallIdsUseCase().execute(
+            user=request.user, scryfall_ids=scryfall_ids
         )
 
         return Response(

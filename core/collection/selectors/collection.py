@@ -25,3 +25,9 @@ class CollectionSelector:
     @staticmethod
     def list_collection_item_from_folder(folder: Folder):
         return CollectionItem.objects.filter(folder=folder).order_by("-id")
+
+    @staticmethod
+    def list_collection_item_from_scryfall_ids(user: User, scryfall_ids: list[str]):
+        return CollectionItem.objects.filter(
+            user=user, scryfall_id__in=scryfall_ids
+        ).order_by("-id")
