@@ -8,7 +8,7 @@ import {
   useListSetCollection,
 } from "#/features/scryfall/hooks";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/album/$setCode")({
   component: RouteComponent,
