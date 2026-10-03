@@ -5,7 +5,6 @@ import { Minus, Pencil, Plus, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { CardImage } from "../deckCards/cardImage";
-import ManaCost from "../search/manaCost";
 import { Button } from "../ui/button";
 
 import {
@@ -13,11 +12,11 @@ import {
   usePartialUpdateCollectionItem,
 } from "#/features/collection/hooks";
 
-import {
-  EditCardDialog,
-  type UpdateCardData,
-} from "../deckCards/editCardDialog";
+import { type UpdateCardData } from "../dialogs/EditCardDialog";
 import ShowPrice from "./showPrice";
+
+import ManaCost from "../search/manaCost";
+import GeneralDialog from "../dialogs/GeneralDialog";
 
 export default function CardRow({
   dataCard,
@@ -30,7 +29,8 @@ export default function CardRow({
 
   const deleteCollectorItem = useDeleteCollectionItem();
 
-  const [openEdit, setOpenEdit] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [initialTab, setInitialTab] = useState<"preview" | "edit">("preview");
 
   function handleQuantity(quantity: number) {
     if (quantity < 1) {
@@ -50,11 +50,20 @@ export default function CardRow({
         ...data,
       },
     });
+
+    setOpenDialog(false);
   }
 
   return (
     <>
-      <div className="flex gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
+      <div
+        className="flex gap-3 rounded-xl border border-border bg-card p-3 shadow-sm"
+
+        onClick={() => {
+          setInitialTab("preview");
+          setOpenDialog(true);
+        }}
+      >
         <div className="w-20 shrink-0">
           <CardImage card={card} alt={card.name} foil={dataCard.foil} />
         </div>
@@ -90,7 +99,12 @@ export default function CardRow({
               size="sm"
               variant="ghost"
               className="text-xs text-muted-foreground"
-              onClick={() => setOpenEdit(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+
+                setInitialTab("edit");
+                setOpenDialog(true);
+              }}
             >
               <Pencil className="mr-1 h-3.5 w-3.5" />
               Edit
@@ -101,7 +115,11 @@ export default function CardRow({
               size="icon"
               variant="outline"
               className="h-7 w-7"
-              onClick={() => handleQuantity(dataCard.quantity - 1)}
+              onClick={(e) => {
+                e.stopPropagation();
+
+                handleQuantity(dataCard.quantity - 1);
+              }}
             >
               <Minus className="h-3.5 w-3.5" />
             </Button>
@@ -114,7 +132,10 @@ export default function CardRow({
               size="icon"
               variant="outline"
               className="h-7 w-7"
-              onClick={() => handleQuantity(dataCard.quantity + 1)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleQuantity(dataCard.quantity + 1);
+              }}
             >
               <Plus className="h-3.5 w-3.5" />
             </Button>
@@ -129,7 +150,10 @@ export default function CardRow({
               size="icon"
               variant="ghost"
               className="ml-auto h-7 w-7 text-muted-foreground hover:text-destructive"
-              onClick={() => deleteCollectorItem.mutate(dataCard.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteCollectorItem.mutate(dataCard.id);
+              }}
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
@@ -137,11 +161,12 @@ export default function CardRow({
         </div>
       </div>
 
-      <EditCardDialog
+      <GeneralDialog
         card={card}
         dataCard={dataCard}
-        open={openEdit}
-        onOpenChange={setOpenEdit}
+        open={openDialog}
+        onOpenChange={setOpenDialog}
+        initialTab={initialTab}
         onUpdate={handleUpdate}
       />
     </>
