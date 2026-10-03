@@ -4,8 +4,6 @@ import { twMerge } from "tailwind-merge";
 
 import type { ScryfallCard } from "#/features/scryfall/types";
 import type { DataCard } from "#/features/collection/types";
-import type { CollectionItem } from "#/features/collection/types";
-import type { DeckCard } from "#/features/deckCards/types";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -123,4 +121,18 @@ export function downloadFile(blob: Blob, filename: string) {
   link.click();
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
+}
+
+export function symbolUrl(symbol: string) {
+  const code = symbol.replace(/[{}]/g, "").replace(/\//g, "");
+  return `https://svgs.scryfall.io/card-symbols/${code.toUpperCase()}.svg`;
+}
+
+export function processOracleText(text: string | undefined) {
+  if (!text) return "";
+
+  return text.replace(/\{[^}]+\}/g, (match) => {
+    const imgSrc = symbolUrl(match);
+    return `<img src="${imgSrc}" alt="${match}" class="h-3.5 w-3.5 inline align-middle" />`;
+  });
 }

@@ -18,7 +18,7 @@ export function CardImage({
 
   let imageUrl =
     !card.image_uris && card.card_faces
-      ? isHovered
+      ? isHovered && card.layout !== "art_series"
         ? card.card_faces[1].image_uris?.normal
         : card.card_faces[0].image_uris?.normal
       : card.image_uris?.normal;
