@@ -17,7 +17,7 @@ class UpdateDeckCardUseCase:
         card = DeckCardSelector.get_card_from_id(card_id=card_id)
 
         if not card:
-            raise DeckCardException(f"Card: {card_id} not found")
+            raise DeckCardException(f"Card: {card_id} not found", "404")
 
         update_deck_card_dto = UpdateDeckCardInput(
             deck=deck, scryfall_id=scryfall_id, quantity=quantity, zone=zone

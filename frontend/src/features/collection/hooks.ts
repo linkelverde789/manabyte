@@ -13,6 +13,7 @@ import type {
   FilterCollectionParams,
   PartialUpdateCollectionItemData,
 } from "./types";
+import { toast } from "sonner";
 
 export function useGetCollectionItems(params: FilterCollectionParams) {
   return useQuery({
@@ -30,9 +31,12 @@ export function useBulkCreateCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
       });
+
+      toast.dismiss()
+      toast.success(`List imported to this collection!`);
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -46,9 +50,12 @@ export function useCreateCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
       });
+      toast.success(`Card added to collection!`);
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(
+        error instanceof Error ? error.message : "An error ocurred",
+      );
     },
   });
 }
@@ -70,9 +77,10 @@ export function usePartialUpdateCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
       });
+      toast.success(`Card updated!`);
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -87,9 +95,10 @@ export function useDeleteCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
       });
+      toast.success(`Card deleted!`);
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }

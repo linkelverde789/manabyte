@@ -8,6 +8,7 @@ import {
   type PartialUpdateDeckCardData,
 } from "./api";
 import type { CreateDeckCardData } from "./types";
+import { toast } from "sonner";
 
 export function useDeckCards(deckId: number) {
   return useQuery({
@@ -29,9 +30,11 @@ export function useCreateDeckCard(deckId: number) {
       await queryClient.refetchQueries({
         queryKey: ["deck", deckId],
       });
+      toast.success(`Card added to the deck!`);
+      
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -52,7 +55,7 @@ export function useBulkCreateDeckCard(deckId: number) {
       });
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -79,10 +82,13 @@ export function usePartialUpdateDeckCard(deckId: number) {
       await queryClient.refetchQueries({
         queryKey: ["deck", deckId],
       });
+
+      toast.success(`Card updated!`);
+
     },
 
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -100,9 +106,12 @@ export function useDeleteDeckCard(deckId: number) {
       await queryClient.refetchQueries({
         queryKey: ["deck", deckId],
       });
+
+      toast.success(`Card deleted from the deck!`);
+
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }

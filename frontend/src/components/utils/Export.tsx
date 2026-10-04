@@ -7,12 +7,17 @@ import {
 } from "#/components/ui/dropdown";
 import { Button } from "#/components/ui/button";
 import { ChevronDown, Download } from "lucide-react";
+import { toast } from "sonner";
 
 export function Export({
   onExportFormatChange,
 }: {
   onExportFormatChange: (format: ExportFormat) => void;
 }) {
+  function handleExport(format: "csv" | "xlsx") {
+    toast.loading("Exporting...");
+    onExportFormatChange(format);
+  }
   return (
     <div className="flex flex-wrap gap-3">
       <DropdownMenu>
@@ -23,10 +28,10 @@ export function Export({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onSelect={() => onExportFormatChange("csv")}>
+          <DropdownMenuItem onSelect={() => handleExport("csv")}>
             Export as CSV
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onExportFormatChange("xlsx")}>
+          <DropdownMenuItem onSelect={() => handleExport("xlsx")}>
             Export as XLSX
           </DropdownMenuItem>
         </DropdownMenuContent>

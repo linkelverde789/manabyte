@@ -12,7 +12,7 @@ class BulkCreateDeckCardUseCase:
         deck = DeckSelector.get_deck_by_user(deck_id=deck_id, user=user)
 
         if not deck:
-            raise DeckException(f"Deck {deck_id} not found")
+            raise DeckException(f"Deck {deck_id} not found", "404")
 
         create_data_dto = [
             CreateDeckCardInput(

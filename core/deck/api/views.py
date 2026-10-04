@@ -44,7 +44,7 @@ class UserDeckView(ViewSet):
         user = request.user
         data = request.data
 
-        deck = CreateDeckUseCase.execute(
+        deck = CreateDeckUseCase().execute(
             name=data["name"],
             format=data["format"],
             user=user,
@@ -69,9 +69,7 @@ class DeckCardsView(ViewSet):
 
         user = request.user
 
-        deck = GetDeckForUserUseCase().execute(deck_id=deck_id, user=user)
-
-        cards = ListCardsFromDeckUseCase().execute(deck=deck)
+        cards = ListCardsFromDeckUseCase().execute(deck_id=deck_id, user=user)
 
         return Response(
             DeckCardResponseSerializer(
@@ -83,13 +81,12 @@ class DeckCardsView(ViewSet):
         user = request.user
         data = request.data
 
-        deck = GetDeckForUserUseCase().execute(user=user, deck_id=deck_id)
-
         cards = CreateDeckCardUseCase().execute(
             scryfall_id=data["scryfall_id"],
             zone=data.get("zone", "mainboard"),
-            deck=deck,
             quantity=int(data["quantity"]),
+            deck_id=deck_id,
+            user=user,
         )
 
         return Response(
@@ -142,7 +139,6 @@ class DeckCardsView(ViewSet):
     def destroy(self, request, pk, deck_id=None):
         user = request.user
 
-        deck = GetDeckForUserUseCase().execute(deck_id=deck_id, user=user)
-        DeleteDeckCardUseCase().execute(deck=deck, card_id=pk)
+        DeleteDeckCardUseCase().execute(deck_id=deck_id, card_id=pk, user=user)
 
         return Response(status=status.HTTP_204_NO_CONTENT)

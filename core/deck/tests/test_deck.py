@@ -29,6 +29,17 @@ def test_retrieve_deck(user, auth_client):
 
 
 @pytest.mark.django_db
+def test_create_decks(user, auth_client):
+    data = {"name": "My new deck", "format": "Commander"}
+    res = auth_client.post(reverse("deck-list"), data, format="json")
+
+    assert res.status_code == HTTP_200_OK
+
+    response = auth_client.get(reverse("deck-detail", kwargs={"pk": res.data["id"]}))
+    assert res.data["id"] == response.data["id"]
+
+
+@pytest.mark.django_db
 def test_delete_deck(user, auth_client):
     deck_one = Deck.objects.create(name="Deck 1", user=user, format="Commander")
     deck_two = Deck.objects.create(name="Deck 2", user=user, format="Modern")

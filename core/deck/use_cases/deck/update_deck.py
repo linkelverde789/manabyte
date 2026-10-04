@@ -25,6 +25,6 @@ class UpdateDeckUseCase:
         deck = GetDeckForUserUseCase().execute(pk=deck_id, user=user)
 
         if deck is None:
-            raise DeckException("Deck not found")
+            raise DeckException("Deck not found", "404")
 
         return DeckService.update_deck(deck=deck, data=update_deck_dto)

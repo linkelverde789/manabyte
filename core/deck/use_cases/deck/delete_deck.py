@@ -9,6 +9,6 @@ class DeleteDeckUseCase:
         deck = DeckSelector.get_deck_by_user(deck_id=deck_id, user=user)
 
         if deck is None:
-            raise DeckException(f"Deck {deck_id} not found")
+            raise DeckException(f"Deck {deck_id} not found", "404")
 
         DeckService.delete_deck(deck)

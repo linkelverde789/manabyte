@@ -12,15 +12,15 @@ class CreateFolderInput:
 
     def validate(self) -> "CreateFolderInput":
         self.name = self.name.strip()
-        self.type = self.type.strip()
+        self.type = self.type.strip().lower()
 
         if not self.name:
-            raise FolderException("Name can't be empty", "401")
+            raise FolderException("Name can't be empty", "400")
 
         if not self.type:
-            raise FolderException("Type can't be empty", "401")
+            raise FolderException("Type can't be empty", "400")
 
         if self.type != "deck" and self.type != "collection":
-            raise FolderException("Type must be deck or collection", "401")
+            raise FolderException("Type must be deck or collection", "400")
 
         return self

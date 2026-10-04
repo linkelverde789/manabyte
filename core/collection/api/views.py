@@ -1,5 +1,4 @@
 from collection.api.serializers import CollectionItemResponseSerializer
-from collection.models import CollectionItem
 from collection.use_cases.bulk_create_collection_item import (
     BulkCreateCollectionItemUseCase,
 )
@@ -14,6 +13,7 @@ from collection.use_cases.list_collection_item_from_scryfall_ids import (
 from collection.use_cases.list_collection_item_from_user import (
     ListCollectionItemFromUserUseCase,
 )
+from collection.use_cases.update_collection_item import UpdateCollectionItemUseCase
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -50,6 +50,7 @@ class CollectionItemView(ViewSet):
             collection_items = ListCollectionItemFromFolderUseCase().execute(
                 user=user, folder_id=params["folder_id"]
             )
+
         else:
             collection_items = ListCollectionItemFromUserUseCase().execute(user=user)
 
@@ -100,28 +101,13 @@ class CollectionItemView(ViewSet):
         user = request.user
         data = request.data
 
-        collectionItem = CollectionItem.objects.filter(id=pk, user=user).first()
-
-        if "scryfall_id" in data:
-            collectionItem.scryfall_id = data["scryfall_id"]
-
-        if "quantity" in data:
-            collectionItem.quantity = data["quantity"]
-
-        if "foil" in data:
-            collectionItem.foil = data["foil"]
-
-        if "language" in data:
-            collectionItem.language = data["language"]
-
-        if "condition" in data:
-            collectionItem.condition = data["condition"]
-
-        collectionItem.save()
+        collection_item = UpdateCollectionItemUseCase().execute(
+            user=user, data=data, item_id=pk
+        )
 
         return Response(
             CollectionItemResponseSerializer(
-                collectionItem, context={"request": request}
+                collection_item, context={"request": request}
             ).data
         )
 

@@ -7,5 +7,9 @@ class DeckCardSelector:
         return DeckCard.objects.filter(id=card_id).first()
 
     @staticmethod
+    def get_card_from_id_and_deck(card_id: int, deck: Deck):
+        return DeckCard.objects.filter(id=card_id, deck=deck).first()
+
+    @staticmethod
     def list_cards_from_deck(deck: Deck):
         return DeckCard.objects.filter(deck=deck).order_by("-id")

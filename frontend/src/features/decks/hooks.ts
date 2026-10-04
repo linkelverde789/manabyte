@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createDeck, deleteDeck, getDeck, getDecks } from "./api";
 import type { CreateDeckData } from "./types";
+import { toast } from "sonner";
 
 export function useDecks() {
   return useQuery({
@@ -26,9 +27,10 @@ export function useCreateDeck() {
       queryClient.invalidateQueries({
         queryKey: ["decks"],
       });
+      toast.success("Deck created!")
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -45,10 +47,12 @@ export function useDeleteDeck() {
       queryClient.invalidateQueries({
         queryKey: ["decks"],
       });
+      toast.success("Deck deleted!")
+
     },
 
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }

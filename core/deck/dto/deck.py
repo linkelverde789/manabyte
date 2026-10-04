@@ -23,10 +23,10 @@ class CreateDeckInput:
         self.format = self.format.strip()
 
         if not self.name:
-            raise DeckException("The name is required")
+            raise DeckException("The name is required", "400")
 
         if not self.format:
-            raise DeckException("The format is required")
+            raise DeckException("The format is required", "400")
 
         return self
 
@@ -42,12 +42,12 @@ class UpdateDeckInput:
             self.name = self.name.strip()
 
             if not self.name:
-                raise DeckException("The name can't be empty")
+                raise DeckException("The name can't be empty", "400")
 
         if self.format is not None:
             self.format = self.format.strip()
 
             if not self.format:
-                raise DeckException("The format can't be empty")
+                raise DeckException("The format can't be empty", "400")
 
         return self

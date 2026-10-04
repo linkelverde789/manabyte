@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFolder, deleteFolder, getFolder, listFolders } from "./api";
 import type { CreateFolderData } from "./types";
+import { toast } from "sonner";
 
 export function useListFolders() {
   return useQuery({
@@ -26,10 +27,11 @@ export function useCreateFolder() {
       queryClient.invalidateQueries({
         queryKey: ["folders"],
       });
+      toast.success("Folder created!")
     },
 
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -44,10 +46,11 @@ export function useDeleteFolder() {
       queryClient.invalidateQueries({
         queryKey: ["folders"],
       });
+      toast.success("Folder deleted!")
     },
 
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
