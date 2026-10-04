@@ -8,6 +8,7 @@ import {
   type PartialUpdateDeckCardData,
 } from "./api";
 import type { CreateDeckCardData } from "./types";
+import { toast } from "sonner";
 
 export function useDeckCards(deckId: number) {
   return useQuery({
@@ -31,7 +32,7 @@ export function useCreateDeckCard(deckId: number) {
       });
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -52,7 +53,7 @@ export function useBulkCreateDeckCard(deckId: number) {
       });
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -82,7 +83,7 @@ export function usePartialUpdateDeckCard(deckId: number) {
     },
 
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -102,7 +103,7 @@ export function useDeleteDeckCard(deckId: number) {
       });
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }

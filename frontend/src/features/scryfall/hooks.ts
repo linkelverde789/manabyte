@@ -12,6 +12,7 @@ import {
   type ScryfallCollectionIdentifier,
 } from "./api";
 import type { ScryfallCard } from "./types";
+import { toast } from "sonner";
 
 export function useSearchCard(text: string) {
   return useQuery({
@@ -63,7 +64,7 @@ export function useLoadCollection() {
     },
 
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error.message}`);
     },
   });
 }

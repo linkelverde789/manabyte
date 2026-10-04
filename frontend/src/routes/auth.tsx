@@ -6,6 +6,7 @@ import { Label } from "@radix-ui/react-label";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { LogIn, UserPlus } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth")({
   component: RouteComponent,
@@ -51,11 +52,12 @@ function RouteComponent() {
       await fn();
       void navigate({ to: "/decks" });
     } catch (error) {
-      console.error(
-        "Error occurred:",
-        error instanceof Error ? error.message : "Something went wrong",
+      toast.error(
+        `Error occurred: ${error instanceof Error ? error.message : "Something went wrong"}`,
       );
-      console.error("Error object:", error);
+      toast.error(
+        `Error occurred: ${error instanceof Error ? error.message : "Something went wrong"}`,
+      );
     }
   };
 

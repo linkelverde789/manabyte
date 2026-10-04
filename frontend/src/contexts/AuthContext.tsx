@@ -1,121 +1,120 @@
 import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-    type ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
 } from "react";
 
 import { onAuthExpired } from "#/api/manabyte";
 import {
-    getCurrentUser,
-    loginRequest,
-    logoutRequest,
-    registerRequest,
-    type LoginPayload,
-    type RegisterPayload,
-    type User,
+  getCurrentUser,
+  loginRequest,
+  logoutRequest,
+  registerRequest,
+  type LoginPayload,
+  type RegisterPayload,
+  type User,
 } from "#/lib/auth";
+import { toast } from "sonner";
 
 export type { User } from "#/lib/auth";
 
 export type AuthContextValue = {
-    user: User | null;
-    isAuthenticated: boolean;
-    loading: boolean;
-    login: (payload: LoginPayload) => Promise<void>;
-    register: (payload: RegisterPayload) => Promise<void>;
-    logout: () => Promise<void>;
+  user: User | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  login: (payload: LoginPayload) => Promise<void>;
+  register: (payload: RegisterPayload) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 type AuthProviderProps = {
-    children: ReactNode;
+  children: ReactNode;
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        let cancelled = false;
+  useEffect(() => {
+    let cancelled = false;
 
-        async function loadAuth() {
-            try {
-                const currentUser = await getCurrentUser();
-                if (!cancelled) {
-                    setUser(currentUser);
-                }
-            } catch (error) {
-                console.error("Error loading authentication:", error);
-                if (!cancelled) {
-                    setUser(null);
-                }
-            } finally {
-                if (!cancelled) {
-                    setLoading(false);
-                }
-            }
+    async function loadAuth() {
+      try {
+        const currentUser = await getCurrentUser();
+        if (!cancelled) {
+          setUser(currentUser);
         }
-
-        void loadAuth();
-
-        const unsubscribe = onAuthExpired(() => {
-            if (!cancelled) {
-                setUser(null);
-            }
-        });
-
-        return () => {
-            cancelled = true;
-            unsubscribe();
-        };
-    }, []);
-
-    const login = useCallback(async (payload: LoginPayload) => {
-        const nextUser = await loginRequest(payload);
-        setUser(nextUser);
-    }, []);
-
-    const register = useCallback(async (payload: RegisterPayload) => {
-        const nextUser = await registerRequest(payload);
-        setUser(nextUser);
-    }, []);
-
-    const logout = useCallback(async () => {
-        try {
-            await logoutRequest();
-        } finally {
-            setUser(null);
+      } catch (error) {
+        toast.error(`Error loading authentication: ${error}`);
+        if (!cancelled) {
+          setUser(null);
         }
-    }, []);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
 
-    const value = useMemo<AuthContextValue>(
-        () => ({
-            user,
-            isAuthenticated: user !== null,
-            loading,
-            login,
-            register,
-            logout,
-        }),
-        [user, loading, login, register, logout],
-    );
+    void loadAuth();
 
-    return (
-        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-    );
+    const unsubscribe = onAuthExpired(() => {
+      if (!cancelled) {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
+  }, []);
+
+  const login = useCallback(async (payload: LoginPayload) => {
+    const nextUser = await loginRequest(payload);
+    setUser(nextUser);
+  }, []);
+
+  const register = useCallback(async (payload: RegisterPayload) => {
+    const nextUser = await registerRequest(payload);
+    setUser(nextUser);
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await logoutRequest();
+    } finally {
+      setUser(null);
+    }
+  }, []);
+
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user,
+      isAuthenticated: user !== null,
+      loading,
+      login,
+      register,
+      logout,
+    }),
+    [user, loading, login, register, logout],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
-    const context = useContext(AuthContext);
+  const context = useContext(AuthContext);
 
-    if (!context) {
-        throw new Error("useAuth must be used inside an AuthProvider");
-    }
+  if (!context) {
+    throw new Error("useAuth must be used inside an AuthProvider");
+  }
 
-    return context;
+  return context;
 }

@@ -13,6 +13,7 @@ import type {
   FilterCollectionParams,
   PartialUpdateCollectionItemData,
 } from "./types";
+import { toast } from "sonner";
 
 export function useGetCollectionItems(params: FilterCollectionParams) {
   return useQuery({
@@ -32,7 +33,7 @@ export function useBulkCreateCollectionItem() {
       });
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -48,7 +49,7 @@ export function useCreateCollectionItem() {
       });
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -72,7 +73,7 @@ export function usePartialUpdateCollectionItem() {
       });
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }
@@ -89,7 +90,7 @@ export function useDeleteCollectionItem() {
       });
     },
     onError: (error) => {
-      console.error("ERROR", error);
+      toast.error(`${error}`);
     },
   });
 }

@@ -17,6 +17,7 @@ import { FolderHeader } from "#/components/collection/FolderHeader";
 import { FolderTabs } from "#/components/collection/FolderTabs";
 import { FolderToolbar } from "#/components/collection/FolderToolbar";
 import { FolderContent } from "#/components/collection/FolderContent";
+import { toast } from "sonner";
 
 export function SearchCards({
   onCreate,
@@ -79,6 +80,10 @@ function RouteComponent() {
 
   useEffect(() => {
     if (!exportData || !exportType) return;
+
+    toast.dismiss();
+
+    toast.success("Export complete!");
 
     downloadFile(
       exportData.blob,

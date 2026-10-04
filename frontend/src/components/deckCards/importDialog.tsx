@@ -21,6 +21,7 @@ import type { ScryfallCard } from "#/features/scryfall/types";
 
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import { searchCardFuzzy } from "#/features/scryfall/api";
+import { toast } from "sonner";
 
 interface ResolvedRow {
   quantity: number;
@@ -75,7 +76,7 @@ export function ImportDialog({
       setResult(null);
       setText("");
     } catch (error) {
-      console.error(error);
+      toast.error(`${error}`);
     } finally {
       setBusy(false);
     }
@@ -85,7 +86,7 @@ export function ImportDialog({
     const lines = parseDecklist(text);
 
     if (!lines.length) {
-      console.error("Paste at least one card line first.");
+      toast.error("Paste at least one card line first.");
       return;
     }
 
@@ -96,7 +97,7 @@ export function ImportDialog({
 
       setResult(result);
     } catch (error) {
-      console.error(error);
+      toast.error(`${error}`);
     } finally {
       setBusy(false);
     }
@@ -330,7 +331,7 @@ async function resolveLines(
         failed.push(line);
       }
     } catch (error) {
-      console.error("Error buscando carta:", error);
+      toast.error(`Error searching card: ${error}`);
       failed.push(line);
     }
   }
