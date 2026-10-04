@@ -1,5 +1,3 @@
-import { toast } from "sonner";
-
 const API_URL = import.meta.env.VITE_BASE_API_URL;
 const AUTH_URL = import.meta.env.VITE_AUTH_API_URL;
 

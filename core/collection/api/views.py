@@ -1,4 +1,5 @@
 from collection.api.serializers import CollectionItemResponseSerializer
+from collection.exceptions import CollectionItemException
 from collection.models import CollectionItem
 from collection.use_cases.bulk_create_collection_item import (
     BulkCreateCollectionItemUseCase,
@@ -14,6 +15,7 @@ from collection.use_cases.list_collection_item_from_scryfall_ids import (
 from collection.use_cases.list_collection_item_from_user import (
     ListCollectionItemFromUserUseCase,
 )
+from collection.use_cases.update_collection_item import UpdateCollectionItemUseCase
 from folder.exceptions import FolderException
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -48,9 +50,17 @@ class CollectionItemView(ViewSet):
         collection_items = None
 
         if "folder_id" in params:
-            collection_items = ListCollectionItemFromFolderUseCase().execute(
-                user=user, folder_id=params["folder_id"]
-            )
+            try:
+                collection_items = ListCollectionItemFromFolderUseCase().execute(
+                    user=user, folder_id=params["folder_id"]
+                )
+            except FolderException as folderException:
+                return Response(
+                    status=folderException.code, data={"error": folderException.message}
+                )
+
+            except Exception as e:
+                return Response(status=501, data={"error": e})
         else:
             collection_items = ListCollectionItemFromUserUseCase().execute(user=user)
 
@@ -64,23 +74,15 @@ class CollectionItemView(ViewSet):
         user = request.user
         data = request.data
 
-        try:
-            collection_item = CreateCollectionItemUseCase().execute(
-                user=user,
-                scryfall_id=data["scryfall_id"],
-                quantity=data["quantity"],
-                foil=data["foil"],
-                language=data["language"],
-                condition=data["condition"],
-                folder_id=data.get("folder_id", None),
-            )
-
-        except FolderException as folderException:
-            return Response(
-                status=folderException.code, data={"error": folderException.message}
-            )
-        except Exception as e:
-            return Response(status=501, data={"error": e.message})
+        collection_item = CreateCollectionItemUseCase().execute(
+            user=user,
+            scryfall_id=data["scryfall_id"],
+            quantity=data["quantity"],
+            foil=data["foil"],
+            language=data["language"],
+            condition=data["condition"],
+            folder_id=data.get("folder_id", None),
+        )
 
         return Response(
             CollectionItemResponseSerializer(
@@ -94,9 +96,22 @@ class CollectionItemView(ViewSet):
         user = request.user
         data = request.data
 
-        result = BulkCreateCollectionItemUseCase().execute(
-            user=user, folder_id=data["folder_id"], items=data["items"]
-        )
+        try:
+            result = BulkCreateCollectionItemUseCase().execute(
+                user=user, folder_id=data["folder_id"], items=data["items"]
+            )
+        except FolderException as folderException:
+            return Response(
+                status=folderException.code, data={"error": folderException.message}
+            )
+
+        except CollectionItemException as itemException:
+            return Response(
+                status=itemException.code, data={"error": itemException.message}
+            )
+
+        except Exception as e:
+            return Response(status=501, data={"error": e})
 
         return Response(
             CollectionItemResponseSerializer(
@@ -109,32 +124,36 @@ class CollectionItemView(ViewSet):
         user = request.user
         data = request.data
 
-        collectionItem = CollectionItem.objects.filter(id=pk, user=user).first()
+        try:
+            collection_item = UpdateCollectionItemUseCase().execute(
+                user=user, data=data, item_id=pk
+            )
 
-        if "scryfall_id" in data:
-            collectionItem.scryfall_id = data["scryfall_id"]
+        except CollectionItemException as itemException:
+            return Response(
+                status=itemException.code, data={"error": itemException.message}
+            )
 
-        if "quantity" in data:
-            collectionItem.quantity = data["quantity"]
+        except FolderException as folderException:
+            return Response(
+                status=folderException.code, data={"error": folderException.message}
+            )
 
-        if "foil" in data:
-            collectionItem.foil = data["foil"]
-
-        if "language" in data:
-            collectionItem.language = data["language"]
-
-        if "condition" in data:
-            collectionItem.condition = data["condition"]
-
-        collectionItem.save()
+        except Exception as e:
+            return Response(status=501, data={"error": e})
 
         return Response(
             CollectionItemResponseSerializer(
-                collectionItem, context={"request": request}
+                collection_item, context={"request": request}
             ).data
         )
 
     def destroy(self, request, pk):
-        DeleteCollectionItemUseCase().execute(user=request.user, item_id=pk)
+        try:
+            DeleteCollectionItemUseCase().execute(user=request.user, item_id=pk)
+        except CollectionItemException as itemException:
+            return Response(
+                status=itemException.code, data={"error": itemException.message}
+            )
 
         return Response(status=HTTP_204_NO_CONTENT)
