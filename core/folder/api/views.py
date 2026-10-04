@@ -38,13 +38,9 @@ class UserFolderView(ViewSet):
         user = request.user
         data = request.data
 
-        try:
-            folder = CreateFolderUseCase().execute(
-                user=user, name=data["name"], type=data["type"]
-            )
-
-        except Exception as e:
-            return Response(status=400, data={"error": e})
+        folder = CreateFolderUseCase().execute(
+            user=user, name=data["name"], type=data["type"]
+        )
 
         return Response(
             FolderResponseSerializer(folder, context={"request": request}).data,

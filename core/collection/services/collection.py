@@ -14,7 +14,7 @@ class CollectionItemService:
             user=data.user,
             scryfall_id=data.scryfall_id,
             quantity=data.quantity,
-            foil=12,
+            foil=data.foil,
             language=data.language,
             condition=data.condition,
             folder=data.folder,

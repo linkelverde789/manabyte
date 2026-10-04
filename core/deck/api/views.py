@@ -69,9 +69,7 @@ class DeckCardsView(ViewSet):
 
         user = request.user
 
-        deck = GetDeckForUserUseCase().execute(deck_id=deck_id, user=user)
-
-        cards = ListCardsFromDeckUseCase().execute(deck=deck)
+        cards = ListCardsFromDeckUseCase().execute(deck_id=deck_id, user=user)
 
         return Response(
             DeckCardResponseSerializer(
@@ -83,13 +81,12 @@ class DeckCardsView(ViewSet):
         user = request.user
         data = request.data
 
-        deck = GetDeckForUserUseCase().execute(user=user, deck_id=deck_id)
-
         cards = CreateDeckCardUseCase().execute(
             scryfall_id=data["scryfall_id"],
             zone=data.get("zone", "mainboard"),
-            deck=deck,
             quantity=int(data["quantity"]),
+            deck_id=deck_id,
+            user=user,
         )
 
         return Response(
