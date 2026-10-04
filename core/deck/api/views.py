@@ -44,7 +44,7 @@ class UserDeckView(ViewSet):
         user = request.user
         data = request.data
 
-        deck = CreateDeckUseCase.execute(
+        deck = CreateDeckUseCase().execute(
             name=data["name"],
             format=data["format"],
             user=user,

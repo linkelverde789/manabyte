@@ -35,7 +35,7 @@ export default function StylePicker({
                 : "hover:bg-muted/60",
             )}
           >
-            <CardImage card={card} alt={printing.name} />
+            <CardImage card={printing} alt={printing.name} />
             <div className="px-0.5 text-[10px] leading-tight text-muted-foreground">
               <div className="font-medium text-foreground">
                 {printing.set?.toUpperCase()} #{printing.collector_number}
