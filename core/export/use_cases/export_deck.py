@@ -10,7 +10,7 @@ class ExportDeckUseCase:
     def execute(self, user: User, deck_id: int | None, format: str = "csv"):
 
         if deck_id is None:
-            raise DeckException("Deck id can't be None")
+            raise DeckException("Deck id can't be None", "400")
 
         deck = DeckSelector.get_deck_by_user(deck_id=deck_id, user=user)
 

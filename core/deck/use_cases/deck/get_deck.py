@@ -8,6 +8,6 @@ class GetDeckUseCase:
         deck = DeckSelector.get_deck_by_id(deck_id=pk)
 
         if deck is None:
-            raise DeckException(f"Deck {pk} not found")
+            raise DeckException(f"Deck {pk} not found", "404")
 
         return deck

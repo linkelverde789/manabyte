@@ -16,13 +16,13 @@ class CreateDeckCardInput:
         self.zone = self.zone.strip()
 
         if not self.scryfall_id:
-            raise DeckCardException("Scryfall ID can't be empty")
+            raise DeckCardException("Scryfall ID can't be empty", "400")
 
         if self.quantity < 1:
             raise DeckCardException("Quantity should be higher or equal than 1", "400")
 
         if not self.zone:
-            raise DeckCardException("Zone can't be empty")
+            raise DeckCardException("Zone can't be empty", "400")
 
         return self
 
@@ -39,14 +39,14 @@ class UpdateDeckCardInput:
             self.scryfall_id = self.scryfall_id.strip()
 
             if not self.scryfall_id:
-                raise DeckCardException("Scryfall ID can't be empty")
+                raise DeckCardException("Scryfall ID can't be empty", "400")
 
         if self.quantity is not None and self.quantity < 1:
-            raise DeckCardException("Quantity should be higher or equal than 1")
+            raise DeckCardException("Quantity should be higher or equal than 1", "400")
 
         if self.zone is not None:
             self.zone = self.zone.strip()
             if not self.zone:
-                raise DeckCardException("Zone can't be empty")
+                raise DeckCardException("Zone can't be empty", "400")
 
         return self

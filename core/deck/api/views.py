@@ -139,7 +139,6 @@ class DeckCardsView(ViewSet):
     def destroy(self, request, pk, deck_id=None):
         user = request.user
 
-        deck = GetDeckForUserUseCase().execute(deck_id=deck_id, user=user)
-        DeleteDeckCardUseCase().execute(deck=deck, card_id=pk)
+        DeleteDeckCardUseCase().execute(deck_id=deck_id, card_id=pk, user=user)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
