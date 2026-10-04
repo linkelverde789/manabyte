@@ -8,6 +8,7 @@ import {
     type ReactNode,
 } from "react";
 
+import { onAuthExpired } from "#/api/manabyte";
 import {
     getCurrentUser,
     loginRequest,
@@ -62,8 +63,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         void loadAuth();
 
+        const unsubscribe = onAuthExpired(() => {
+            if (!cancelled) {
+                setUser(null);
+            }
+        });
+
         return () => {
             cancelled = true;
+            unsubscribe();
         };
     }, []);
 

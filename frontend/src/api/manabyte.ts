@@ -1,7 +1,9 @@
 const API_URL = import.meta.env.VITE_BASE_API_URL;
+const AUTH_URL = import.meta.env.VITE_AUTH_API_URL;
 
 type ApiOptions = RequestInit & {
   responseType?: "json" | "blob";
+  retried?: boolean;
 };
 
 export type BlobResponse = {
@@ -9,11 +11,32 @@ export type BlobResponse = {
   filename?: string;
 };
 
+type AuthExpiredListener = () => void;
+
+const authExpiredListeners = new Set<AuthExpiredListener>();
+
+export function onAuthExpired(listener: AuthExpiredListener): () => void {
+  authExpiredListeners.add(listener);
+  return () => {
+    authExpiredListeners.delete(listener);
+  };
+}
+
+function notifyAuthExpired() {
+  for (const listener of authExpiredListeners) {
+    listener();
+  }
+}
+
 export async function api<T>(
   endpoint: string,
   options?: ApiOptions,
 ): Promise<T> {
-  const { responseType = "json", ...fetchOptions } = options ?? {};
+  const {
+    responseType = "json",
+    retried = false,
+    ...fetchOptions
+  } = options ?? {};
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...fetchOptions,
@@ -23,6 +46,14 @@ export async function api<T>(
       ...fetchOptions.headers,
     },
   });
+
+  if (response.status === 401 && !retried) {
+    const refreshed = await refreshSession();
+    if (refreshed) {
+      return api<T>(endpoint, { ...options, retried: true });
+    }
+    notifyAuthExpired();
+  }
 
   if (!response.ok) {
     throw new Error(`API Error: ${response.status}`);
@@ -56,4 +87,20 @@ export async function api<T>(
   }
 
   return (await response.json()) as T;
+}
+
+let refreshInFlight: Promise<boolean> | null = null;
+
+export function refreshSession(): Promise<boolean> {
+  if (!refreshInFlight) {
+    refreshInFlight = fetch(`${AUTH_URL}/refresh/`, {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => res.ok)
+      .finally(() => {
+        refreshInFlight = null;
+      });
+  }
+  return refreshInFlight;
 }

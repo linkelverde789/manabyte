@@ -17,6 +17,8 @@ export type RegisterPayload = {
     password: string;
 };
 
+import { refreshSession } from "#/api/manabyte";
+
 const AUTH_API = import.meta.env.VITE_AUTH_API_URL;
 
 async function authRequest(path: string, init?: RequestInit): Promise<Response> {
@@ -45,8 +47,8 @@ export async function getCurrentUser(): Promise<User | null> {
         return user;
     }
 
-    const refresh = await authRequest("/refresh/", { method: "POST" });
-    if (!refresh.ok) {
+    const refreshed = await refreshSession();
+    if (!refreshed) {
         return null;
     }
 
