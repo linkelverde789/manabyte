@@ -1,7 +1,11 @@
+from datetime import timedelta
+
 import pytest
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from rest_framework.test import APIClient
+from rest_framework_simplejwt.tokens import AccessToken
 
 from users.api.cookies import ACCESS_COOKIE, REFRESH_COOKIE
 from users.models import User
@@ -100,3 +104,20 @@ def test_me_and_refresh():
     no_refresh = APIClient()
     missing = no_refresh.post(reverse("token_refresh"))
     assert missing.status_code == HTTP_204_NO_CONTENT
+
+
+@pytest.mark.django_db
+def test_me_with_expired_access_token():
+    client = APIClient()
+    user = User.objects.create_user(
+        username="testuser",
+        password="testpassword",
+        email="test@test.com",
+    )
+    token = AccessToken.for_user(user)
+    token.set_exp(from_time=timezone.now() - timedelta(hours=1))
+    client.cookies[ACCESS_COOKIE] = str(token)
+
+    me = client.get(reverse("me"))
+    assert me.status_code == HTTP_200_OK
+    assert me.data["user"] is None
