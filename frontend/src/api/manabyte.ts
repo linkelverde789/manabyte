@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 const API_URL = import.meta.env.VITE_BASE_API_URL;
 const AUTH_URL = import.meta.env.VITE_AUTH_API_URL;
 
@@ -56,7 +58,19 @@ export async function api<T>(
   }
 
   if (!response.ok) {
-    throw new Error(`API Error: ${response.status}`);
+    let message = `API Error: ${response.status}`;
+
+    try {
+      const errorData = await response.json();
+
+      if (typeof errorData?.error === "string") {
+        message = errorData.error;
+      } else if (typeof errorData?.message === "string") {
+        message = errorData.message;
+      }
+    } catch {}
+
+    throw new Error(message);
   }
 
   if (response.status === 204) {

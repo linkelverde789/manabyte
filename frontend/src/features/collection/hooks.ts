@@ -47,9 +47,12 @@ export function useCreateCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
       });
+      toast.success(`Card created!`);
     },
     onError: (error) => {
-      toast.error(`${error}`);
+      toast.error(
+        error instanceof Error ? error.message : "Ha ocurrido un error",
+      );
     },
   });
 }
@@ -71,6 +74,7 @@ export function usePartialUpdateCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
       });
+      toast.success(`Card updated!`);
     },
     onError: (error) => {
       toast.error(`${error}`);
@@ -88,6 +92,7 @@ export function useDeleteCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
       });
+      toast.success(`Card deleted!`);
     },
     onError: (error) => {
       toast.error(`${error}`);

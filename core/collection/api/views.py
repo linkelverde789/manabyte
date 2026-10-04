@@ -14,6 +14,7 @@ from collection.use_cases.list_collection_item_from_scryfall_ids import (
 from collection.use_cases.list_collection_item_from_user import (
     ListCollectionItemFromUserUseCase,
 )
+from folder.exceptions import FolderException
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -63,15 +64,23 @@ class CollectionItemView(ViewSet):
         user = request.user
         data = request.data
 
-        collection_item = CreateCollectionItemUseCase().execute(
-            user=user,
-            scryfall_id=data["scryfall_id"],
-            quantity=data["quantity"],
-            foil=data["foil"],
-            language=data["language"],
-            condition=data["condition"],
-            folder_id=data.get("folder_id", None),
-        )
+        try:
+            collection_item = CreateCollectionItemUseCase().execute(
+                user=user,
+                scryfall_id=data["scryfall_id"],
+                quantity=data["quantity"],
+                foil=data["foil"],
+                language=data["language"],
+                condition=data["condition"],
+                folder_id=data.get("folder_id", None),
+            )
+
+        except FolderException as folderException:
+            return Response(
+                status=folderException.code, data={"error": folderException.message}
+            )
+        except Exception as e:
+            return Response(status=501, data={"error": e.message})
 
         return Response(
             CollectionItemResponseSerializer(

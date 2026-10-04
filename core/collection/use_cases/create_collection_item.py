@@ -24,7 +24,7 @@ class CreateCollectionItemUseCase:
             folder = FolderSelector.get_folder_from_user(user=user, folder_id=folder_id)
 
             if folder is None:
-                raise FolderException(f"Folder: {folder_id} not found", "404")
+                raise FolderException(f"Folder: {folder_id} not found", 404)
 
         input_dto = CreateCollectionItemInput(
             scryfall_id=scryfall_id,
