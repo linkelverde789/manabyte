@@ -31,6 +31,9 @@ export function useBulkCreateCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
       });
+
+      toast.dismiss()
+      toast.success(`List imported to this collection!`);
     },
     onError: (error) => {
       toast.error(`${error}`);
@@ -47,11 +50,11 @@ export function useCreateCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
       });
-      toast.success(`Card created!`);
+      toast.success(`Card added to collection!`);
     },
     onError: (error) => {
       toast.error(
-        error instanceof Error ? error.message : "Ha ocurrido un error",
+        error instanceof Error ? error.message : "An error ocurred",
       );
     },
   });

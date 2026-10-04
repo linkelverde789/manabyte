@@ -211,6 +211,8 @@ function RouteComponent() {
             condition: "MN",
           }));
 
+          toast.loading("Importing list...")
+
           await bulkCreateCollectionItem({ items: data, folder_id: folderId });
         }}
       />

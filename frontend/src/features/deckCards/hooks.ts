@@ -30,6 +30,8 @@ export function useCreateDeckCard(deckId: number) {
       await queryClient.refetchQueries({
         queryKey: ["deck", deckId],
       });
+      toast.success(`Card added to the deck!`);
+      
     },
     onError: (error) => {
       toast.error(`${error}`);
@@ -80,6 +82,9 @@ export function usePartialUpdateDeckCard(deckId: number) {
       await queryClient.refetchQueries({
         queryKey: ["deck", deckId],
       });
+
+      toast.success(`Card updated!`);
+
     },
 
     onError: (error) => {
@@ -101,6 +106,9 @@ export function useDeleteDeckCard(deckId: number) {
       await queryClient.refetchQueries({
         queryKey: ["deck", deckId],
       });
+
+      toast.success(`Card deleted from the deck!`);
+
     },
     onError: (error) => {
       toast.error(`${error}`);

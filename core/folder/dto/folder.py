@@ -12,7 +12,7 @@ class CreateFolderInput:
 
     def validate(self) -> "CreateFolderInput":
         self.name = self.name.strip()
-        self.type = self.type.strip()
+        self.type = self.type.strip().lower()
 
         if not self.name:
             raise FolderException("Name can't be empty", "400")

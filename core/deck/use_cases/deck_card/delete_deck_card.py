@@ -1,10 +1,8 @@
 from deck.exceptions import DeckCardException, DeckException
-from deck.models import Deck
+from deck.selectors.deck import DeckSelector
 from deck.selectors.deck_card import DeckCardSelector
 from deck.services.deck_card import DeckCardService
-
-from core.deck.selectors.deck import DeckSelector
-from core.users.models import User
+from users.models import User
 
 
 class DeleteDeckCardUseCase:
