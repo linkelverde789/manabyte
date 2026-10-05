@@ -27,7 +27,7 @@ export function useCreateFolder() {
       queryClient.invalidateQueries({
         queryKey: ["folders"],
       });
-      toast.success("Folder created!")
+      toast.success("Folder created!");
     },
 
     onError: (error) => {
@@ -46,7 +46,7 @@ export function useDeleteFolder() {
       queryClient.invalidateQueries({
         queryKey: ["folders"],
       });
-      toast.success("Folder deleted!")
+      toast.success("Folder deleted!");
     },
 
     onError: (error) => {

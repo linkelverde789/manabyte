@@ -51,7 +51,10 @@ export default function NewDeckDialog() {
         onSuccess: (deck) => {
           setOpen(false);
           setName("");
-          navigate({ to: "/decks/$deckId", params: { deckId: deck.id } });
+          navigate({
+            to: "/decks/$deckId",
+            params: { deckId: deck.id.toLocaleString() },
+          });
         },
       },
     );

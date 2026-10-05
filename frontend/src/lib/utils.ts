@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 
 import type { ScryfallCard } from "#/features/scryfall/types";
 import type { DataCard } from "#/features/collection/types";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

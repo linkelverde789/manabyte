@@ -51,17 +51,6 @@ export default function StylePicker({
   );
 }
 
-export function cardImage(
-  card: ScryfallCard,
-  size: "small" | "normal" | "large" = "normal",
-) {
-  return (
-    card.image_uris?.[size] ??
-    card.card_faces?.[0]?.image_uris?.[size] ??
-    undefined
-  );
-}
-
 export function styleLabel(card: ScryfallCard) {
   const parts: string[] = [];
   const effects = card.frame_effects ?? [];
