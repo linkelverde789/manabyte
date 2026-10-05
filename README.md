@@ -4,6 +4,8 @@ Aplicación web para **construir mazos** y **llevar la colección** de *Magic: T
 
 Los datos de las cartas (nombre, imagen, ediciones, símbolos de maná) vienen de [Scryfall](https://scryfall.com/). En ManaByte solo se guarda lo que es tuyo: usuario, mazos, copias y metadatos (cantidad, foil, idioma, estado).
 
+Sitio web: [ManaByte](https://manabyte.linkelverde.dev/)
+
 ## Qué puedes hacer
 
 - **Cuenta**: registro, login y sesión con JWT en cookies.
@@ -35,6 +37,8 @@ La API vive bajo `/api/`:
 - `api/deck/` — mazos y cartas del mazo (incluye alta masiva)
 - `api/collection/` — ítems de colección
 - `api/folder/` — carpetas (mazos o colección)
+- `api/stats/` — datos generales para dashboard
+
 
 ## Requisitos
 
@@ -49,11 +53,27 @@ La API vive bajo `/api/`:
 En `core/` crea un `.env` (el archivo no se versiona):
 
 ```env
-DB_NAME=manabyte
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_HOST=localhost
-DB_PORT=5432
+# Django
+DJANGO_SECRET_KEY=
+DJANGO_DEBUG=
+DJANGO_ALLOWED_HOSTS=
+
+# PostgreSQL
+POSTGRES_DB=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_HOST=
+POSTGRES_PORT=
+
+# CORS
+CORS_ALLOWED_ORIGINS=
+
+# CSRF
+CSRF_TRUSTED_ORIGINS=
+
+# JWT
+JWT_ACCESS_TOKEN_MINUTES=
+JWT_REFRESH_TOKEN_DAYS=
 ```
 
 Luego:
@@ -76,7 +96,6 @@ cd core
 pytest
 ```
 
-(`pytest` y `pytest-django` hay que instalarlos aparte si no están en el entorno.)
 
 ### Frontend
 

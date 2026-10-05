@@ -3,29 +3,30 @@ import type { ScryfallCard } from "#/features/scryfall/types";
 import { groupCardsByType } from "#/lib/utils";
 import { memo } from "react";
 import EmptyDeck from "../deckCards/emptyDeck";
-import { CardRowSkeleton } from "../deckCards/skeletons";
 import CardRow from "./cardRow";
 
 export function FolderContent({
   isLoading,
+  isResolvingCards,
   deckRows,
   groupByType,
 }: {
   isLoading: boolean;
+  isResolvingCards: boolean;
   deckRows: DeckRow[];
   groupByType: boolean;
 }) {
-  if (isLoading) {
+  if (isLoading || isResolvingCards) {
     return (
-      <div className="space-y-2">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <CardRowSkeleton key={index} />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 15 }).map((_, index) => (
+          <ItemRowSkeleton key={index} />
         ))}
       </div>
     );
   }
 
-  if (deckRows.length === 0) {
+  if (!isResolvingCards && deckRows.length === 0) {
     return <EmptyDeck />;
   }
 
@@ -72,3 +73,22 @@ function GroupedCards({ data }: { data: DeckRow[] }) {
 }
 
 const MemoizedCardRow = memo(CardRow);
+
+export function ItemRowSkeleton() {
+  return (
+    <div className="relative rounded-xl border border-border bg-card p-4 shadow-sm">
+      <div className="space-y-2 pr-8">
+        <div className="flex items-center gap-2">
+          <div className="h-3.5 w-3.5 animate-pulse rounded-full bg-muted" />
+          <div className="h-3 w-16 animate-pulse rounded bg-muted" />
+        </div>
+
+        <div className="h-6 w-32 animate-pulse rounded bg-muted" />
+
+        <div className="h-4 w-20 animate-pulse rounded bg-muted" />
+      </div>
+
+      <div className="absolute right-2 top-2 h-8 w-8 animate-pulse rounded-md bg-muted" />
+    </div>
+  );
+}
