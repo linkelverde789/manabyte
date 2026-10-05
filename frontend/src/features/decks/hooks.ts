@@ -27,7 +27,7 @@ export function useCreateDeck() {
       queryClient.invalidateQueries({
         queryKey: ["decks"],
       });
-      toast.success("Deck created!")
+      toast.success("Deck created!");
     },
     onError: (error) => {
       toast.error(`${error}`);
@@ -47,8 +47,7 @@ export function useDeleteDeck() {
       queryClient.invalidateQueries({
         queryKey: ["decks"],
       });
-      toast.success("Deck deleted!")
-
+      toast.success("Deck deleted!");
     },
 
     onError: (error) => {

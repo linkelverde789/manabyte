@@ -64,7 +64,6 @@ export function useLoadCollection() {
     },
 
     onError: (error) => {
-      console.log(error);
       toast.error(`${error.message}`);
     },
   });

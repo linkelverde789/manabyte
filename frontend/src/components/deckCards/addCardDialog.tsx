@@ -10,7 +10,7 @@ import {
 } from "../ui/dialog";
 import ManaCost from "../search/manaCost";
 import { CardImage } from "./cardImage";
-import { cardImage, styleLabel } from "./stylePicker";
+import { styleLabel } from "./stylePicker";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../ui/input";
 import { Layers, Loader2 } from "lucide-react";

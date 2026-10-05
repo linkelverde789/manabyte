@@ -63,6 +63,7 @@ function RouteComponent() {
     mutate: loadCollection,
     data: results,
     reset: resetCollection,
+    isPending: scryfallLoading,
   } = useLoadCollection();
 
   const [sort, setSort] = useState<string>("recent");
@@ -211,7 +212,7 @@ function RouteComponent() {
             condition: "MN",
           }));
 
-          toast.loading("Importing list...")
+          toast.loading("Importing list...");
 
           await bulkCreateCollectionItem({ items: data, folder_id: folderId });
         }}
@@ -234,7 +235,8 @@ function RouteComponent() {
             />
 
             <FolderContent
-              isLoading={isLoading}
+              isLoading={isLoading || scryfallLoading}
+              isResolvingCards={missingIds.length > 0}
               deckRows={deckRows}
               groupByType={groupByType}
             />

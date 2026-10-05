@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Loader2, Search } from "lucide-react";
 import { CardImage } from "./cardImage";
-import { cardImage } from "./stylePicker";
 import ManaCost from "../search/manaCost";
 import { AddCardDialog } from "./addCardDialog";
 import type { CreateCollectionItemData } from "#/features/collection/types";

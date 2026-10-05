@@ -3,29 +3,31 @@ import type { ScryfallCard } from "#/features/scryfall/types";
 import { groupCardsByType } from "#/lib/utils";
 import { memo } from "react";
 import EmptyDeck from "../deckCards/emptyDeck";
-import { CardRowSkeleton } from "../deckCards/skeletons";
 import CardRow from "./cardRow";
+import { ItemRowSkeleton } from "./skeletons";
 
 export function FolderContent({
   isLoading,
+  isResolvingCards,
   deckRows,
   groupByType,
 }: {
   isLoading: boolean;
+  isResolvingCards: boolean;
   deckRows: DeckRow[];
   groupByType: boolean;
 }) {
-  if (isLoading) {
+  if (isLoading || isResolvingCards) {
     return (
-      <div className="space-y-2">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <CardRowSkeleton key={index} />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 15 }).map((_, index) => (
+          <ItemRowSkeleton key={index} />
         ))}
       </div>
     );
   }
 
-  if (deckRows.length === 0) {
+  if (!isResolvingCards && deckRows.length === 0) {
     return <EmptyDeck />;
   }
 

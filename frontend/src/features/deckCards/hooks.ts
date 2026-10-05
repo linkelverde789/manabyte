@@ -31,7 +31,6 @@ export function useCreateDeckCard(deckId: number) {
         queryKey: ["deck", deckId],
       });
       toast.success(`Card added to the deck!`);
-      
     },
     onError: (error) => {
       toast.error(`${error}`);
@@ -84,7 +83,6 @@ export function usePartialUpdateDeckCard(deckId: number) {
       });
 
       toast.success(`Card updated!`);
-
     },
 
     onError: (error) => {
@@ -108,7 +106,6 @@ export function useDeleteDeckCard(deckId: number) {
       });
 
       toast.success(`Card deleted from the deck!`);
-
     },
     onError: (error) => {
       toast.error(`${error}`);

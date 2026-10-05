@@ -1,3 +1,4 @@
+import { AlbumIndexSkeleton } from "#/components/album/skeletons";
 import { Input } from "#/components/ui/input";
 import { useListSets } from "#/features/scryfall/hooks";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -74,51 +75,6 @@ function RouteComponent() {
               </li>
             ))
           )}
-        </ul>
-      </div>
-    </div>
-  );
-}
-
-function SetListItemSkeleton() {
-  return (
-    <li className="flex items-center gap-2 px-3 py-2">
-      <div className="h-4 w-4 animate-pulse rounded bg-muted" />
-
-      <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-
-      <div className="ml-auto h-3 w-8 animate-pulse rounded bg-muted" />
-    </li>
-  );
-}
-
-export function AlbumIndexSkeleton() {
-  return (
-    <div
-      className="mx-auto max-w-2xl space-y-4 px-4 py-16"
-      aria-busy="true"
-      aria-label="Loading set albums"
-    >
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="h-8 w-8 animate-pulse rounded-lg bg-muted" />
-
-        <div className="space-y-2">
-          <div className="h-3 w-20 animate-pulse rounded bg-muted" />
-          <div className="h-9 w-44 animate-pulse rounded bg-muted" />
-        </div>
-      </div>
-
-      {/* Search + list */}
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-        {/* Search input */}
-        <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
-
-        {/* Sets list */}
-        <ul className="mt-4 max-h-80 overflow-hidden rounded-md border">
-          {Array.from({ length: 10 }).map((_, index) => (
-            <SetListItemSkeleton key={index} />
-          ))}
         </ul>
       </div>
     </div>

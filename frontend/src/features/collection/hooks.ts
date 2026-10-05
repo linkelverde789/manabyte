@@ -32,7 +32,7 @@ export function useBulkCreateCollectionItem() {
         queryKey: ["collection"],
       });
 
-      toast.dismiss()
+      toast.dismiss();
       toast.success(`List imported to this collection!`);
     },
     onError: (error) => {
@@ -53,9 +53,7 @@ export function useCreateCollectionItem() {
       toast.success(`Card added to collection!`);
     },
     onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : "An error ocurred",
-      );
+      toast.error(error instanceof Error ? error.message : "An error ocurred");
     },
   });
 }

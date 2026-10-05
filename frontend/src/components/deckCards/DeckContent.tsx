@@ -17,7 +17,6 @@ export function DeckContent({ deck }: { deck: Deck }) {
   const {
     mutate: loadCollection,
     data: results,
-    isPending: isLoadingCollection,
     reset: resetCollection,
   } = useLoadCollection();
 
