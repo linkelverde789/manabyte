@@ -200,7 +200,7 @@ function RouteComponent() {
       <FolderHeader
         folderName={folder?.name}
         total={total}
-        entries={collectionItems?.length ?? 0}
+        entries={deckRows}
         onImport={async (rows) => {
           const data = rows.map((row) => ({
             scryfall_id: row.card.id,

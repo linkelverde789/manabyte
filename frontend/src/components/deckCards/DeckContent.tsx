@@ -18,6 +18,7 @@ export function DeckContent({ deck }: { deck: Deck }) {
     mutate: loadCollection,
     data: results,
     reset: resetCollection,
+    isPending: isLoadingCollection,
   } = useLoadCollection();
 
   const missingIds = useMemo(() => {
@@ -74,10 +75,10 @@ export function DeckContent({ deck }: { deck: Deck }) {
     );
   }, [cards, collection]);
 
-  if (isLoadingCards) {
+  if (isLoadingCards || isLoadingCollection) {
     return (
       <div className="space-y-2">
-        {Array.from({ length: 5 }).map((_, index) => (
+        {Array.from({ length: 7 }).map((_, index) => (
           <CardRowSkeleton key={index} />
         ))}
       </div>
