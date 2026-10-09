@@ -223,3 +223,8 @@ __pycache__/
 *.pyc
 
 .vscode/
+
+
+#To avoid uploading scryfall jsonl with all cards
+*.jsonl
+*.gz

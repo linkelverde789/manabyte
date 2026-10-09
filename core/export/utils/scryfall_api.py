@@ -27,6 +27,16 @@ class ScryfallAPI:
 
         return collection
 
+    @staticmethod
+    def download_bulk_data():
+        response = requests.get(
+            f"{ScryfallAPI.BASE_URL}/bulk-data",
+            headers=ScryfallAPI.HEADERS,
+            timeout=30,
+        )
+        response.raise_for_status()
+        return response.json()
+
 
 def batch_generator(data, size=75):
     for i in range(0, len(data), size):
