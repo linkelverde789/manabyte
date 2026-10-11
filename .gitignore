@@ -225,6 +225,6 @@ __pycache__/
 .vscode/
 
 
-#To avoid uploading scryfall jsonl with all cards
-*.jsonl
-*.gz
+#To avoid uploading scryfall jsonl with all cards, but allowing fixtures
+*/data/*.jsonl
+*/data/*.gz
