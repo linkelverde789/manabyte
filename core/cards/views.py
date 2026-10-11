@@ -17,6 +17,7 @@ FIELD_LOOKUPS = {
     "set_code": lambda value: Q(set__code__iexact=value),
     "set_name": lambda value: Q(set__name__iexact=value),
     "keywords": lambda value: Q(keywords__icontains=value),
+    "colors": lambda value: Q(faces__colors__iexact=value),
 }
 
 
