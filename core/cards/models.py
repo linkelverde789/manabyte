@@ -58,6 +58,7 @@ class ScryfallCardFace(models.Model):
     mana_cost = models.CharField(max_length=100, blank=True)
     type_line = models.CharField(max_length=255, blank=True)
     oracle_text = models.TextField(blank=True)
+    flavor_text = models.TextField(blank=True)
     image_url = models.URLField(max_length=500, blank=True)
 
     colors = models.JSONField(default=list, blank=True)

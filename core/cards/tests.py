@@ -1,3 +1,218 @@
-from django.test import TestCase
+from django.db.models import Q
+from django.urls import reverse
+from rest_framework.status import HTTP_200_OK
 
-# Create your tests here.
+
+def _check_name_in_response(data: list, qs):
+    for index, card in enumerate(qs):
+        assert card.name == data[index]["name"]
+
+
+def test_limit_and_page_search(cards_db, api_client):
+    res = api_client.get(reverse("search"))
+
+    # Should return the first 75 cards on the database
+    qs = cards_db.all().order_by("oracle_id", "id").distinct("oracle_id")[0:75]
+
+    data = res.data
+
+    assert len(data) == qs.count()
+
+    _check_name_in_response(data, qs)
+
+    # Send limit and page from query_params
+    page = 3
+    limit = 30
+
+    res = api_client.get(
+        reverse("search"), {"page": page, "limit": limit}, format="json"
+    )
+    data = res.data
+    assert len(data) == limit
+
+
+def test_simple_search(cards_db, api_client):
+    qs = (
+        cards_db.filter(name__icontains="cactuar")
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+    )
+
+    res = api_client.get(reverse("search"), {"q": "Cactuar"}, format="json")
+
+    assert res.status_code == HTTP_200_OK
+
+    data = res.data
+
+    assert len(data) == qs.count()
+    _check_name_in_response(data, qs)
+
+
+def test_type_search(cards_db, api_client):
+    type = "human"
+    limit = 12
+    page = 1
+    res = api_client.get(
+        reverse("search"),
+        {"q": f"type:{type}", "page": page, "limit": limit},
+        format="json",
+    )
+
+    qs = (
+        cards_db.filter(faces__type_line__icontains=type)
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")[page - 1 : limit]
+    )
+
+    assert len(res.data) == qs.count()
+    _check_name_in_response(res.data, qs)
+
+
+def test_name_search(cards_db, api_client):
+    name = "creature"
+    limit = 50
+    page = 1
+
+    # When using name:XXX will search only on name field
+    strict_result = api_client.get(
+        reverse("search"),
+        {"q": f"name:{name}", "page": page, "limit": limit},
+        format="json",
+    )
+
+    qs = (
+        cards_db.filter(faces__name__icontains=name)
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")[page - 1 : limit]
+    )
+
+    assert len(strict_result.data) == qs.count()
+
+    _check_name_in_response(strict_result.data, qs)
+
+    # When searching withot name:XXX search will use type_line, oracle_text and name
+    relaxed_result = api_client.get(
+        reverse("search"),
+        {"q": f"{name}", "page": page, "limit": limit},
+        format="json",
+    )
+
+    assert len(relaxed_result.data) > len(strict_result.data)
+
+
+def test_set_search(cards_db, api_client):
+    set_code = "fin"
+    set_name = "Final fantasy"
+
+    qs = (
+        cards_db.filter(set__code__iexact=set_code)
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+    )[0:75]
+
+    res = api_client.get(
+        reverse("search"), {"q": f"set_code:{set_code}"}, format="json"
+    )
+
+    assert res.status_code == HTTP_200_OK
+
+    assert len(res.data) == qs.count()
+    _check_name_in_response(res.data, qs)
+
+    qs = (
+        cards_db.filter(set__name__iexact=set_name)
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+    )[0:75]
+
+    res = api_client.get(
+        reverse("search"), {"q": f'set_name:"{set_name}"'}, format="json"
+    )
+
+    assert res.status_code == HTTP_200_OK
+
+    assert len(res.data) == qs.count()
+    _check_name_in_response(res.data, qs)
+
+    # There are some sets with Final in the name
+    set_name = "Final"
+
+    qs = (
+        cards_db.filter(Q(set__name__iexact=set_name) | Q(set__code__iexact=set_name))
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+    )[0:75]
+
+    res = api_client.get(reverse("search"), {"q": f"set:{set_name}"}, format="json")
+
+    assert res.status_code == HTTP_200_OK
+
+    assert len(res.data) == qs.count()
+    _check_name_in_response(res.data, qs)
+
+
+def test_keyword_search(cards_db, api_client):
+    keyword = "Trample"
+    set_code = "ltr"
+
+    # Get all cards with trample keyword from LOTR Set
+    res = api_client.get(
+        reverse("search"),
+        {"q": f"keywords:{keyword} set:{set_code}"},
+        format="json",
+    )
+
+    assert res.status_code == HTTP_200_OK
+
+    qs = (
+        cards_db.filter(keywords__icontains=keyword, set__code__iexact=set_code)
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+    )
+
+    assert len(res.data) == qs.count()
+
+    _check_name_in_response(res.data, qs)
+
+
+def test_exclude_field_filters(cards_db, api_client):
+    name = "cactuar"
+    excluded_name = "jumbo cactuar"
+
+    # Should contain 1 result
+    strict_qs = (
+        cards_db.filter(Q(name__icontains=name) | Q(faces__name__icontains=name))
+        .exclude(
+            Q(name__icontains=excluded_name) | Q(faces__name__icontains=excluded_name)
+        )
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+    )
+
+    # Should contain 2 results
+    relaxed_qs = (
+        cards_db.filter(name__icontains=name)
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+    )
+
+    strict_result = api_client.get(
+        reverse("search"), {"q": f'name:{name} -name:"{excluded_name}"'}, format="json"
+    )
+
+    assert strict_result.status_code == HTTP_200_OK
+    assert len(strict_result.data) == strict_qs.count()
+
+    _check_name_in_response(strict_result.data, strict_qs)
+
+    relaxed_result = api_client.get(
+        reverse("search"), {"q": f"name:{name}"}, format="json"
+    )
+
+    assert relaxed_result.status_code == HTTP_200_OK
+
+    assert len(relaxed_result.data) == relaxed_qs.count()
+
+    _check_name_in_response(relaxed_result.data, relaxed_qs)
+
+    assert len(relaxed_result.data) > len(strict_result.data)
