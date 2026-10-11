@@ -1,5 +1,4 @@
 import pytest
-from cards.models import ScryfallCard
 from rest_framework.test import APIClient
 from users.models import User
 
@@ -22,9 +21,3 @@ def user(db):
 def auth_client(api_client, user):
     api_client.force_authenticate(user=user)
     return api_client
-
-
-@pytest.fixture
-def cards_db(django_db_blocker):
-    with django_db_blocker.unblock():
-        yield ScryfallCard.objects.using("cards_readonly")

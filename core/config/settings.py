@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     "collection",
     "stats",
     "export",
-    "cards",
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -134,15 +133,7 @@ DATABASES = {
         "PASSWORD": os.environ["POSTGRES_PASSWORD"],
         "HOST": os.environ.get("POSTGRES_HOST", "127.0.0.1"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-    },
-    "cards_readonly": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["POSTGRES_DB"],
-        "USER": os.environ["POSTGRES_READONLY_USER"],
-        "PASSWORD": os.environ["POSTGRES_READONLY_PASSWORD"],
-        "HOST": os.environ.get("POSTGRES_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-    },
+    }
 }
 
 

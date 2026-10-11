@@ -26,5 +26,4 @@ urlpatterns = [
     path("api/folder/", include("folder.urls")),
     path("api/auth/", include("users.urls")),
     path("api/export/", include("export.urls")),
-    path("api/cards/", include("cards.urls")),
 ]
