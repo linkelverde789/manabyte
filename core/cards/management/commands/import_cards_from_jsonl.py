@@ -58,9 +58,10 @@ def _process_one_face(card, face_index, face_data, fallback=None):
     if not image_uris:
         image_uris = fallback.get("image_uris") or {}
 
-    colors = face_data.get("colors")
+    colors = face_data.get("color_identity")
+
     if colors is None:
-        colors = fallback.get("colors") or []
+        colors = fallback.get("color_identity") or []
 
     ScryfallCardFace.objects.update_or_create(
         card=card,
@@ -72,6 +73,7 @@ def _process_one_face(card, face_index, face_data, fallback=None):
                 face_data.get("type_line") or fallback.get("type_line") or ""
             ),
             "oracle_text": face_data.get("oracle_text") or "",
+            "flavor_text": face_data.get("flavor_text") or "",
             "image_url": (image_uris.get("normal") or image_uris.get("large") or ""),
             "colors": colors,
         },
