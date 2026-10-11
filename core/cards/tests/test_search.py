@@ -2,6 +2,8 @@ from django.db.models import Q
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK
 
+from cards.models import ScryfallCard, ScryfallSet
+
 
 def _check_name_in_response(data: list, qs):
     for index, card in enumerate(qs):
@@ -12,7 +14,11 @@ def test_limit_and_page_search(cards_db, api_client):
     res = api_client.get(reverse("search"))
 
     # Should return the first 75 cards on the database
-    qs = cards_db.all().order_by("oracle_id", "id").distinct("oracle_id")[0:75]
+    qs = (
+        ScryfallCard.objects.all()
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")[0:75]
+    )
 
     data = res.data
 
@@ -32,19 +38,28 @@ def test_limit_and_page_search(cards_db, api_client):
 
 
 def test_simple_search(cards_db, api_client):
+
+    name = ScryfallCard.objects.first().name
+
     qs = (
-        cards_db.filter(name__icontains="cactuar")
+        ScryfallCard.objects.filter(
+            Q(name__icontains=name)
+            | Q(faces__name__icontains=name)
+            | Q(faces__type_line__icontains=name)
+            | Q(faces__oracle_text__icontains=name)
+        )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
     )
 
-    res = api_client.get(reverse("search"), {"q": "Cactuar"}, format="json")
+    res = api_client.get(reverse("search"), {"q": f'"{name}"'}, format="json")
 
     assert res.status_code == HTTP_200_OK
 
     data = res.data
 
     assert len(data) == qs.count()
+
     _check_name_in_response(data, qs)
 
 
@@ -59,7 +74,7 @@ def test_type_search(cards_db, api_client):
     )
 
     qs = (
-        cards_db.filter(faces__type_line__icontains=type)
+        ScryfallCard.objects.filter(faces__type_line__icontains=type)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")[page - 1 : limit]
     )
@@ -81,7 +96,7 @@ def test_name_search(cards_db, api_client):
     )
 
     qs = (
-        cards_db.filter(faces__name__icontains=name)
+        ScryfallCard.objects.filter(faces__name__icontains=name)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")[page - 1 : limit]
     )
@@ -101,11 +116,13 @@ def test_name_search(cards_db, api_client):
 
 
 def test_set_search(cards_db, api_client):
-    set_code = "fin"
-    set_name = "Final fantasy"
+
+    set = ScryfallSet.objects.first()
+    set_code = set.code
+    set_name = set.name
 
     qs = (
-        cards_db.filter(set__code__iexact=set_code)
+        ScryfallCard.objects.filter(set__code__iexact=set_code)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
     )[0:75]
@@ -120,7 +137,7 @@ def test_set_search(cards_db, api_client):
     _check_name_in_response(res.data, qs)
 
     qs = (
-        cards_db.filter(set__name__iexact=set_name)
+        ScryfallCard.objects.filter(set__name__iexact=set_name)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
     )[0:75]
@@ -138,7 +155,9 @@ def test_set_search(cards_db, api_client):
     set_name = "Final"
 
     qs = (
-        cards_db.filter(Q(set__name__iexact=set_name) | Q(set__code__iexact=set_name))
+        ScryfallCard.objects.filter(
+            Q(set__name__iexact=set_name) | Q(set__code__iexact=set_name)
+        )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
     )[0:75]
@@ -153,24 +172,42 @@ def test_set_search(cards_db, api_client):
 
 def test_keyword_search(cards_db, api_client):
     keyword = "Trample"
-    set_code = "ltr"
+    set_code = ScryfallSet.objects.first().code
 
     # Get all cards with trample keyword from LOTR Set
     res = api_client.get(
         reverse("search"),
-        {"q": f"keywords:{keyword} set:{set_code}"},
+        {"q": f"keywords:{keyword} set_code:{set_code}"},
         format="json",
     )
 
     assert res.status_code == HTTP_200_OK
 
     qs = (
-        cards_db.filter(keywords__icontains=keyword, set__code__iexact=set_code)
+        ScryfallCard.objects.filter(
+            keywords__icontains=keyword, set__code__iexact=set_code
+        )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
     )
 
     assert len(res.data) == qs.count()
+
+    _check_name_in_response(res.data, qs)
+
+
+def text_color_search(cards_db, api_client):
+    color = "G"
+
+    qs = (
+        ScryfallCard.objects.filter(faces__colors__icontains=color)
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+    )[0:75]
+
+    res = api_client(reverse("search"), {"q": f"color:{color}"}, format="json")
+
+    assert res.data == qs.count()
 
     _check_name_in_response(res.data, qs)
 
@@ -181,17 +218,12 @@ def test_exclude_field_filters(cards_db, api_client):
 
     # Should contain 1 result
     strict_qs = (
-        cards_db.filter(Q(name__icontains=name) | Q(faces__name__icontains=name))
+        ScryfallCard.objects.filter(
+            Q(name__icontains=name) | Q(faces__name__icontains=name)
+        )
         .exclude(
             Q(name__icontains=excluded_name) | Q(faces__name__icontains=excluded_name)
         )
-        .order_by("oracle_id", "id")
-        .distinct("oracle_id")
-    )
-
-    # Should contain 2 results
-    relaxed_qs = (
-        cards_db.filter(name__icontains=name)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
     )
@@ -204,6 +236,18 @@ def test_exclude_field_filters(cards_db, api_client):
     assert len(strict_result.data) == strict_qs.count()
 
     _check_name_in_response(strict_result.data, strict_qs)
+
+    # Should contain 2 results
+    relaxed_qs = (
+        ScryfallCard.objects.filter(
+            Q(name__icontains=name)
+            | Q(faces__name__icontains=name)
+            | Q(faces__type_line__icontains=name)
+            | Q(faces__oracle_text__icontains=name)
+        )
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+    )
 
     relaxed_result = api_client.get(
         reverse("search"), {"q": f"name:{name}"}, format="json"

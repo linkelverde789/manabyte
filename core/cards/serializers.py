@@ -14,6 +14,7 @@ class ScryfallFaceSerializer(serializers.Serializer):
     type_line = serializers.CharField()
     oracle_text = serializers.CharField()
     image_url = serializers.CharField()
+    colors = serializers.JSONField()
 
 
 class ScryfallCardResponseSerializer(serializers.Serializer):
@@ -32,7 +33,6 @@ class ScryfallCardResponseSerializer(serializers.Serializer):
         max_digits=12,
         decimal_places=2,
     )
-    colors = serializers.JSONField()
     keywords = serializers.JSONField()
 
     set = ScryfallSetSerializer()

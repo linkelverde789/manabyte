@@ -86,3 +86,17 @@ class SearchCardViewSet(APIView):
                 context={"request": request},
             ).data
         )
+
+
+class PrintingsCardViewSet(APIView):
+    def get(self, request, oracle_id):
+
+        prints = ScryfallCard.objects.filter(oracle_id=oracle_id).order_by("id")
+
+        return Response(
+            ScryfallCardResponseSerializer(
+                prints,
+                many=True,
+                context={"request": request},
+            ).data
+        )
