@@ -3,6 +3,7 @@ from django.urls import reverse
 from rest_framework.status import HTTP_200_OK
 from sets.models import ScryfallSet
 
+from cards.consts import SEARCH_LIMIT
 from cards.models import ScryfallCard
 from cards.utils.utils import check_name_in_response
 
@@ -14,7 +15,7 @@ def test_limit_and_page_search(cards_db, api_client):
     qs = (
         ScryfallCard.objects.all()
         .order_by("oracle_id", "id")
-        .distinct("oracle_id")[0:75]
+        .distinct("oracle_id")[0:SEARCH_LIMIT]
     )
 
     data = res.data
@@ -47,7 +48,7 @@ def test_simple_search(cards_db, api_client):
         )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
-    )[0:75]
+    )[0:SEARCH_LIMIT]
 
     res = api_client.get(reverse("search"), {"q": f'"{name}"'}, format="json")
 
@@ -122,7 +123,7 @@ def test_set_search(cards_db, api_client):
         ScryfallCard.objects.filter(set__code__iexact=set_code)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
-    )[0:75]
+    )[0:SEARCH_LIMIT]
 
     res = api_client.get(
         reverse("search"), {"q": f"set_code:{set_code}"}, format="json"
@@ -137,7 +138,7 @@ def test_set_search(cards_db, api_client):
         ScryfallCard.objects.filter(set__name__iexact=set_name)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
-    )[0:75]
+    )[0:SEARCH_LIMIT]
 
     res = api_client.get(
         reverse("search"), {"q": f'set_name:"{set_name}"'}, format="json"
@@ -157,7 +158,7 @@ def test_set_search(cards_db, api_client):
         )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
-    )[0:75]
+    )[0:SEARCH_LIMIT]
 
     res = api_client.get(reverse("search"), {"q": f"set:{set_name}"}, format="json")
 
@@ -200,7 +201,7 @@ def text_color_search(cards_db, api_client):
         ScryfallCard.objects.filter(faces__colors__icontains=color)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
-    )[0:75]
+    )[0:SEARCH_LIMIT]
 
     res = api_client(reverse("search"), {"q": f"color:{color}"}, format="json")
 

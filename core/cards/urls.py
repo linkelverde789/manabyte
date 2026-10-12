@@ -1,6 +1,6 @@
 from django.urls import path
 
-from cards.views import PrintingsCardViewSet, SearchCardViewSet
+from cards.api.views import PrintingsCardViewSet, SearchCardViewSet
 
 urlpatterns = [
     path("search/", SearchCardViewSet.as_view(), name="search"),
