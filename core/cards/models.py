@@ -1,13 +1,5 @@
 from django.db import models
-
-
-class ScryfallSet(models.Model):
-    external_id = models.UUIDField(unique=True)
-    code = models.CharField(max_length=10, unique=True)
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
+from sets.models import ScryfallSet
 
 
 class ScryfallCard(models.Model):
@@ -38,6 +30,7 @@ class ScryfallCard(models.Model):
         decimal_places=2,
         default=0,
     )
+    layout = models.CharField(max_length=20, default="normal")
 
     keywords = models.JSONField(default=list, blank=True)
 
@@ -58,6 +51,7 @@ class ScryfallCardFace(models.Model):
     mana_cost = models.CharField(max_length=100, blank=True)
     type_line = models.CharField(max_length=255, blank=True)
     oracle_text = models.TextField(blank=True)
+    flavor_text = models.TextField(blank=True)
     image_url = models.URLField(max_length=500, blank=True)
 
     colors = models.JSONField(default=list, blank=True)
