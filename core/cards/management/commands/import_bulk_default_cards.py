@@ -4,7 +4,7 @@ from pathlib import Path
 
 import requests
 from django.core.management.base import BaseCommand
-from export.utils.scryfall_api import ScryfallAPI
+from scryfall.api import ScryfallAPI
 
 
 class Command(BaseCommand):

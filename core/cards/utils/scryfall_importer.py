@@ -16,12 +16,14 @@ def _decimal_price(value):
         return Decimal("0.00")
 
 
-def _process_set(set_id, set_code, set_name):
+def process_set(set_id, set_code, set_name, card_count=1, icon_url=""):
     scryfall_set, _ = ScryfallSet.objects.update_or_create(
         external_id=set_id,
         defaults={
             "code": set_code,
             "name": set_name,
+            "card_count": card_count,
+            "icon_url": icon_url,
         },
     )
     return scryfall_set
@@ -89,7 +91,7 @@ def _process_multiple_faces(card, faces, fallback=None):
 
 
 def _process_line(card_data):
-    scryfall_set = _process_set(
+    scryfall_set = process_set(
         set_id=card_data["set_id"],
         set_code=card_data["set"],
         set_name=card_data["set_name"],
@@ -147,7 +149,7 @@ def parse_file(file_path):
             ) as exc:
                 failed.append(json.loads(line)["id"])
                 print(f"Line {line_number}: {exc}")
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 print(f"Unexpected error at line {line_number}: {exc}")
 
     return failed, processed
