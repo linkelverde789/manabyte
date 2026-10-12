@@ -1,11 +1,24 @@
+from cards.api.serializers.card_serializer import ScryfallCardResponseSerializer
 from cards.models import ScryfallCard
-from cards.serializers import ScryfallCardResponseSerializer
 from cards.utils.utils import collector_number_sort_key
+from collection.models import CollectionItem
+from django.contrib.postgres.aggregates import BoolOr
+from django.db.models import (
+    BooleanField,
+    CharField,
+    IntegerField,
+    OuterRef,
+    Subquery,
+    Sum,
+    Value,
+)
+from django.db.models.functions import Coalesce
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from sets.models import ScryfallSet
-from sets.serializers import ScryfallSetSerializer
+from sets.serializers import AlbumCardSerializer, ScryfallSetSerializer
 
 
 class ListSetsViewSet(APIView):
@@ -33,6 +46,55 @@ class ListCardFromSetViewSet(APIView):
 
         return Response(
             ScryfallCardResponseSerializer(
+                cards,
+                many=True,
+                context={"request": request},
+            ).data
+        )
+
+
+class ListAlbumViewSet(APIView):
+    permission_classes = [IsAuthenticated]  # noqa: RUF012
+
+    def get(self, request, set_code):
+        collection = (
+            CollectionItem.objects.filter(
+                user=request.user,
+                scryfall_id=OuterRef("external_id"),
+            )
+            .values("scryfall_id")
+            .annotate(
+                total_quantity=Sum("quantity"),
+                has_foil=BoolOr("foil"),
+            )
+        )
+
+        cards = list(
+            ScryfallCard.objects.filter(set__code=set_code)
+            .annotate(
+                quantity=Coalesce(
+                    Subquery(collection.values("total_quantity")[:1]),
+                    Value(0),
+                    output_field=IntegerField(),
+                ),
+                foil=Coalesce(
+                    Subquery(collection.values("has_foil")[:1]),
+                    Value(False),
+                    output_field=BooleanField(),
+                ),
+                condition=Coalesce(
+                    Subquery(collection.values("condition")[:1]),
+                    Value("NM"),
+                    output_file=CharField(),
+                ),
+            )
+            .order_by("collector_number")
+        )
+
+        cards.sort(key=collector_number_sort_key)
+
+        return Response(
+            AlbumCardSerializer(
                 cards,
                 many=True,
                 context={"request": request},

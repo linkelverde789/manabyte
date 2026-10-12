@@ -30,6 +30,7 @@ class ScryfallCard(models.Model):
         decimal_places=2,
         default=0,
     )
+    layout = models.CharField(max_length=20, default="normal")
 
     keywords = models.JSONField(default=list, blank=True)
 

@@ -1,15 +1,6 @@
+from cards.api.serializers.face_serializer import ScryfallFaceSerializer
 from rest_framework import serializers
 from sets.serializers import ScryfallSetSerializer
-
-
-class ScryfallFaceSerializer(serializers.Serializer):
-    face_index = serializers.IntegerField()
-    name = serializers.CharField()
-    mana_cost = serializers.CharField()
-    type_line = serializers.CharField()
-    oracle_text = serializers.CharField()
-    image_url = serializers.CharField()
-    colors = serializers.JSONField()
 
 
 class ScryfallCardResponseSerializer(serializers.Serializer):
