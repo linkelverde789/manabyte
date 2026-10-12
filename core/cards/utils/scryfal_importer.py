@@ -1,8 +1,9 @@
 import json
 from decimal import Decimal, InvalidOperation
 
-from cards.models import ScryfallCard, ScryfallCardFace, ScryfallSet
+from cards.models import ScryfallCard, ScryfallCardFace
 from django.db import transaction
+from sets.models import ScryfallSet
 
 
 def _decimal_price(value):

@@ -27,4 +27,5 @@ urlpatterns = [
     path("api/auth/", include("users.urls")),
     path("api/export/", include("export.urls")),
     path("api/cards/", include("cards.urls")),
+    path("api/sets/", include("sets.urls")),
 ]
