@@ -1,4 +1,4 @@
-import type { ScryfallCard } from "#/features/scryfall/types";
+import type { CardFace } from "#/features/album/types";
 
 import { cn } from "#/lib/utils";
 import { useState } from "react";
@@ -9,19 +9,24 @@ export function CardImage({
   className,
   foil,
 }: {
-  card: ScryfallCard;
+  card: CardFace[];
   alt: string;
   className?: string;
   foil?: boolean;
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
+  /*
   let imageUrl =
     !card.image_uris && card.card_faces
       ? isHovered && card.layout !== "art_series"
         ? card.card_faces[1].image_uris?.normal
         : card.card_faces[0].image_uris?.normal
       : card.image_uris?.normal;
+      */
+
+  let imageUrl =
+    card.length > 1 && isHovered ? card[1].image_url : card[0].image_url;
 
   return (
     <div

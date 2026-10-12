@@ -6,8 +6,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from cards.api.serializers.card_serializer import ScryfallCardResponseSerializer
 from cards.models import ScryfallCard
-from cards.serializers import ScryfallCardResponseSerializer
 
 FIELD_LOOKUPS = {
     "name": lambda value: Q(name__icontains=value) | Q(faces__name__icontains=value),
