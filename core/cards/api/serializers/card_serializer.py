@@ -1,7 +1,7 @@
 from cards.api.serializers.face_serializer import ScryfallFaceSerializer
 from cards.consts import SEARCH_LIMIT
 from rest_framework import serializers
-from sets.serializers import ScryfallSetSerializer
+from sets.api.serializers import ScryfallSetSerializer
 
 
 class ScryfallCardResponseSerializer(serializers.Serializer):

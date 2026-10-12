@@ -1,4 +1,3 @@
-from cards.api.serializers.card_serializer import ScryfallCardResponseSerializer
 from cards.models import ScryfallCard
 from cards.utils.utils import collector_number_sort_key
 from collection.models import CollectionItem
@@ -13,53 +12,30 @@ from django.db.models import (
     Value,
 )
 from django.db.models.functions import Coalesce
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from sets.models import ScryfallSet
-from sets.serializers import AlbumCardSerializer, ScryfallSetSerializer
+from users.models import User
 
 
-class ListSetsViewSet(APIView):
-    def get(self, request):
+class SetSelector:
+    @staticmethod
+    def list_sets():
+        return ScryfallSet.objects.all().order_by("name")
 
-        sets = ScryfallSet.objects.all().order_by("name")
-
-        return Response(
-            ScryfallSetSerializer(
-                sets,
-                many=True,
-                context={"request": request},
-            ).data
-        )
-
-
-class ListCardFromSetViewSet(APIView):
-    def get(self, request, set_code):
-
+    @staticmethod
+    def list_cards_from_set(set_code: str):
         cards = list(
             ScryfallCard.objects.filter(set__code=set_code).prefetch_related("faces")
         )
 
         cards.sort(key=collector_number_sort_key)
 
-        return Response(
-            ScryfallCardResponseSerializer(
-                cards,
-                many=True,
-                context={"request": request},
-            ).data
-        )
+        return cards
 
-
-class ListAlbumViewSet(APIView):
-    permission_classes = [IsAuthenticated]  # noqa: RUF012
-
-    def get(self, request, set_code):
+    @staticmethod
+    def list_cards_for_album(set_code: str, user: User):
         collection = (
             CollectionItem.objects.filter(
-                user=request.user,
+                user=user,
                 scryfall_id=OuterRef("external_id"),
             )
             .values("scryfall_id")
@@ -93,10 +69,4 @@ class ListAlbumViewSet(APIView):
 
         cards.sort(key=collector_number_sort_key)
 
-        return Response(
-            AlbumCardSerializer(
-                cards,
-                many=True,
-                context={"request": request},
-            ).data
-        )
+        return cards

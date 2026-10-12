@@ -1,6 +1,6 @@
 from django.urls import path
 
-from sets.views import ListAlbumViewSet, ListCardFromSetViewSet, ListSetsViewSet
+from sets.api.views import ListAlbumViewSet, ListCardFromSetViewSet, ListSetsViewSet
 
 urlpatterns = [
     path("", ListSetsViewSet.as_view(), name="set"),
