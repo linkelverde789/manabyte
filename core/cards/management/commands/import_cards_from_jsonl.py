@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from cards.utils.scryfal_importer import parse_file
+from cards.utils.scryfall_importer import parse_file
 from config import settings
 from django.core.management.base import BaseCommand
 

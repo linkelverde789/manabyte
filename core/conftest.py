@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import pytest
-from cards.models import ScryfallCard, ScryfallCardFace, ScryfallSet
-from cards.utils.scryfal_importer import parse_file
+from cards.models import ScryfallCard
+from cards.utils.scryfall_importer import parse_file
 from config import settings
 from rest_framework.test import APIClient
 from users.models import User
