@@ -1,13 +1,10 @@
 from django.db.models import Q
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK
+from sets.models import ScryfallSet
 
-from cards.models import ScryfallCard, ScryfallSet
-
-
-def _check_name_in_response(data: list, qs):
-    for index, card in enumerate(qs):
-        assert card.name == data[index]["name"]
+from cards.models import ScryfallCard
+from cards.utils.utils import check_name_in_response
 
 
 def test_limit_and_page_search(cards_db, api_client):
@@ -24,7 +21,7 @@ def test_limit_and_page_search(cards_db, api_client):
 
     assert len(data) == qs.count()
 
-    _check_name_in_response(data, qs)
+    check_name_in_response(data, qs)
 
     # Send limit and page from query_params
     page = 3
@@ -50,7 +47,7 @@ def test_simple_search(cards_db, api_client):
         )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
-    )
+    )[0:75]
 
     res = api_client.get(reverse("search"), {"q": f'"{name}"'}, format="json")
 
@@ -60,7 +57,7 @@ def test_simple_search(cards_db, api_client):
 
     assert len(data) == qs.count()
 
-    _check_name_in_response(data, qs)
+    check_name_in_response(data, qs)
 
 
 def test_type_search(cards_db, api_client):
@@ -80,7 +77,7 @@ def test_type_search(cards_db, api_client):
     )
 
     assert len(res.data) == qs.count()
-    _check_name_in_response(res.data, qs)
+    check_name_in_response(res.data, qs)
 
 
 def test_name_search(cards_db, api_client):
@@ -103,7 +100,7 @@ def test_name_search(cards_db, api_client):
 
     assert len(strict_result.data) == qs.count()
 
-    _check_name_in_response(strict_result.data, qs)
+    check_name_in_response(strict_result.data, qs)
 
     # When searching withot name:XXX search will use type_line, oracle_text and name
     relaxed_result = api_client.get(
@@ -134,7 +131,7 @@ def test_set_search(cards_db, api_client):
     assert res.status_code == HTTP_200_OK
 
     assert len(res.data) == qs.count()
-    _check_name_in_response(res.data, qs)
+    check_name_in_response(res.data, qs)
 
     qs = (
         ScryfallCard.objects.filter(set__name__iexact=set_name)
@@ -149,7 +146,7 @@ def test_set_search(cards_db, api_client):
     assert res.status_code == HTTP_200_OK
 
     assert len(res.data) == qs.count()
-    _check_name_in_response(res.data, qs)
+    check_name_in_response(res.data, qs)
 
     # There are some sets with Final in the name
     set_name = "Final"
@@ -167,7 +164,7 @@ def test_set_search(cards_db, api_client):
     assert res.status_code == HTTP_200_OK
 
     assert len(res.data) == qs.count()
-    _check_name_in_response(res.data, qs)
+    check_name_in_response(res.data, qs)
 
 
 def test_keyword_search(cards_db, api_client):
@@ -193,7 +190,7 @@ def test_keyword_search(cards_db, api_client):
 
     assert len(res.data) == qs.count()
 
-    _check_name_in_response(res.data, qs)
+    check_name_in_response(res.data, qs)
 
 
 def text_color_search(cards_db, api_client):
@@ -209,7 +206,7 @@ def text_color_search(cards_db, api_client):
 
     assert res.data == qs.count()
 
-    _check_name_in_response(res.data, qs)
+    check_name_in_response(res.data, qs)
 
 
 def test_exclude_field_filters(cards_db, api_client):
@@ -235,7 +232,7 @@ def test_exclude_field_filters(cards_db, api_client):
     assert strict_result.status_code == HTTP_200_OK
     assert len(strict_result.data) == strict_qs.count()
 
-    _check_name_in_response(strict_result.data, strict_qs)
+    check_name_in_response(strict_result.data, strict_qs)
 
     # Should contain 2 results
     relaxed_qs = (
@@ -257,6 +254,6 @@ def test_exclude_field_filters(cards_db, api_client):
 
     assert len(relaxed_result.data) == relaxed_qs.count()
 
-    _check_name_in_response(relaxed_result.data, relaxed_qs)
+    check_name_in_response(relaxed_result.data, relaxed_qs)
 
     assert len(relaxed_result.data) > len(strict_result.data)

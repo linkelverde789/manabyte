@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "export",
     "cards",
     "fixtures",
+    "sets",
 ]
 
 AUTH_USER_MODEL = "users.User"
