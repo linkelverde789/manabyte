@@ -1,3 +1,4 @@
+import pytest
 from django.db.models import Q
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK
@@ -8,7 +9,8 @@ from cards.models import ScryfallCard
 from cards.utils.utils import check_name_in_response
 
 
-def test_limit_and_page_search(cards_db, api_client):
+@pytest.mark.django_db
+def test_limit_and_page_search(api_client):
     res = api_client.get(reverse("search"))
 
     # Should return the first 75 cards on the database
@@ -35,7 +37,8 @@ def test_limit_and_page_search(cards_db, api_client):
     assert len(data) == limit
 
 
-def test_simple_search(cards_db, api_client):
+@pytest.mark.django_db
+def test_simple_search(api_client):
 
     name = ScryfallCard.objects.first().name
 
@@ -61,7 +64,8 @@ def test_simple_search(cards_db, api_client):
     check_name_in_response(data, qs)
 
 
-def test_type_search(cards_db, api_client):
+@pytest.mark.django_db
+def test_type_search(api_client):
     type = "human"
     limit = 12
     page = 1
@@ -81,7 +85,8 @@ def test_type_search(cards_db, api_client):
     check_name_in_response(res.data, qs)
 
 
-def test_name_search(cards_db, api_client):
+@pytest.mark.django_db
+def test_name_search(api_client):
     name = "creature"
     limit = 50
     page = 1
@@ -113,7 +118,8 @@ def test_name_search(cards_db, api_client):
     assert len(relaxed_result.data) > len(strict_result.data)
 
 
-def test_set_search(cards_db, api_client):
+@pytest.mark.django_db
+def test_set_search(api_client):
 
     set = ScryfallSet.objects.first()
     set_code = set.code
@@ -168,7 +174,8 @@ def test_set_search(cards_db, api_client):
     check_name_in_response(res.data, qs)
 
 
-def test_keyword_search(cards_db, api_client):
+@pytest.mark.django_db
+def test_keyword_search(api_client):
     keyword = "Trample"
     set_code = ScryfallSet.objects.first().code
 
@@ -194,7 +201,8 @@ def test_keyword_search(cards_db, api_client):
     check_name_in_response(res.data, qs)
 
 
-def text_color_search(cards_db, api_client):
+@pytest.mark.django_db
+def text_color_search(api_client):
     color = "G"
 
     qs = (
@@ -210,7 +218,8 @@ def text_color_search(cards_db, api_client):
     check_name_in_response(res.data, qs)
 
 
-def test_exclude_field_filters(cards_db, api_client):
+@pytest.mark.django_db
+def test_exclude_field_filters(api_client):
     name = "cactuar"
     excluded_name = "jumbo cactuar"
 

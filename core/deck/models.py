@@ -1,3 +1,4 @@
+from cards.models import ScryfallCard
 from django.db import models
 from folder.models import Folder
 from users.models import User
@@ -29,7 +30,12 @@ class DeckCard(models.Model):
         related_name="cards",
     )
 
-    scryfall_id = models.UUIDField()
+    card = models.ForeignKey(
+        ScryfallCard,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     quantity = models.PositiveIntegerField(default=1)
 

@@ -1,3 +1,4 @@
+import pytest
 from cards.models import ScryfallCard
 from cards.utils.utils import check_name_in_response, collector_number_sort_key
 from django.urls import reverse
@@ -5,7 +6,8 @@ from django.urls import reverse
 from sets.models import ScryfallSet
 
 
-def test_retrieve_cards_from_set(cards_db, api_client):
+@pytest.mark.django_db
+def test_retrieve_cards_from_set(api_client):
     set_code = "ltr"
 
     qs = list(ScryfallCard.objects.filter(set__code=set_code).prefetch_related("faces"))
@@ -21,7 +23,8 @@ def test_retrieve_cards_from_set(cards_db, api_client):
     check_name_in_response(res.data, qs)
 
 
-def test_retrieve_sets(cards_db, api_client):
+@pytest.mark.django_db
+def test_retrieve_sets(api_client):
     qs = ScryfallSet.objects.all().order_by("name")
 
     res = api_client.get(reverse("set"))
