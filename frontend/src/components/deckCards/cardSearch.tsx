@@ -1,4 +1,3 @@
-import { useCardSearchManabyte } from "#/features/scryfall/hooks";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Loader2, Search } from "lucide-react";
@@ -7,6 +6,7 @@ import ManaCost from "../search/manaCost";
 import { AddCardDialog } from "./addCardDialog";
 import type { CreateCollectionItemData } from "#/features/collection/types";
 import type { Card } from "#/lib/types";
+import { useCardSearch } from "#/features/utils/hooks";
 
 export default function CardSearch({
   onCreate,
@@ -26,7 +26,7 @@ export default function CardSearch({
     return () => clearTimeout(t);
   }, [term]);
 
-  const { data: results, isLoading } = useCardSearchManabyte(debounced);
+  const { data: results, isLoading } = useCardSearch(debounced);
 
   return (
     <div className="space-y-4">

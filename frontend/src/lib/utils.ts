@@ -2,6 +2,8 @@ import type { ClassValue } from "clsx";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { BaseCardInformation, Card } from "./types";
+import type { DeckCard } from "#/features/deckCards/types";
+import type { CollectionItem } from "#/features/collection/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -66,13 +68,15 @@ export function parseDecklist(text: string): ParsedLine[] {
   return out;
 }
 
-export function groupCardsByType(
-  cards: {
-    card: Card;
-    dataCard: BaseCardInformation;
-  }[],
-) {
-  const groups: Record<string, typeof cards> = {};
+type CardRow<T extends BaseCardInformation> = {
+  card: Card;
+  dataCard: T;
+};
+
+export function groupCardsByType<T extends BaseCardInformation>(
+  cards: CardRow<T>[],
+): Record<string, CardRow<T>[]> {
+  const groups: Record<string, CardRow<T>[]> = {};
 
   for (const item of cards) {
     const typeLine = item.card.card_faces[0].type_line;

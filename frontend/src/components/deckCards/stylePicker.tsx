@@ -1,8 +1,8 @@
-import { useListPrints } from "#/features/scryfall/hooks";
 import { cn } from "#/lib/utils";
 import { Loader2 } from "lucide-react";
 import { CardImage } from "./cardImage";
 import type { Card } from "#/lib/types";
+import { useListPrints } from "#/features/utils/hooks";
 
 export default function StylePicker({
   card,

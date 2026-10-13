@@ -1,5 +1,5 @@
 import type { CollectionItem } from "#/features/collection/types";
-import type { ScryfallCard } from "#/features/scryfall/types";
+import type { Card } from "#/lib/types";
 import { ImportDialog } from "../deckCards/importDialog";
 
 export function FolderHeader({
@@ -10,7 +10,7 @@ export function FolderHeader({
 }: {
   folderName?: string;
   total: number;
-  entries: { card: ScryfallCard; dataCard: CollectionItem }[];
+  entries: { card: Card; dataCard: CollectionItem }[];
   onImport: (rows: any[]) => Promise<void>;
 }) {
   const prices =
@@ -19,9 +19,7 @@ export function FolderHeader({
       if (!card || !dataCard) return acc;
 
       const quantity = dataCard.quantity || 0;
-      const price = parseFloat(
-        card.prices?.[dataCard.foil ? "usd_foil" : "usd"] || "0",
-      );
+      const price = dataCard.foil ? card.price_foil : card.price_nonfoil;
 
       return acc + quantity * price;
     }, 0) ?? 0;

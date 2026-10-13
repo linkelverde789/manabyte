@@ -7,18 +7,17 @@ import {
   loadSingleCard,
   randomCard,
   searchCardFuzzy,
+  searchCardScryfall,
   searchCardStyles,
   type ScryfallCollectionIdentifier,
 } from "./api";
 import type { ScryfallCard } from "./types";
 import { toast } from "sonner";
-import { api } from "#/api/manabyte";
-import type { Card } from "#/lib/types";
 
-export function useSearchCard(text: string) {
+export function useSearchCardScryfall(text: string) {
   return useQuery({
     queryKey: ["search", text],
-    queryFn: () => searchCard(text),
+    queryFn: () => searchCardScryfall(text),
     enabled: text.length > 2,
   });
 }
@@ -122,28 +121,4 @@ export function useListSets() {
     queryKey: ["sets"],
     queryFn: listSets,
   });
-}
-
-export function useListPrints(oracle_id: string) {
-  return useQuery({
-    queryKey: ["prints", oracle_id],
-    queryFn: () => listCardPrints(oracle_id),
-    enabled: !!oracle_id,
-  });
-}
-
-export function listCardPrints(oracle_id: string) {
-  return api<Card[]>(`/cards/printings/${oracle_id}`);
-}
-
-export function useCardSearchManabyte(text: string) {
-  return useQuery({
-    queryKey: ["search", text],
-    queryFn: () => searchCard(text),
-    enabled: !!text && text.length > 2,
-  });
-}
-
-export function searchCard(text: string) {
-  return api<Card[]>(`/cards/search/?q=${text}`);
 }

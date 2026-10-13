@@ -1,13 +1,8 @@
+import type { BaseCardInformation } from "#/lib/types";
 import type { CreateDeckCardData } from "../deckCards/types";
 import type { Folder } from "../folders/types";
 
-export interface DataCard {
-  id: number;
-  scryfall_id: string;
-  quantity: number;
-}
-
-export interface CollectionItem extends DataCard {
+export interface CollectionItem extends BaseCardInformation {
   folder: Folder | null;
   foil: boolean;
   language: string;

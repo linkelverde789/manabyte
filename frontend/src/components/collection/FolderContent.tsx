@@ -1,10 +1,10 @@
-import type { CollectionItem } from "#/features/collection/types";
-import type { ScryfallCard } from "#/features/scryfall/types";
 import { groupCardsByType } from "#/lib/utils";
 import { memo } from "react";
 import EmptyDeck from "../deckCards/emptyDeck";
 import CardRow from "./cardRow";
 import { ItemRowSkeleton } from "./skeletons";
+import type { Card } from "#/lib/types";
+import type { CollectionItem } from "#/features/collection/types";
 
 export function FolderContent({
   isLoading,
@@ -45,7 +45,7 @@ export function FolderContent({
 }
 
 type DeckRow = {
-  card: ScryfallCard;
+  card: Card;
   dataCard: CollectionItem;
 };
 

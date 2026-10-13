@@ -2,8 +2,8 @@ import { Loader2, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import SearchResults from "../index/searchResult";
-import { useCardSearchManabyte } from "#/features/scryfall/hooks";
 import type { Card } from "#/lib/types";
+import { useCardSearch } from "#/features/utils/hooks";
 
 export default function CardSearch({
   autoFocus,
@@ -19,7 +19,7 @@ export default function CardSearch({
     return () => clearTimeout(t);
   }, [text]);
 
-  const { data: results, isLoading } = useCardSearchManabyte(debounced);
+  const { data: results, isLoading } = useCardSearch(debounced);
 
   return (
     <div className="space-y-4">
