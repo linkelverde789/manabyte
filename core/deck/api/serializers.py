@@ -1,3 +1,4 @@
+from cards.api.serializers.card_serializer import ScryfallCardResponseSerializer
 from django.db.models import Sum
 from folder.api.serializers import FolderResponseSerializer
 from rest_framework import serializers
@@ -16,6 +17,6 @@ class DeckResponseSerializer(serializers.Serializer):
 
 class DeckCardResponseSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    scryfall_id = serializers.UUIDField()
+    card = ScryfallCardResponseSerializer()
     quantity = serializers.IntegerField()
     zone = serializers.CharField()

@@ -51,6 +51,6 @@ export function DeckListContent({ decks }: { decks: Deck[] }) {
   }
 
   return decks.map((deck) => {
-    return <DeckRow deck={deck} onDelete={handleDeleteDeck} />;
+    return <DeckRow key={deck.id} deck={deck} onDelete={handleDeleteDeck} />;
   });
 }

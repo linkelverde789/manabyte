@@ -2,8 +2,8 @@ import { Loader2, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import SearchResults from "../index/searchResult";
-import type { ScryfallCard } from "#/features/scryfall/types";
-import { useSearchCard } from "#/features/scryfall/hooks";
+import { useCardSearchManabyte } from "#/features/scryfall/hooks";
+import type { Card } from "#/lib/types";
 
 export default function CardSearch({
   autoFocus,
@@ -12,14 +12,14 @@ export default function CardSearch({
 }) {
   const [text, setText] = useState("");
   const [debounced, setDebounced] = useState("");
-  const [picked, setPicked] = useState<ScryfallCard | null>(null);
+  const [picked, setPicked] = useState<Card | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(text.trim()), 350);
     return () => clearTimeout(t);
   }, [text]);
 
-  const { data: results, isLoading } = useSearchCard(debounced);
+  const { data: results, isLoading } = useCardSearchManabyte(debounced);
 
   return (
     <div className="space-y-4">
@@ -37,16 +37,14 @@ export default function CardSearch({
         )}
       </div>
 
-      {debounced.length >= 2 &&
-        !isLoading &&
-        (results?.data.length ?? 0) === 0 && (
-          <p className="text-sm text-muted-foreground">
-            No cards found for “{debounced}”.
-          </p>
-        )}
+      {!isLoading && (!results || (results.length ?? 0)) === 0 && (
+        <p className="text-sm text-muted-foreground">
+          No cards found for “{debounced}”.
+        </p>
+      )}
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        <SearchResults cards={results?.data} onPicked={setPicked} />
+        <SearchResults cards={results} onPicked={setPicked} />
       </div>
     </div>
   );

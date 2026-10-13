@@ -40,9 +40,3 @@ def load_cards_catalog(django_db_setup, django_db_blocker):
 
         if count == 0:
             raise RuntimeError("Can't load cards on test database.")
-
-
-@pytest.fixture
-def cards_db(load_cards_catalog, django_db_blocker):
-    with django_db_blocker.unblock():
-        yield ScryfallCard.objects.using("default")

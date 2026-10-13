@@ -4,21 +4,20 @@ import {
   useDeleteDeckCard,
   usePartialUpdateDeckCard,
 } from "#/features/deckCards/hooks";
-import type { DeckCard } from "#/features/deckCards/types";
-import type { ScryfallCard } from "#/features/scryfall/types";
 import { cn } from "#/lib/utils";
 import { Layers, Minus, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { CardImage } from "./cardImage";
 import StylePicker from "./stylePicker";
+import type { BaseCardInformation, Card } from "#/lib/types";
 
 export default function CardRow({
   card,
   dataCard,
   deckId,
 }: {
-  card: ScryfallCard;
-  dataCard: DeckCard;
+  card: Card;
+  dataCard: BaseCardInformation;
   deckId: number;
 }) {
   const [openStyles, setOpenStyles] = useState(false);
@@ -65,6 +64,8 @@ export default function CardRow({
     deleteCard.mutate(dataCard.id);
   }
 
+  const mana_cost = card.card_faces[0].mana_cost;
+
   return (
     <div className="space-y-2">
       <div
@@ -75,7 +76,12 @@ export default function CardRow({
         )}
       >
         <div className="w-10 shrink-0">
-          <CardImage card={card} alt={card.name} className="rounded-md" />
+          <CardImage
+            card={card.card_faces}
+            alt={card.name}
+            className="rounded-md"
+            foil={card.can_foil && !card.can_nonfoil}
+          />
         </div>
 
         <div className="min-w-0 flex-1">
@@ -84,11 +90,11 @@ export default function CardRow({
               {card.name}
             </span>
 
-            {card.mana_cost && <ManaCost cost={card.mana_cost} />}
+            {mana_cost && <ManaCost cost={mana_cost} />}
           </div>
 
           <div className="text-xs uppercase text-muted-foreground">
-            {card.set} #{card.collector_number}
+            {card.set.code} #{card.collector_number}
           </div>
         </div>
 

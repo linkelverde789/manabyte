@@ -1,11 +1,15 @@
+import pytest
 from django.db.models import Count
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK
 
+from cards.models import ScryfallCard
 
-def test_retrieve_printings(cards_db, api_client):
+
+@pytest.mark.django_db
+def test_retrieve_printings(api_client):
     oracle_id = (
-        cards_db.values("oracle_id")
+        ScryfallCard.objects.values("oracle_id")
         .annotate(count=Count("oracle_id"))
         .order_by("-count")
         .first()

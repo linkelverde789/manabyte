@@ -1,3 +1,4 @@
+from cards.selectors.cards import CardSelector
 from deck.dto.deck_card import CreateDeckCardInput
 from deck.exceptions import DeckException
 from deck.selectors.deck import DeckSelector
@@ -17,7 +18,7 @@ class BulkCreateDeckCardUseCase:
         create_data_dto = [
             CreateDeckCardInput(
                 deck=deck,
-                scryfall_id=card["scryfall_id"],
+                card=CardSelector.get_card_from_scryfall_id(card["scryfall_id"]),
                 quantity=card["quantity"],
                 zone=card.get("zone", None),
             ).validate()

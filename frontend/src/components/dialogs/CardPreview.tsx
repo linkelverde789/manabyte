@@ -1,17 +1,19 @@
-import type { ScryfallCard, ScryfallCardFace } from "#/features/scryfall/types";
 import { useEffect, useState } from "react";
 
 import ManaCost from "../search/manaCost";
 import { Button } from "../ui/button";
 import { processOracleText } from "#/lib/utils";
+import type { Card, Face } from "#/lib/types";
 
-export function CardPreview({ card }: { card: ScryfallCard }) {
+export function CardPreview({ card }: { card: Card }) {
   const [transform, setTransform] = useState(false);
 
   const canTransform = card.keywords?.includes("Transform");
 
-  const [data, setData] = useState<ScryfallCardFace>(
-    canTransform && card.card_faces ? card.card_faces[0] : card,
+  const [data, setData] = useState<Face>(
+    canTransform && card.card_faces.length > 1
+      ? card.card_faces[1]
+      : card.card_faces[0],
   );
 
   useEffect(() => {
@@ -24,12 +26,8 @@ export function CardPreview({ card }: { card: ScryfallCard }) {
     <div className="grid md:grid-cols-[minmax(0,0.92fr)_minmax(0,1fr)]">
       <div className="flex items-center justify-center bg-muted/40 p-6 md:p-9">
         <img
-          src={
-            data.image_uris
-              ? data.image_uris.normal
-              : card.card_faces?.[0]?.image_uris?.normal
-          }
-          alt={`${data.name} - ${card.set_name} card`}
+          src={data.image_url}
+          alt={`${data.name} - ${card.set.code} card`}
           className="aspect-[488/680] w-full max-w-[260px] rounded-lg object-contain shadow-xl md:max-w-[360px]"
         />
       </div>
@@ -37,7 +35,7 @@ export function CardPreview({ card }: { card: ScryfallCard }) {
       <div className="flex min-w-0 flex-col px-6 pb-8 pt-6 md:px-9 md:py-10">
         <div className="text-left">
           <p className="text-xs font-medium uppercase tracking-widest text-primary">
-            {card.set_name} · #{card.collector_number}
+            {card.set.name} · #{card.collector_number}
           </p>
 
           <h2 className="mt-3 text-3xl leading-tight sm:text-4xl">

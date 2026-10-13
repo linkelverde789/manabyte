@@ -9,7 +9,7 @@ class DeckCardService:
     def create_deck_card(data: CreateDeckCardInput) -> DeckCard:
         card = DeckCard.objects.create(
             deck=data.deck,
-            scryfall_id=data.scryfall_id,
+            card=data.card,
             quantity=data.quantity,
             zone=data.zone,
         )
@@ -23,7 +23,7 @@ class DeckCardService:
             [
                 DeckCard(
                     deck=item.deck,
-                    scryfall_id=item.scryfall_id,
+                    card=item.card,
                     quantity=item.quantity,
                     zone=item.zone,
                 )
@@ -34,8 +34,8 @@ class DeckCardService:
     @transaction.atomic
     @staticmethod
     def update_deck_card(card: DeckCard, data: UpdateDeckCardInput) -> DeckCard:
-        if data.scryfall_id is not None:
-            card.scryfall_id = data.scryfall_id
+        if data.card is not None:
+            card.card = data.card
 
         if data.quantity is not None:
             card.quantity = data.quantity

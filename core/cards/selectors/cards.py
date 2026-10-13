@@ -85,3 +85,7 @@ class CardSelector:
     @staticmethod
     def list_card_prints(oracle_id: str):
         return ScryfallCard.objects.filter(oracle_id=oracle_id).order_by("id")
+
+    @staticmethod
+    def get_card_from_scryfall_id(scryfall_id: str) -> ScryfallCard | None:
+        return ScryfallCard.objects.filter(external_id=scryfall_id).first()
