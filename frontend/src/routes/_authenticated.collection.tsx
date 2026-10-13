@@ -30,6 +30,7 @@ function RouteComponent() {
           : folders?.map((folder) => {
               return (
                 <FolderRow
+                  key={folder.id}
                   folder={folder}
                   onDelete={() => deleteFolder.mutate(folder.id)}
                 />
