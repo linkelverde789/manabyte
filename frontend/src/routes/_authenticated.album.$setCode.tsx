@@ -3,11 +3,8 @@ import { SetHeader } from "#/components/album/SetHeader";
 import { SetPaginator } from "#/components/album/SetPaginator";
 import { SetProgress } from "#/components/album/SetProgress";
 import { SetAlbumSkeleton } from "#/components/album/skeletons";
-import { useListCollectionItemFromSet } from "#/features/collection/hooks";
-import {
-  useGetSetInformation,
-  useListSetCollection,
-} from "#/features/scryfall/hooks";
+import { useListAlbum } from "#/features/album/hooks";
+import { useGetSetInformation } from "#/features/scryfall/hooks";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -20,30 +17,28 @@ function RouteComponent() {
 
   const { data: setInformation } = useGetSetInformation(setCode);
 
-  const { data: setCollection, isLoading: isSetLoading } =
-    useListSetCollection(setCode);
-
-  const scryfallIds = setCollection?.map((item) => item.id);
-
-  const { data: collection = [], isLoading: isCollectionLoading } =
-    useListCollectionItemFromSet(scryfallIds);
+  const { data: collection, isLoading } = useListAlbum(setCode);
 
   const [page, setPage] = useState(1);
 
-  if (isSetLoading || isCollectionLoading || !setCollection) {
+  if (isLoading) {
     return <SetAlbumSkeleton />;
+  }
+
+  if (!collection) {
+    return;
   }
 
   const elementsPerPage = 60;
 
-  const totalPages = Math.ceil(setCollection.length / elementsPerPage);
+  const totalPages = Math.ceil(collection.length / elementsPerPage);
 
   const currentPage = Math.min(page, Math.max(totalPages, 1));
 
   const startIndex = (currentPage - 1) * elementsPerPage;
   const endIndex = startIndex + elementsPerPage;
 
-  const result = setCollection.slice(startIndex, endIndex);
+  const result = collection.slice(startIndex, endIndex);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
@@ -54,7 +49,9 @@ function RouteComponent() {
 
       <SetProgress
         setCollectionCount={setInformation?.card_count!}
-        userCollectionCount={collection.length}
+        userCollectionCount={
+          collection.filter((card) => card.quantity > 0).length
+        }
       />
 
       <SetPaginator
@@ -65,11 +62,7 @@ function RouteComponent() {
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {result.map((card) => (
-          <AlbumCardSlot
-            key={card.id}
-            card={card}
-            dataCard={collection.find((item) => item.scryfall_id === card.id)}
-          />
+          <AlbumCardSlot key={card.external_id} card={card} />
         ))}
       </div>
       <SetPaginator

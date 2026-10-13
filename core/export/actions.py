@@ -8,8 +8,7 @@ from deck.selectors.deck_card import DeckCardSelector
 from django.http import HttpResponse
 from folder.models import Folder
 from openpyxl import Workbook
-
-from export.utils.scryfall_api import ScryfallAPI
+from scryfall.api import ScryfallAPI
 
 
 def export_deck(deck: Deck, format_type: str = "csv"):

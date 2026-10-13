@@ -1,11 +1,12 @@
 import requests
 from collection.models import CollectionItem
 from deck.models import DeckCard
+from export.utils.utils import batch_generator
 
 
 class ScryfallAPI:
     BASE_URL = "https://api.scryfall.com"
-    HEADERS = {"Content-Type": "application/json", "User-Agent": "Manabyte/1.0"}
+    HEADERS = {"Content-Type": "application/json", "User-Agent": "Manabyte/1.0"}  # noqa: RUF012
 
     @staticmethod
     def load_collection(cards: list[DeckCard] | list[CollectionItem]):
@@ -27,7 +28,21 @@ class ScryfallAPI:
 
         return collection
 
+    @staticmethod
+    def download_bulk_data():
+        response = requests.get(
+            f"{ScryfallAPI.BASE_URL}/bulk-data",
+            headers=ScryfallAPI.HEADERS,
+            timeout=30,
+        )
+        response.raise_for_status()
+        return response.json()
 
-def batch_generator(data, size=75):
-    for i in range(0, len(data), size):
-        yield data[i : i + size]
+    @staticmethod
+    def get_complete_set_information():
+        response = requests.get(
+            f"{ScryfallAPI.BASE_URL}/sets", headers=ScryfallAPI.HEADERS, timeout=30
+        )
+        response.raise_for_status()
+
+        return response.json()
