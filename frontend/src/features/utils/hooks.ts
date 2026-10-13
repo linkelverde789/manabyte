@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { listCardPrints, searchCard } from "./api";
+import { listCardPrints, searchCard, listSet } from "./api";
 
 export function useListPrints(oracle_id: string) {
   return useQuery({
@@ -14,5 +14,12 @@ export function useCardSearch(text: string) {
     queryKey: ["search", text],
     queryFn: () => searchCard(text),
     enabled: !!text && text.length > 2,
+  });
+}
+
+export function useListSets() {
+  return useQuery({
+    queryKey: ["sets"],
+    queryFn: () => listSet(),
   });
 }
