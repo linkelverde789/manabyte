@@ -1,6 +1,5 @@
-from uuid import uuid4
-
 import pytest
+from cards.models import ScryfallCard
 from collection.models import CollectionItem
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
@@ -8,8 +7,9 @@ from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CON
 
 @pytest.mark.django_db
 def test_create_collection_item(auth_client):
+    scryfall_id = ScryfallCard.objects.all().first().external_id
     data = {
-        "scryfall_id": uuid4(),
+        "scryfall_id": scryfall_id,
         "quantity": 2,
         "foil": True,
         "language": "en",
@@ -20,17 +20,19 @@ def test_create_collection_item(auth_client):
 
     assert res.status_code == HTTP_201_CREATED
 
-    assert res.data["scryfall_id"] == str(data["scryfall_id"])
+    assert res.data["card"]["external_id"] == str(data["scryfall_id"])
 
 
 @pytest.mark.django_db
 def test_bulk_create_collection_item(auth_client):
     data = []
 
+    cards = ScryfallCard.objects.all()[0:10]
+
     for item in range(10):
         data.append(
             {
-                "scryfall_id": uuid4(),
+                "scryfall_id": cards[item].external_id,
                 "quantity": item + 1,
                 "foil": True,
                 "language": "en",
@@ -50,18 +52,21 @@ def test_bulk_create_collection_item(auth_client):
 
 @pytest.mark.django_db
 def test_partial_update_collection_item(user, auth_client):
-    original_uuid = uuid4()
+    card = ScryfallCard.objects.all().first()
+
     collectionItem = CollectionItem.objects.create(
         user=user,
-        scryfall_id=original_uuid,
+        card=card,
         quantity=1,
         language="en",
         foil=False,
         condition="PSA 1",
     )
 
+    updated_id = ScryfallCard.objects.all().last().external_id
+
     data = {
-        "scryfall_id": uuid4(),
+        "scryfall_id": updated_id,
         "quantity": 999,
         "language": "es",
         "foil": True,
@@ -74,7 +79,7 @@ def test_partial_update_collection_item(user, auth_client):
         format="json",
     )
 
-    assert res.data["scryfall_id"] != str(collectionItem.scryfall_id)
+    assert res.data["card"]["external_id"] != str(collectionItem.card.external_id)
     assert res.data["quantity"] != collectionItem.quantity
     assert res.data["language"] != collectionItem.language
     assert res.data["foil"] != collectionItem.foil
@@ -82,7 +87,7 @@ def test_partial_update_collection_item(user, auth_client):
 
     collectionItem.refresh_from_db()
 
-    assert res.data["scryfall_id"] == str(collectionItem.scryfall_id)
+    assert res.data["card"]["external_id"] == str(collectionItem.card.external_id)
     assert res.data["quantity"] == collectionItem.quantity
     assert res.data["language"] == collectionItem.language
     assert res.data["foil"] == collectionItem.foil
@@ -93,10 +98,12 @@ def test_partial_update_collection_item(user, auth_client):
 def test_list_collection_item(user, auth_client):
     data = []
 
+    cards = ScryfallCard.objects.all()[0:10]
+
     for item in range(10):
         data.append(
             CollectionItem(
-                scryfall_id=uuid4(),
+                card=cards[item],
                 quantity=item,
                 foil=True,
                 language="en",
@@ -115,8 +122,9 @@ def test_list_collection_item(user, auth_client):
 
 @pytest.mark.django_db
 def test_destroy_collection_item(user, auth_client):
+    card = ScryfallCard.objects.first()
     collection_item = CollectionItem.objects.create(
-        scryfall_id=uuid4(),
+        card=card,
         quantity=1,
         foil=True,
         language="en",
@@ -136,73 +144,6 @@ def test_destroy_collection_item(user, auth_client):
     assert res.status_code == HTTP_204_NO_CONTENT
 
     res = auth_client.get(reverse("collection-list"))
-
-    assert res.status_code == HTTP_200_OK
-    assert len(res.data) == 0
-
-
-@pytest.mark.django_db
-def test_list_collection_item_from_scryfall_ids(user, auth_client):
-    collection_items = []
-
-    for item in range(10):
-        collection_items.append(
-            CollectionItem(
-                scryfall_id=uuid4(),
-                quantity=item + 1,
-                foil=True,
-                language="en",
-                condition=f"PSA {item}",
-                user=user,
-            )
-        )
-
-    CollectionItem.objects.bulk_create(collection_items)
-
-    res = auth_client.post(
-        reverse("collection-set"),
-        {
-            "scryfall_ids": ",".join(
-                [
-                    str(collection_items[0].scryfall_id),
-                    str(collection_items[1].scryfall_id),
-                ]
-            ),
-        },
-        format="json",
-    )
-
-    assert res.status_code == HTTP_200_OK
-    assert len(res.data) == 2
-
-    res = auth_client.post(
-        reverse("collection-set"),
-        {
-            "scryfall_ids": ",".join(
-                [
-                    str(collection_items[2].scryfall_id),
-                    str(uuid4()),
-                ]
-            ),
-        },
-        format="json",
-    )
-
-    assert res.status_code == HTTP_200_OK
-    assert len(res.data) == 1
-
-    res = auth_client.post(
-        reverse("collection-set"),
-        {
-            "scryfall_ids": ",".join(
-                [
-                    str(uuid4()),
-                    str(uuid4()),
-                ]
-            ),
-        },
-        format="json",
-    )
 
     assert res.status_code == HTTP_200_OK
     assert len(res.data) == 0

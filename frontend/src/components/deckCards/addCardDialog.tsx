@@ -1,5 +1,3 @@
-import { useSearchCardStyles } from "#/features/scryfall/hooks";
-import type { ScryfallCard } from "#/features/scryfall/types";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -10,13 +8,14 @@ import {
 } from "../ui/dialog";
 import ManaCost from "../search/manaCost";
 import { CardImage } from "./cardImage";
-import { styleLabel } from "./stylePicker";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../ui/input";
 import { Layers, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "#/lib/utils";
 import type { CreateCollectionItemData } from "#/features/collection/types";
+import type { Card } from "#/lib/types";
+import { useListPrints } from "#/features/utils/hooks";
 
 export function AddCardDialog({
   card,
@@ -24,12 +23,12 @@ export function AddCardDialog({
   onOpenChange,
   onCreate,
 }: {
-  card: ScryfallCard | null;
+  card: Card | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreate: (data: CreateCollectionItemData) => void;
 }) {
-  const [selected, setSelected] = useState<ScryfallCard | null>(card);
+  const [selected, setSelected] = useState<Card | null>(card);
   const [showStyles, setShowStyles] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
@@ -39,20 +38,19 @@ export function AddCardDialog({
     setQuantity(1);
   }, [card]);
 
-  const { data: printings, isLoading } = useSearchCardStyles(
-    selected?.name ?? "",
-  );
+  const { data: printings, isLoading } = useListPrints(card?.oracle_id!);
 
   if (!card || !selected) return null;
 
   function submit() {
-    let foil = !selected?.nonfoil! && selected?.foil!;
+    if (!selected) return;
+    let foil = selected.can_foil && !selected.can_nonfoil;
 
     onCreate({
       quantity: quantity,
-      scryfall_id: selected?.id!,
+      scryfall_id: selected?.external_id,
       foil,
-      language: selected?.lang!,
+      language: selected?.lang,
       condition: "MN",
     });
     setSelected(card);
@@ -66,16 +64,17 @@ export function AddCardDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2">
-            {selected.name} <ManaCost cost={selected.mana_cost} />
+            {selected.name} <ManaCost cost={selected.card_faces[0].mana_cost} />
           </DialogTitle>
           <DialogDescription>
-            {selected.set_name} ({selected.set?.toUpperCase()}) #
-            {selected.collector_number} · {selected.rarity}
+            {selected.set.name} ({selected.set.code?.toUpperCase()}) #
+            {selected.collector_number} · {"C"}
+            {/* {selected.rarity} */}
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-6 sm:grid-cols-[200px_1fr]">
-          <CardImage card={selected} alt={selected.name} />
+          <CardImage card={selected.card_faces} alt={selected.name} />
 
           <div className="space-y-4">
             <div className="flex flex-wrap items-end gap-4">
@@ -119,11 +118,11 @@ export function AddCardDialog({
               </div>
             )}
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
-              {(printings?.data ?? []).map((p) => {
-                const isActive = p.id === selected.id;
+              {(printings ?? []).map((p) => {
+                const isActive = p.external_id === selected.external_id;
                 return (
                   <button
-                    key={p.id}
+                    key={p.external_id}
                     type="button"
                     onClick={() => setSelected(p)}
                     className={cn(
@@ -131,14 +130,12 @@ export function AddCardDialog({
                       isActive ? "ring-2 ring-primary" : "hover:bg-muted/40",
                     )}
                   >
-                    <CardImage card={p} alt={p.name} />
+                    <CardImage card={p.card_faces} alt={p.name} />
                     <div className="px-0.5 text-[10px] leading-tight text-muted-foreground">
                       <div className="font-medium text-foreground">
-                        {p.set?.toUpperCase()} #{p.collector_number}
+                        {p.set.code?.toUpperCase()} #{p.collector_number}
                       </div>
-                      <div className="line-clamp-2">
-                        {styleLabel(p) || p.set_name}
-                      </div>
+                      <div className="line-clamp-2">{p.set.name}</div>
                     </div>
                   </button>
                 );

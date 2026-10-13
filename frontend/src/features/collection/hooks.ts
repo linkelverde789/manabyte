@@ -4,11 +4,11 @@ import {
   createCollectionItem,
   deleteCollectionItem,
   getCollectionItems,
-  listCollectionItemFromSet,
   partialUpdateCollectionItem,
 } from "./api";
 import type {
   BulkCreateCollectionItemData,
+  CollectionItem,
   CreateCollectionItemData,
   FilterCollectionParams,
   PartialUpdateCollectionItemData,
@@ -85,18 +85,39 @@ export function usePartialUpdateCollectionItem() {
 
 export function useDeleteCollectionItem() {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (cardId: number) => {
-      return deleteCollectionItem(cardId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    mutationFn: (cardId: number) => deleteCollectionItem(cardId),
+
+    onMutate: async (cardId) => {
+      await queryClient.cancelQueries({
         queryKey: ["collection"],
       });
-      toast.success(`Card deleted!`);
+
+      const previousCollections = queryClient.getQueriesData<CollectionItem[]>({
+        queryKey: ["collection"],
+      });
+
+      queryClient.setQueriesData<CollectionItem[]>(
+        { queryKey: ["collection"] },
+        (old) => old?.filter((item) => item.id !== cardId),
+      );
+
+      return { previousCollections };
     },
-    onError: (error) => {
+
+    onError: (error, _cardId, context) => {
+      context?.previousCollections.forEach(([queryKey, data]) => {
+        if (data !== undefined) {
+          queryClient.setQueryData(queryKey, data);
+        }
+      });
+
       toast.error(`${error}`);
+    },
+
+    onSuccess: () => {
+      toast.success("Card deleted!");
     },
   });
 }
@@ -108,12 +129,4 @@ export function useCollectionTotal(folderId: number) {
     total: data?.reduce((total, item) => total + item.quantity, 0) ?? 0,
     entries: data?.length,
   };
-}
-
-export function useListCollectionItemFromSet(scryfallIds?: string[]) {
-  return useQuery({
-    queryKey: ["collection", "set", scryfallIds],
-    queryFn: () => listCollectionItemFromSet(scryfallIds!),
-    enabled: !!scryfallIds?.length,
-  });
 }

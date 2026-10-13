@@ -1,19 +1,19 @@
-import { useSearchCardStyles } from "#/features/scryfall/hooks";
-import type { ScryfallCard } from "#/features/scryfall/types";
 import { cn } from "#/lib/utils";
 import { Loader2 } from "lucide-react";
 import { CardImage } from "./cardImage";
+import type { Card } from "#/lib/types";
+import { useListPrints } from "#/features/utils/hooks";
 
 export default function StylePicker({
   card,
   dataCardId,
   onUpdated,
 }: {
-  card: ScryfallCard;
+  card: Card;
   dataCardId: number;
   onUpdated: (scryfall_id: string, cardId: number) => void;
 }) {
-  const { data: printings, isLoading } = useSearchCardStyles(card.name);
+  const { data: printings, isLoading } = useListPrints(card.oracle_id);
 
   return (
     <div className="col-span-full space-y-2 rounded-lg bg-muted/30 p-3">
@@ -23,43 +23,28 @@ export default function StylePicker({
         </div>
       )}
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-        {(printings?.data ?? []).map((printing) => (
+        {(printings ?? []).map((printing) => (
           <button
-            key={printing.id}
+            key={printing.external_id}
             type="button"
-            onClick={() => onUpdated(printing.id, dataCardId)}
+            onClick={() => onUpdated(printing.external_id, dataCardId)}
             className={cn(
               "space-y-1 rounded-lg p-1 text-left transition",
-              printing.id === card.id
+              printing.external_id === card.external_id
                 ? "ring-2 ring-primary"
                 : "hover:bg-muted/60",
             )}
           >
-            <CardImage card={printing} alt={printing.name} />
+            <CardImage card={printing.card_faces} alt={printing.name} />
             <div className="px-0.5 text-[10px] leading-tight text-muted-foreground">
               <div className="font-medium text-foreground">
-                {printing.set?.toUpperCase()} #{printing.collector_number}
+                {printing.set.code?.toUpperCase()} #{printing.collector_number}
               </div>
-              <div className="line-clamp-2">
-                {styleLabel(printing) || printing.set_name}
-              </div>
+              <div className="line-clamp-2">{printing.set.name}</div>
             </div>
           </button>
         ))}
       </div>
     </div>
   );
-}
-
-export function styleLabel(card: ScryfallCard) {
-  const parts: string[] = [];
-  const effects = card.frame_effects ?? [];
-  if (effects.includes("showcase")) parts.push("Showcase");
-  if (effects.includes("extendedart")) parts.push("Extended art");
-  if (effects.includes("etched")) parts.push("Etched");
-  if (effects.includes("inverted")) parts.push("Inverted");
-  if (card.border_color === "borderless") parts.push("Borderless");
-  if (card.full_art) parts.push("Full art");
-  if (card.promo) parts.push("Promo");
-  return parts.join(" · ");
 }

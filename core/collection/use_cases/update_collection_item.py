@@ -1,3 +1,5 @@
+from cards.api.exceptions import ScryfallCardException
+from cards.selectors.cards import CardSelector
 from collection.dto.collection import UpdateCollectionItemInput
 from collection.exceptions import CollectionItemException
 from collection.models import CollectionItem
@@ -27,9 +29,19 @@ class UpdateCollectionItemUseCase:
             if folder is None:
                 raise FolderException(f"Folder {data['folder_id']} not found", "404")
 
+        card = None
+
+        if "scryfall_id" in data:
+            card = CardSelector.get_card_from_scryfall_id(data["scryfall_id"])
+
+            if card is None:
+                raise ScryfallCardException(
+                    f"Card: {data['scryfall_id']} not found", "404"
+                )
+
         update_input = UpdateCollectionItemInput(
             quantity=data.get("quantity", None),
-            scryfall_id=data.get("scryfall_id", None),
+            card=card,
             foil=data.get("foil", None),
             language=data.get("language", None),
             condition=data.get("condition", None),

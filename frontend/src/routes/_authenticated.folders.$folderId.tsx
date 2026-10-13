@@ -1,7 +1,6 @@
 import CardSearch from "#/components/deckCards/cardSearch";
 import type { CreateCollectionItemData } from "#/features/collection/types";
 import type { ExportFormat } from "#/features/exports/types";
-import type { ScryfallCard } from "#/features/scryfall/types";
 import {
   useBulkCreateCollectionItem,
   useCreateCollectionItem,
@@ -9,7 +8,6 @@ import {
 } from "#/features/collection/hooks";
 import { useFolderExport } from "#/features/exports/hooks";
 import { useGetFolder } from "#/features/folders/hooks";
-import { useLoadCollection } from "#/features/scryfall/hooks";
 import { downloadFile } from "#/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
@@ -55,17 +53,6 @@ function RouteComponent() {
 
   const createCollectionItem = useCreateCollectionItem();
 
-  const [collection, setCollection] = useState<Record<string, ScryfallCard>>(
-    {},
-  );
-
-  const {
-    mutate: loadCollection,
-    data: results,
-    reset: resetCollection,
-    isPending: scryfallLoading,
-  } = useLoadCollection();
-
   const [sort, setSort] = useState<string>("recent");
   const [term, setTerm] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -105,41 +92,6 @@ function RouteComponent() {
     });
   }
 
-  const missingIds = useMemo(() => {
-    return (
-      collectionItems
-        ?.map((card) => card.scryfall_id)
-        .filter((id) => !collection[id])
-        .map((id) => ({ id })) ?? []
-    );
-  }, [collectionItems, collection]);
-
-  useEffect(() => {
-    if (missingIds.length === 0) {
-      return;
-    }
-
-    loadCollection(missingIds);
-  }, [missingIds, loadCollection]);
-
-  useEffect(() => {
-    if (!results?.data) {
-      return;
-    }
-
-    setCollection((previous) => {
-      const next = { ...previous };
-
-      for (const card of results.data) {
-        next[card.id] = card;
-      }
-
-      return next;
-    });
-
-    resetCollection();
-  }, [results, resetCollection]);
-
   const total =
     collectionItems?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
 
@@ -148,7 +100,7 @@ function RouteComponent() {
 
     const rows =
       collectionItems?.flatMap((dataCard) => {
-        const card = collection[dataCard.scryfall_id];
+        const card = dataCard.card;
 
         if (!card) {
           return [];
@@ -156,7 +108,7 @@ function RouteComponent() {
 
         const matches =
           card.name.toLowerCase().includes(query) ||
-          card.set_name?.toLowerCase().includes(query);
+          card.set.name?.toLowerCase().includes(query);
 
         if (!matches) {
           return [];
@@ -181,11 +133,11 @@ function RouteComponent() {
 
       if (sort === "price") {
         const priceA = Number(
-          (a.dataCard.foil ? a.card.prices?.usd_foil : a.card.prices?.usd) ?? 0,
+          (a.dataCard.foil ? a.card.price_foil : a.card.price_nonfoil) ?? 0,
         );
 
         const priceB = Number(
-          (b.dataCard.foil ? b.card.prices?.usd_foil : b.card.prices?.usd) ?? 0,
+          (b.dataCard.foil ? b.card.price_foil : b.card.price_nonfoil) ?? 0,
         );
 
         return priceB - priceA;
@@ -193,7 +145,7 @@ function RouteComponent() {
 
       return 0;
     });
-  }, [collectionItems, collection, debounced, sort]);
+  }, [collectionItems, debounced, sort]);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
@@ -235,8 +187,8 @@ function RouteComponent() {
             />
 
             <FolderContent
-              isLoading={isLoading || scryfallLoading}
-              isResolvingCards={missingIds.length > 0}
+              isLoading={isLoading}
+              isResolvingCards={isLoading}
               deckRows={deckRows}
               groupByType={groupByType}
             />

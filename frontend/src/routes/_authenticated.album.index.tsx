@@ -1,6 +1,6 @@
 import { AlbumIndexSkeleton } from "#/components/album/skeletons";
 import { Input } from "#/components/ui/input";
-import { useListSets } from "#/features/scryfall/hooks";
+import { useListSets } from "#/features/utils/hooks";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BookImage } from "lucide-react";
 import { useState } from "react";
@@ -23,11 +23,11 @@ function RouteComponent() {
 
   const q = query.trim().toLowerCase();
   const filteredSets = q
-    ? sets.data.filter(
+    ? sets.filter(
         (s) =>
           s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q),
       )
-    : sets.data;
+    : sets;
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-4 py-16">
@@ -46,7 +46,7 @@ function RouteComponent() {
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={`Search ${sets.data.length} sets`}
+          placeholder={`Search ${sets.length} sets`}
           autoFocus
         />
         <ul className="mt-4 max-h-80 overflow-y-auto rounded-md border">
@@ -63,7 +63,7 @@ function RouteComponent() {
                   className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-accent"
                 >
                   <img
-                    src={s.icon_svg_uri}
+                    src={s.icon_url}
                     alt=""
                     className="h-4 w-4 invert opacity-80"
                   />

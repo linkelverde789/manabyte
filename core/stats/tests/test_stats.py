@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 import pytest
+from cards.models import ScryfallCard
 from collection.models import CollectionItem
 from deck.models import Deck
 from django.urls import reverse
@@ -14,11 +15,13 @@ def test_get_user_stats(auth_client, user):
     items = 10
     total_cards = items * (items + 1) / 2
 
+    cards = ScryfallCard.objects.all()[0:items]
+
     for item in range(items):
         collection.append(
             CollectionItem(
                 user=user,
-                scryfall_id=uuid4(),
+                card=cards[item],
                 quantity=item + 1,
                 foil=True,
                 condition=f"PSA {item}",
@@ -37,9 +40,9 @@ def test_get_user_stats(auth_client, user):
     assert data["collection"]["unique_cards"] == items
     assert data["collection"]["total"] == total_cards
 
-    same_scryfall_id = uuid4()
+    same_card = ScryfallCard.objects.last()
 
-    CollectionItem.objects.filter(user=user).update(scryfall_id=same_scryfall_id)
+    CollectionItem.objects.filter(user=user).update(card=same_card)
 
     res = auth_client.get(reverse("user-stats"))
     data = res.data

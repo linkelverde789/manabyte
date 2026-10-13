@@ -36,9 +36,9 @@ class SetSelector:
         collection = (
             CollectionItem.objects.filter(
                 user=user,
-                scryfall_id=OuterRef("external_id"),
+                card_id=OuterRef("id"),
             )
-            .values("scryfall_id")
+            .values("card_id")
             .annotate(
                 total_quantity=Sum("quantity"),
                 has_foil=BoolOr("foil"),

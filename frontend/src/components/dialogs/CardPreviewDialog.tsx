@@ -1,4 +1,4 @@
-import type { ScryfallCard } from "#/features/scryfall/types";
+import type { Card } from "#/lib/types";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { CardPreview } from "./CardPreview";
 
@@ -7,7 +7,7 @@ export function CardPreviewDialog({
   onOpenChange,
   card,
 }: {
-  card: ScryfallCard;
+  card: Card;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {

@@ -4,12 +4,12 @@ import { Dialog, DialogContent } from "../ui/dialog";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
-import type { ScryfallCard } from "#/features/scryfall/types";
 import type { CollectionItem } from "#/features/collection/types";
 
 import type { UpdateCardData } from "./EditCardDialog";
 import { CardPreview } from "./CardPreview";
 import EditCard from "./EditCard";
+import type { Card } from "#/lib/types";
 
 export default function GeneralDialog({
   card,
@@ -19,7 +19,7 @@ export default function GeneralDialog({
   initialTab = "preview",
   onUpdate,
 }: {
-  card: ScryfallCard;
+  card: Card;
   dataCard: CollectionItem;
   open: boolean;
   onOpenChange: (open: boolean) => void;

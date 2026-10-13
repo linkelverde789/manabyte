@@ -1,5 +1,5 @@
-import type { ScryfallCard } from "#/features/scryfall/types";
 import type { CollectionItem } from "#/features/collection/types";
+import type { Card } from "#/lib/types";
 
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 
@@ -21,7 +21,7 @@ export function EditCardDialog({
   onOpenChange,
   onUpdate,
 }: {
-  card: ScryfallCard | null;
+  card: Card | null;
   dataCard: CollectionItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;

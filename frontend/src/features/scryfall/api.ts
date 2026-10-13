@@ -7,7 +7,7 @@ import type {
   setCollection,
 } from "./types";
 
-export function searchCard(text: string) {
+export function searchCardScryfall(text: string) {
   return api<ScryfallResult>(
     `/cards/search?q=${encodeURIComponent(text)}&unique=true&order=name&include_extras=false`,
   );

@@ -1,56 +1,96 @@
 import csv
 from io import StringIO
 
-from collection.models import CollectionItem
+from cards.utils.utils import collector_number_sort_key
 from collection.selectors.collection import CollectionSelector
 from deck.models import Deck
 from deck.selectors.deck_card import DeckCardSelector
 from django.http import HttpResponse
 from folder.models import Folder
 from openpyxl import Workbook
-from scryfall.api import ScryfallAPI
 
 
 def export_deck(deck: Deck, format_type: str = "csv"):
-    cards = list(DeckCardSelector.list_cards_from_deck(deck=deck))
-    data_list = get_card_data_list(cards)
-    return export_to_file(data_list, f"{deck.name.lower()}_deck", format_type)
+    deck_cards = DeckCardSelector.list_cards_from_deck(deck)
+    deck_cards = [item for item in deck_cards if item.card is not None]
+    deck_cards.sort(
+        key=lambda item: (
+            item.card.set.code.lower(),
+            collector_number_sort_key(item.card),
+        )
+    )
+
+    data_list = [
+        {
+            "quantity": item.quantity,
+            "name": item.card.name,
+            "set_name": item.card.set.name,
+            "set": item.card.set.code,
+            "collector_number": item.card.collector_number,
+            "foil": "",
+        }
+        for item in deck_cards
+    ]
+
+    return export_to_file(
+        data_list,
+        f"{deck.name.lower()}_deck",
+        format_type,
+    )
 
 
 def export_folder(folder: Folder, format_type: str = "csv"):
-    cards = list(CollectionSelector.list_collection_item_from_folder(folder=folder))
-    data_list = get_card_data_list(cards)
-    return export_to_file(data_list, f"{folder.name.lower()}_folder", format_type)
-
-
-def export_collection(collection: CollectionItem, format_type: str = "csv"):
-    data_list = get_card_data_list(list[collection])
-    return export_to_file(data_list, "collection", format_type)
-
-
-def get_card_data_list(cards):
-    scryfall_collection = ScryfallAPI.load_collection(cards=cards)
-    result = []
-
-    for card in cards:
-        card_data = next(
-            (c for c in scryfall_collection if c.get("id") == str(card.scryfall_id)),
-            None,
+    items = CollectionSelector.list_collection_item_from_folder(folder)
+    items = [item for item in items if item.card is not None]
+    items.sort(
+        key=lambda item: (
+            item.card.set.code.lower(),
+            collector_number_sort_key(item.card),
         )
-        if not card_data:
-            continue
+    )
 
-        row = {
-            "quantity": card.quantity,
-            "name": card_data.get("name"),
-            "set_name": card_data.get("set_name"),
-            "set": card_data.get("set"),
-            "collector_number": card_data.get("collector_number"),
-            "foil": getattr(card, "foil", None),
+    data_list = [
+        {
+            "quantity": item.quantity,
+            "name": item.card.name,
+            "set_name": item.card.set.name,
+            "set": item.card.set.code,
+            "collector_number": item.card.collector_number,
+            "foil": item.foil,
         }
-        result.append(row)
+        for item in items
+    ]
 
-    return result
+    return export_to_file(
+        data_list,
+        f"{folder.name.lower()}_folder",
+        format_type,
+    )
+
+
+def export_collection(user, format_type: str = "csv"):
+    items = CollectionSelector.list_collection_item_from_user(user)
+    items = [item for item in items if item.card is not None]
+    items.sort(
+        key=lambda item: (
+            item.card.set.code.lower(),
+            collector_number_sort_key(item.card),
+        )
+    )
+
+    data_list = [
+        {
+            "quantity": item.quantity,
+            "name": item.card.name,
+            "set_name": item.card.set.name,
+            "set": item.card.set.code,
+            "collector_number": item.card.collector_number,
+            "foil": item.foil,
+        }
+        for item in items
+    ]
+
+    return export_to_file(data_list, "collection", format_type)
 
 
 def export_to_file(data_list, filename, file_type):

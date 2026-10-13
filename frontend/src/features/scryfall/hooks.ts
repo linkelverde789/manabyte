@@ -6,18 +6,18 @@ import {
   loadCollection,
   loadSingleCard,
   randomCard,
-  searchCard,
   searchCardFuzzy,
+  searchCardScryfall,
   searchCardStyles,
   type ScryfallCollectionIdentifier,
 } from "./api";
 import type { ScryfallCard } from "./types";
 import { toast } from "sonner";
 
-export function useSearchCard(text: string) {
+export function useSearchCardScryfall(text: string) {
   return useQuery({
     queryKey: ["search", text],
-    queryFn: () => searchCard(text),
+    queryFn: () => searchCardScryfall(text),
     enabled: text.length > 2,
   });
 }

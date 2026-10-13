@@ -1,5 +1,4 @@
-import type { CardFace } from "#/features/album/types";
-
+import type { Face } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { useState } from "react";
 
@@ -9,7 +8,7 @@ export function CardImage({
   className,
   foil,
 }: {
-  card: CardFace[];
+  card: Face[];
   alt: string;
   className?: string;
   foil?: boolean;
