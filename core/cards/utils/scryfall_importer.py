@@ -16,15 +16,25 @@ def _decimal_price(value):
         return Decimal("0.00")
 
 
-def process_set(set_id, set_code, set_name, card_count=1, icon_url=""):
+def process_set(
+    set_id: str,
+    set_code: str,
+    set_name: str,
+    card_count: int | None = None,
+    icon_url: str | None = None,
+):
+    default = {
+        "code": set_code,
+        "name": set_name,
+    }
+    if card_count is not None:
+        default["card_count"] = card_count
+
+    if icon_url is not None:
+        default["icon_url"] = icon_url
+
     scryfall_set, _ = ScryfallSet.objects.update_or_create(
-        external_id=set_id,
-        defaults={
-            "code": set_code,
-            "name": set_name,
-            "card_count": card_count,
-            "icon_url": icon_url,
-        },
+        external_id=set_id, defaults=default
     )
     return scryfall_set
 
