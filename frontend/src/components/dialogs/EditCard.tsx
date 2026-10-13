@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useSearchCardStyles } from "#/features/scryfall/hooks";
-import type { ScryfallCard } from "#/features/scryfall/types";
+import { useListPrints } from "#/features/scryfall/hooks";
 import type { CollectionItem } from "#/features/collection/types";
 
 import { Input } from "../ui/input";
@@ -11,11 +10,11 @@ import { Label } from "../ui/labels";
 
 import ManaCost from "../search/manaCost";
 import { CardImage } from "../deckCards/cardImage";
-import { styleLabel } from "../deckCards/stylePicker";
 
 import { Layers, Loader2, Sparkles } from "lucide-react";
 
 import { cn } from "#/lib/utils";
+import type { Card } from "#/lib/types";
 
 export interface UpdateCardData {
   scryfall_id?: string;
@@ -32,12 +31,12 @@ export default function EditCard({
   onUpdate,
   onClose,
 }: {
-  card: ScryfallCard | null;
+  card: Card | null;
   dataCard: CollectionItem | null;
   onUpdate: (data: UpdateCardData) => void;
   onClose?: () => void;
 }) {
-  const [selected, setSelected] = useState<ScryfallCard | null>(card);
+  const [selected, setSelected] = useState<Card | null>(card);
 
   const [showStyles, setShowStyles] = useState(false);
 
@@ -56,9 +55,7 @@ export default function EditCard({
     setCondition(dataCard?.condition ?? "NM");
   }, [card, dataCard]);
 
-  const { data: printings, isLoading } = useSearchCardStyles(
-    showStyles && selected ? selected.name : "",
-  );
+  const { data: printings, isLoading } = useListPrints(card?.oracle_id!);
 
   if (!card || !selected || !dataCard) {
     return null;
@@ -66,7 +63,7 @@ export default function EditCard({
 
   function submit() {
     onUpdate({
-      scryfall_id: selected!.id,
+      scryfall_id: selected?.external_id,
       quantity: Math.max(1, quantity),
       foil,
       condition,
@@ -75,26 +72,25 @@ export default function EditCard({
     onClose?.();
   }
 
-  const canFoil = (selected.finishes ?? []).some(
-    (finish) => finish !== "nonfoil",
-  );
+  const canFoil = selected.can_foil;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
         <h2 className="text-2xl font-semibold">{selected.name}</h2>
 
-        <ManaCost cost={selected.mana_cost} />
+        <ManaCost cost={selected.card_faces[0].mana_cost} />
       </div>
 
       <p className="text-sm text-muted-foreground">
-        {selected.set_name} ({selected.set?.toUpperCase()}) #
-        {selected.collector_number} · {selected.rarity}
+        {selected.set.name} ({selected.set.code?.toUpperCase()}) #
+        {selected.collector_number} · {"C"}
+        {/* {selected.rarity} */}
       </p>
 
       <div className="grid gap-6 sm:grid-cols-[200px_1fr]">
         <div className="mx-auto w-full max-w-[200px]">
-          <CardImage card={selected} alt={selected.name} />
+          <CardImage card={selected.card_faces} alt={selected.name} />
         </div>
 
         <div className="space-y-5">
@@ -174,12 +170,12 @@ export default function EditCard({
           )}
 
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
-            {(printings?.data ?? []).map((printing) => {
-              const isActive = printing.id === selected.id;
+            {(printings ?? []).map((printing) => {
+              const isActive = printing.external_id === selected.external_id;
 
               return (
                 <button
-                  key={printing.id}
+                  key={printing.external_id}
                   type="button"
                   onClick={() => setSelected(printing)}
                   className={cn(
@@ -187,16 +183,15 @@ export default function EditCard({
                     isActive ? "ring-2 ring-primary" : "hover:bg-muted/40",
                   )}
                 >
-                  <CardImage card={printing} alt={printing.name} />
+                  <CardImage card={printing.card_faces} alt={printing.name} />
 
                   <div className="px-0.5 text-[10px] leading-tight text-muted-foreground">
                     <div className="font-medium text-foreground">
-                      {printing.set?.toUpperCase()} #{printing.collector_number}
+                      {printing.set.code?.toUpperCase()} #
+                      {printing.collector_number}
                     </div>
 
-                    <div className="line-clamp-2">
-                      {styleLabel(printing) || printing.set_name}
-                    </div>
+                    <div className="line-clamp-2">{printing.set.name}</div>
                   </div>
                 </button>
               );

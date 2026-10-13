@@ -1,6 +1,6 @@
-import type { DataCard } from "../collection/types";
+import type { BaseCardInformation } from "#/lib/types";
 
-export interface DeckCard extends DataCard {
+export interface DeckCard extends BaseCardInformation {
   zone: string;
 }
 
