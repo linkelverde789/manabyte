@@ -5,6 +5,7 @@ from cards.consts import FIELD_LOOKUPS
 from cards.dto.dto import SearchCardsFilters
 from cards.models import ScryfallCard
 from rest_framework.exceptions import ValidationError
+from users.models import User
 
 
 def _parse_q(q, cards):
@@ -89,3 +90,15 @@ class CardSelector:
     @staticmethod
     def get_card_from_scryfall_id(scryfall_id: str) -> ScryfallCard | None:
         return ScryfallCard.objects.filter(external_id=scryfall_id).first()
+
+    @staticmethod
+    def get_cards_from_deck(deck_id: int):
+        return ScryfallCard.objects.filter(deckcard__deck_id=deck_id)
+
+    @staticmethod
+    def get_cards_from_folder(folder_id: int):
+        return ScryfallCard.objects.filter(collectionitem__folder_id=folder_id)
+
+    @staticmethod
+    def get_cards_from_user_collection(user: User):
+        return ScryfallCard.objects.filter(collectionitem__user=user)
