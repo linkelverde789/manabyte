@@ -8,7 +8,6 @@ import {
 } from "#/features/collection/hooks";
 import { useFolderExport } from "#/features/exports/hooks";
 import { useGetFolder } from "#/features/folders/hooks";
-import { useLoadCollection } from "#/features/scryfall/hooks";
 import { downloadFile } from "#/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
