@@ -16,7 +16,9 @@ class CollectionSelector:
 
     @staticmethod
     def list_collection_item_from_user(user: User):
-        return CollectionItem.objects.filter(user=user).order_by("-id")
+        return CollectionItem.objects.filter(user=user).select_related(
+            "card", "card__set"
+        )
 
     @staticmethod
     def list_collection_item():
@@ -24,4 +26,6 @@ class CollectionSelector:
 
     @staticmethod
     def list_collection_item_from_folder(folder: Folder):
-        return CollectionItem.objects.filter(folder=folder).order_by("-id")
+        return CollectionItem.objects.filter(folder=folder).select_related(
+            "card", "card__set"
+        )

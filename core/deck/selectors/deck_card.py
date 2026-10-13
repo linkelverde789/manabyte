@@ -12,4 +12,8 @@ class DeckCardSelector:
 
     @staticmethod
     def list_cards_from_deck(deck: Deck):
-        return DeckCard.objects.filter(deck=deck).order_by("-id")
+        return (
+            DeckCard.objects.filter(deck=deck)
+            .select_related("card", "card__set")
+            .order_by("-id")
+        )
