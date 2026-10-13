@@ -1,8 +1,5 @@
-import type { ScryfallCard } from "#/features/scryfall/types";
-import type { CollectionItem } from "#/features/collection/types";
-
 import { Minus, Pencil, Plus, Sparkles, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { CardImage } from "../deckCards/cardImage";
 import { Button } from "../ui/button";
@@ -17,13 +14,15 @@ import ShowPrice from "./showPrice";
 
 import ManaCost from "../search/manaCost";
 import GeneralDialog from "../dialogs/GeneralDialog";
+import type { Card } from "#/lib/types";
+import type { CollectionItem } from "#/features/collection/types";
 
 export default function CardRow({
   dataCard,
   card,
 }: {
   dataCard: CollectionItem;
-  card: ScryfallCard;
+  card: Card;
 }) {
   const partialUpdateCollectorItem = usePartialUpdateCollectionItem();
 
@@ -31,16 +30,25 @@ export default function CardRow({
 
   const [openDialog, setOpenDialog] = useState(false);
   const [initialTab, setInitialTab] = useState<"preview" | "edit">("preview");
+  const [quantity, setQuantity] = useState(dataCard.quantity);
 
-  function handleQuantity(quantity: number) {
-    if (quantity < 1) {
+  useEffect(() => {
+    setQuantity(dataCard.quantity);
+  }, [dataCard.quantity]);
+
+  function handleQuantity(nextQuantity: number) {
+    if (nextQuantity < 1) {
+      setQuantity(0);
       deleteCollectorItem.mutate(dataCard.id);
-    } else {
-      partialUpdateCollectorItem.mutate({
-        cardId: dataCard.id,
-        data: { quantity },
-      });
+      return;
     }
+
+    setQuantity(nextQuantity);
+
+    partialUpdateCollectorItem.mutate({
+      cardId: dataCard.id,
+      data: { quantity: nextQuantity },
+    });
   }
 
   function handleUpdate(data: UpdateCardData) {
@@ -65,21 +73,25 @@ export default function CardRow({
         }}
       >
         <div className="w-20 shrink-0">
-          <CardImage card={card} alt={card.name} foil={dataCard.foil} />
+          <CardImage
+            card={card.card_faces}
+            alt={card.name}
+            foil={dataCard.foil}
+          />
         </div>
 
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex items-start justify-between gap-2">
             <div className="line-clamp-2 text-sm font-medium">{card.name}</div>
 
-            <ManaCost cost={card.mana_cost} />
+            <ManaCost cost={card.card_faces[0].mana_cost} />
           </div>
 
           <div className="text-xs text-muted-foreground">
-            {card.set_name!.length > 20
-              ? `${card.set_name!.slice(0, 20)}...`
-              : card.set_name}{" "}
-            ({card.set!.toUpperCase()}) #{card.collector_number}
+            {card.set.name!.length > 20
+              ? `${card.set.name!.slice(0, 20)}...`
+              : card.set.name}{" "}
+            ({card.set.code!.toUpperCase()}) #{card.collector_number}
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -118,14 +130,14 @@ export default function CardRow({
               onClick={(e) => {
                 e.stopPropagation();
 
-                handleQuantity(dataCard.quantity - 1);
+                handleQuantity(quantity - 1);
               }}
             >
               <Minus className="h-3.5 w-3.5" />
             </Button>
 
             <span className="w-8 text-center text-sm font-medium">
-              {dataCard.quantity}
+              {quantity}
             </span>
 
             <Button
@@ -134,16 +146,16 @@ export default function CardRow({
               className="h-7 w-7"
               onClick={(e) => {
                 e.stopPropagation();
-                handleQuantity(dataCard.quantity + 1);
+                handleQuantity(quantity + 1);
               }}
             >
               <Plus className="h-3.5 w-3.5" />
             </Button>
 
             {dataCard.foil ? (
-              <ShowPrice price={card.prices?.usd_foil} />
+              <ShowPrice price={card.price_foil} />
             ) : (
-              <ShowPrice price={card.prices?.usd} />
+              <ShowPrice price={card.price_nonfoil} />
             )}
 
             <Button

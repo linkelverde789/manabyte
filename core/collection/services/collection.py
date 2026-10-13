@@ -12,7 +12,7 @@ class CollectionItemService:
     def create_collection_item(data: CreateCollectionItemInput) -> CollectionItem:
         return CollectionItem.objects.create(
             user=data.user,
-            scryfall_id=data.scryfall_id,
+            card=data.card,
             quantity=data.quantity,
             foil=data.foil,
             language=data.language,
@@ -27,7 +27,7 @@ class CollectionItemService:
             [
                 CollectionItem(
                     user=item.user,
-                    scryfall_id=item.scryfall_id,
+                    card=item.card,
                     quantity=item.quantity,
                     foil=item.foil,
                     language=item.language,
@@ -43,8 +43,8 @@ class CollectionItemService:
     def update_collection_item(
         item: CollectionItem, data: UpdateCollectionItemInput
     ) -> CollectionItem:
-        if data.scryfall_id is not None:
-            item.scryfall_id = data.scryfall_id
+        if data.card is not None:
+            item.card = data.card
 
         if data.quantity is not None:
             item.quantity = data.quantity

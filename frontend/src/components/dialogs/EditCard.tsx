@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { useListPrints } from "#/features/scryfall/hooks";
 import type { CollectionItem } from "#/features/collection/types";
 
 import { Input } from "../ui/input";
@@ -15,6 +14,7 @@ import { Layers, Loader2, Sparkles } from "lucide-react";
 
 import { cn } from "#/lib/utils";
 import type { Card } from "#/lib/types";
+import { useListPrints } from "#/features/utils/hooks";
 
 export interface UpdateCardData {
   scryfall_id?: string;

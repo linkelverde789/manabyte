@@ -6,6 +6,7 @@ class ScryfallFaceSerializer(serializers.Serializer):
     name = serializers.CharField()
     mana_cost = serializers.CharField()
     type_line = serializers.CharField()
+    flavor_text = serializers.CharField()
     oracle_text = serializers.CharField()
     image_url = serializers.CharField()
     colors = serializers.JSONField()

@@ -3,7 +3,7 @@ import { DollarSign } from "lucide-react";
 export default function ShowPrice({
   price,
 }: {
-  price: string | null | undefined;
+  price: string | number | null | undefined;
 }) {
   if (!price || price === "") {
     return null;

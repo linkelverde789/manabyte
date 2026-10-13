@@ -19,7 +19,7 @@ class UserStatsView(APIView):
         data = {
             "decks": decks,
             "collection": {
-                "unique_cards": collection_items.distinct("scryfall_id").count(),
+                "unique_cards": collection_items.distinct("card__external_id").count(),
                 "total": collection_items.aggregate(total=Sum("quantity"))["total"]
                 or 0,
             },
