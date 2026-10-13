@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from cards.models import ScryfallCard
 from collection.exceptions import CollectionItemException
 from folder.models import Folder
 from users.models import User
@@ -8,7 +9,7 @@ from users.models import User
 @dataclass
 class CreateCollectionItemInput:
     user: User
-    scryfall_id: str
+    card: ScryfallCard
     quantity: int = 1
     foil: bool = False
     language: str = "en"
@@ -33,7 +34,7 @@ class CreateCollectionItemInput:
 
 @dataclass
 class UpdateCollectionItemInput:
-    scryfall_id: str | None = None
+    card: ScryfallCard | None = None
     quantity: int | None = None
     foil: bool | None = None
     language: str | None = None

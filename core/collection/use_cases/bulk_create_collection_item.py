@@ -1,3 +1,4 @@
+from cards.selectors.cards import CardSelector
 from collection.dto.collection import CreateCollectionItemInput
 from collection.selectors.collection import CollectionSelector
 from collection.services.collection import CollectionItemService
@@ -23,7 +24,7 @@ class BulkCreateCollectionItemUseCase:
                 condition=item["condition"],
                 folder=folder,
                 quantity=item["quantity"],
-                scryfall_id=item["scryfall_id"],
+                card=CardSelector.get_card_from_scryfall_id(item["scryfall_id"]),
                 user=user,
             ).validate()
             for item in items
