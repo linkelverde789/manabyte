@@ -203,7 +203,7 @@ def test_keyword_search(api_client):
 
 @pytest.mark.django_db
 def text_color_search(api_client):
-    color = "G"
+    color = "g"
 
     qs = (
         ScryfallCard.objects.filter(faces__colors__icontains=color)

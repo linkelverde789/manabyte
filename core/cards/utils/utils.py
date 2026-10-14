@@ -15,4 +15,5 @@ def collector_number_sort_key(card):
 
 def check_name_in_response(data: list, qs):
     for index, card in enumerate(qs):
+        print(f"card: {card.set.code}, data: {data[index]['set']['code']}")
         assert card.name == data[index]["name"]

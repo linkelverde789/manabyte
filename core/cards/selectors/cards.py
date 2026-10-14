@@ -4,11 +4,15 @@ import shlex
 from cards.consts import FIELD_LOOKUPS
 from cards.dto.dto import SearchCardsFilters
 from cards.models import ScryfallCard
+from django.db.models import Q
 from rest_framework.exceptions import ValidationError
+from sets.consts import SET_TYPES_TO_EXCLUDE
 from users.models import User
 
 
 def _parse_q(q, cards):
+    cards = _exclude_some_sets(cards)
+
     try:
         tokens = shlex.split(q)
     except ValueError as exc:
@@ -62,6 +66,13 @@ def _parse_fields(parsed, cards):
             cards = cards.exclude(condition)
         else:
             cards = cards.filter(condition)
+
+    return cards
+
+
+# TODO: Refactor this. Maybe need research on sets
+def _exclude_some_sets(cards):
+    cards = cards.exclude(set__set_type__in=SET_TYPES_TO_EXCLUDE)
 
     return cards
 
