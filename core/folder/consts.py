@@ -1,0 +1,2 @@
+FOLDER_TYPE_COLLECTION = "collection"
+FOLDER_TYPE_DECK = "deck"
