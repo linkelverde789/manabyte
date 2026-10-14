@@ -19,6 +19,7 @@ class Command(BaseCommand):
                 set_id=set["id"],
                 set_code=set["code"],
                 set_name=set["name"],
+                set_type=set["set_type"],
                 card_count=set["card_count"],
                 icon_url=set["icon_svg_uri"],
             )

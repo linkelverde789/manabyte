@@ -20,6 +20,7 @@ def process_set(
     set_id: str,
     set_code: str,
     set_name: str,
+    set_type: str | None = None,
     card_count: int | None = None,
     icon_url: str | None = None,
 ):
@@ -32,6 +33,9 @@ def process_set(
 
     if icon_url is not None:
         default["icon_url"] = icon_url
+
+    if set_type is not None:
+        default["type"] = set_type
 
     scryfall_set, _ = ScryfallSet.objects.update_or_create(
         external_id=set_id, defaults=default
@@ -54,7 +58,8 @@ def _process_card(card_data, scryfall_set):
             "can_nonfoil": card_data.get("nonfoil", card_data.get("can_nonfoil", True)),
             "price_nonfoil": _decimal_price(prices.get("usd")),
             "price_foil": _decimal_price(prices.get("usd_foil")),
-            "keywords": card_data.get("keywords") or [],
+            "keywords": card_data.get("keywords", []),
+            "layout": card_data.get("layout", "normal"),
         },
     )
 
