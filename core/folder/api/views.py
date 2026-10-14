@@ -1,6 +1,7 @@
 from collection.models import CollectionItem
 from deck.models import Deck
 from folder.api.serializers import FolderResponseSerializer
+from folder.consts import FOLDER_TYPE_COLLECTION, FOLDER_TYPE_DECK
 from folder.models import Folder
 from folder.use_cases.create_folder import CreateFolderUseCase
 from folder.use_cases.get_folder_from_user import GetFolderFromUserUseCase
@@ -52,9 +53,9 @@ class UserFolderView(ViewSet):
 
         folder = Folder.objects.filter(user=user, id=pk).first()
 
-        if folder.type == "deck":
+        if folder.type.lower() == FOLDER_TYPE_DECK:
             Deck.objects.filter(folder=folder, user=user).update(folder=None)
-        elif folder.type == "collection":
+        elif folder.type.lower() == FOLDER_TYPE_COLLECTION:
             CollectionItem.objects.filter(folder=folder, user=user).update(folder=None)
 
         folder.delete()

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from folder.consts import FOLDER_TYPE_COLLECTION, FOLDER_TYPE_DECK
 from folder.exceptions import FolderException
 from users.models import User
 
@@ -20,7 +21,7 @@ class CreateFolderInput:
         if not self.type:
             raise FolderException("Type can't be empty", "400")
 
-        if self.type != "deck" and self.type != "collection":
+        if self.type != FOLDER_TYPE_DECK and self.type != FOLDER_TYPE_COLLECTION:
             raise FolderException("Type must be deck or collection", "400")
 
         return self
