@@ -69,9 +69,8 @@ def _parse_fields(parsed, cards):
     return cards
 
 
-# TODO: Refactor this. Maybe need research on sets
 def _exclude_some_sets(cards):
-    cards = cards.exclude(set__set_type__in=SET_TYPES_TO_EXCLUDE)
+    cards = cards.exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
 
     return cards
 

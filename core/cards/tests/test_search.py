@@ -1,7 +1,8 @@
 import pytest
-from django.db.models import Q
+from django.db.models import Q, Subquery
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK
+from sets.consts import SET_TYPES_TO_EXCLUDE
 from sets.models import ScryfallSet
 
 from cards.consts import SEARCH_LIMIT
@@ -17,8 +18,9 @@ def test_limit_and_page_search(api_client):
     qs = (
         ScryfallCard.objects.all()
         .order_by("oracle_id", "id")
-        .distinct("oracle_id")[0:SEARCH_LIMIT]
-    )
+        .distinct("oracle_id")
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
+    )[0:SEARCH_LIMIT]
 
     data = res.data
 
@@ -51,6 +53,7 @@ def test_simple_search(api_client):
         )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
     )[0:SEARCH_LIMIT]
 
     res = api_client.get(reverse("search"), {"q": f'"{name}"'}, format="json")
@@ -78,8 +81,9 @@ def test_type_search(api_client):
     qs = (
         ScryfallCard.objects.filter(faces__type_line__icontains=type)
         .order_by("oracle_id", "id")
-        .distinct("oracle_id")[page - 1 : limit]
-    )
+        .distinct("oracle_id")
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
+    )[page - 1 : limit]
 
     assert len(res.data) == qs.count()
     check_name_in_response(res.data, qs)
@@ -101,8 +105,9 @@ def test_name_search(api_client):
     qs = (
         ScryfallCard.objects.filter(faces__name__icontains=name)
         .order_by("oracle_id", "id")
-        .distinct("oracle_id")[page - 1 : limit]
-    )
+        .distinct("oracle_id")
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
+    )[page - 1 : limit]
 
     assert len(strict_result.data) == qs.count()
 
@@ -129,6 +134,7 @@ def test_set_search(api_client):
         ScryfallCard.objects.filter(set__code__iexact=set_code)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
     )[0:SEARCH_LIMIT]
 
     res = api_client.get(
@@ -144,6 +150,7 @@ def test_set_search(api_client):
         ScryfallCard.objects.filter(set__name__iexact=set_name)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
     )[0:SEARCH_LIMIT]
 
     res = api_client.get(
@@ -164,6 +171,7 @@ def test_set_search(api_client):
         )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
     )[0:SEARCH_LIMIT]
 
     res = api_client.get(reverse("search"), {"q": f"set:{set_name}"}, format="json")
@@ -194,7 +202,8 @@ def test_keyword_search(api_client):
         )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
-    )
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
+    )[0:SEARCH_LIMIT]
 
     assert len(res.data) == qs.count()
 
@@ -209,6 +218,7 @@ def text_color_search(api_client):
         ScryfallCard.objects.filter(faces__colors__icontains=color)
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
     )[0:SEARCH_LIMIT]
 
     res = api_client(reverse("search"), {"q": f"color:{color}"}, format="json")
@@ -233,7 +243,8 @@ def test_exclude_field_filters(api_client):
         )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
-    )
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
+    )[0:SEARCH_LIMIT]
 
     strict_result = api_client.get(
         reverse("search"), {"q": f'name:{name} -name:"{excluded_name}"'}, format="json"
@@ -254,7 +265,8 @@ def test_exclude_field_filters(api_client):
         )
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
-    )
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
+    )[0:SEARCH_LIMIT]
 
     relaxed_result = api_client.get(
         reverse("search"), {"q": f"name:{name}"}, format="json"
