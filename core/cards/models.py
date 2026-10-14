@@ -57,8 +57,8 @@ class ScryfallCardFace(models.Model):
     colors = models.JSONField(default=list, blank=True)
 
     class Meta:
-        ordering = ["face_index"]
-        constraints = [
+        ordering = ["face_index"]  # noqa: RUF012
+        constraints = [  # noqa: RUF012
             models.UniqueConstraint(
                 fields=["card", "face_index"],
                 name="unique_card_face_index",
