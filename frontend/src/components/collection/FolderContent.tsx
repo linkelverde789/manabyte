@@ -1,9 +1,7 @@
 import { groupCardsByType } from "#/lib/utils";
-import { memo } from "react";
 import EmptyDeck from "../deckCards/emptyDeck";
 import CardRow from "./cardRow";
 import { ItemRowSkeleton } from "./skeletons";
-import type { Card } from "#/lib/types";
 import type { CollectionItem } from "#/features/collection/types";
 
 export function FolderContent({
@@ -14,7 +12,7 @@ export function FolderContent({
 }: {
   isLoading: boolean;
   isResolvingCards: boolean;
-  deckRows: DeckRow[];
+  deckRows: CollectionItem[];
   groupByType: boolean;
 }) {
   if (isLoading || isResolvingCards) {
@@ -37,20 +35,18 @@ export function FolderContent({
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {deckRows.map(({ card, dataCard }) => (
-        <MemoizedCardRow key={dataCard.id} card={card} dataCard={dataCard} />
+      {deckRows.map((item) => (
+        <CardRow key={item.id} card={item.card} dataCard={item} />
       ))}
     </div>
   );
 }
 
-type DeckRow = {
-  card: Card;
-  dataCard: CollectionItem;
-};
-
-function GroupedCards({ data }: { data: DeckRow[] }) {
-  const grouped = groupCardsByType(data);
+function GroupedCards({ data }: { data: CollectionItem[] }) {
+  const deckRows = data.map((item) => {
+    return { dataCard: item, card: item.card };
+  });
+  const grouped = groupCardsByType(deckRows);
 
   return (
     <div className="space-y-6">
@@ -60,11 +56,7 @@ function GroupedCards({ data }: { data: DeckRow[] }) {
 
           <div className="space-y-2">
             {rows.map(({ card, dataCard }) => (
-              <MemoizedCardRow
-                key={dataCard.id}
-                card={card}
-                dataCard={dataCard}
-              />
+              <CardRow key={dataCard.id} card={card} dataCard={dataCard} />
             ))}
           </div>
         </div>
@@ -72,5 +64,3 @@ function GroupedCards({ data }: { data: DeckRow[] }) {
     </div>
   );
 }
-
-const MemoizedCardRow = memo(CardRow);

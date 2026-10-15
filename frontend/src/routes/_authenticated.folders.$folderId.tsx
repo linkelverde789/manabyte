@@ -44,18 +44,21 @@ function RouteComponent() {
 
   const [groupByType, setGroupByType] = useState(false);
 
-  const { data: collectionItems, isLoading } = useGetCollectionItems({
-    folderId,
-  });
-
   const { mutateAsync: bulkCreateCollectionItem } =
     useBulkCreateCollectionItem();
 
   const createCollectionItem = useCreateCollectionItem();
 
-  const [sort, setSort] = useState<string>("recent");
+  const [sorting, setSort] = useState<"recent" | "price" | "name" | "quantity">(
+    "recent",
+  );
   const [term, setTerm] = useState("");
   const [debounced, setDebounced] = useState("");
+  const { data: collectionItems, isLoading } = useGetCollectionItems({
+    folderId,
+    sorting,
+    q: debounced,
+  });
   const [tab, setTab] = useState<"main" | "search">("main");
 
   useEffect(() => {
@@ -95,64 +98,10 @@ function RouteComponent() {
   const total =
     collectionItems?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
 
-  const deckRows = useMemo(() => {
-    const query = debounced.toLowerCase();
-
-    const rows =
-      collectionItems?.flatMap((dataCard) => {
-        const card = dataCard.card;
-
-        if (!card) {
-          return [];
-        }
-
-        const matches =
-          card.name.toLowerCase().includes(query) ||
-          card.set.name?.toLowerCase().includes(query);
-
-        if (!matches) {
-          return [];
-        }
-
-        return [
-          {
-            card,
-            dataCard,
-          },
-        ];
-      }) ?? [];
-
-    return rows.sort((a, b) => {
-      if (sort === "name") {
-        return a.card.name.localeCompare(b.card.name);
-      }
-
-      if (sort === "quantity") {
-        return b.dataCard.quantity - a.dataCard.quantity;
-      }
-
-      if (sort === "price") {
-        const priceA = Number(
-          (a.dataCard.foil ? a.card.price_foil : a.card.price_nonfoil) ?? 0,
-        );
-
-        const priceB = Number(
-          (b.dataCard.foil ? b.card.price_foil : b.card.price_nonfoil) ?? 0,
-        );
-
-        return priceB - priceA;
-      }
-
-      return 0;
-    });
-  }, [collectionItems, debounced, sort]);
-
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
       <FolderHeader
-        folderName={folder?.name}
-        total={total}
-        entries={deckRows}
+        folderId={folderId}
         onImport={async (rows) => {
           const data = rows.map((row) => ({
             scryfall_id: row.card.id,
@@ -179,7 +128,7 @@ function RouteComponent() {
             <FolderToolbar
               term={term}
               onTermChange={setTerm}
-              sort={sort}
+              sort={sorting}
               onSortChange={setSort}
               groupByType={groupByType}
               onGroupByTypeChange={setGroupByType}
@@ -189,7 +138,7 @@ function RouteComponent() {
             <FolderContent
               isLoading={isLoading}
               isResolvingCards={isLoading}
-              deckRows={deckRows}
+              deckRows={collectionItems ?? []}
               groupByType={groupByType}
             />
           </>

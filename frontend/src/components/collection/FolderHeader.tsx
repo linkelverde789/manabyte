@@ -1,38 +1,24 @@
-import type { CollectionItem } from "#/features/collection/types";
-import type { Card } from "#/lib/types";
+import { useGetFolderStats } from "#/features/stats/hooks";
 import { ImportDialog } from "../deckCards/importDialog";
 
 export function FolderHeader({
-  folderName,
-  total,
-  entries,
   onImport,
+  folderId,
 }: {
-  folderName?: string;
-  total: number;
-  entries: { card: Card; dataCard: CollectionItem }[];
   onImport: (rows: any[]) => Promise<void>;
+  folderId: number;
 }) {
-  const prices =
-    entries?.reduce((acc, item) => {
-      const { card, dataCard } = item || {};
-      if (!card || !dataCard) return acc;
-
-      const quantity = dataCard.quantity || 0;
-      const price = dataCard.foil ? card.price_foil : card.price_nonfoil;
-
-      return acc + quantity * price;
-    }, 0) ?? 0;
+  const { data: folderStats } = useGetFolderStats(folderId);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">
-            {folderName}
+            {folderStats?.folder_name}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {total} cards · {entries.length} entries
+            {folderStats?.cards} cards · {folderStats?.entries} entries
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -50,7 +36,7 @@ export function FolderHeader({
           Collection value
         </p>
         <p className="text-2xl font-semibold text-primary">
-          ${prices.toFixed(2)}
+          ${folderStats?.price}
         </p>
       </div>
     </div>

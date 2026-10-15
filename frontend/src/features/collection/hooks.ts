@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 export function useGetCollectionItems(params: FilterCollectionParams) {
   return useQuery({
-    queryKey: ["collection", params.folderId],
+    queryKey: ["collection", params],
     queryFn: () => getCollectionItems(params),
   });
 }
@@ -30,6 +30,9 @@ export function useBulkCreateCollectionItem() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["stats-folder"],
       });
 
       toast.dismiss();
@@ -49,6 +52,9 @@ export function useCreateCollectionItem() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["stats-folder"],
       });
       toast.success(`Card added to collection!`);
     },
@@ -74,6 +80,9 @@ export function usePartialUpdateCollectionItem() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["collection"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["stats-folder"],
       });
       toast.success(`Card updated!`);
     },
@@ -117,6 +126,9 @@ export function useDeleteCollectionItem() {
     },
 
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["stats-folder"],
+      });
       toast.success("Card deleted!");
     },
   });

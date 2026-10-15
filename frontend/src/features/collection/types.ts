@@ -38,4 +38,6 @@ export interface PartialUpdateCollectionItemData {
 
 export interface FilterCollectionParams {
   folderId?: string | number;
+  sorting?: string;
+  q?: string;
 }
