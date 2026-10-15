@@ -6,7 +6,11 @@ export function listCardPrints(oracle_id: string) {
 }
 
 export function searchCard(text: string) {
-  return api<Card[]>(`/cards/search/?q=${text}`);
+  const searchParams = new URLSearchParams();
+
+  searchParams.set("q", String(text));
+  const queryString = searchParams.toString();
+  return api<Card[]>(`/cards/search/${queryString ? `?${queryString}` : ""}`);
 }
 
 export function listSet() {
