@@ -14,7 +14,7 @@ class CardSelector:
 
         cards = (
             ScryfallCard.objects.all()
-            .order_by("oracle_id", "is_borderless")
+            .order_by("oracle_id", "is_borderless", "collector_number")
             .distinct("oracle_id")
         )
 
@@ -22,6 +22,9 @@ class CardSelector:
 
         if q is not None:
             cards = filter_cards_from_query(q, cards)
+
+        for card in cards:
+            print(card.id, card.is_borderless)
 
         return cards[(page - 1) * limit : limit * page]
 
