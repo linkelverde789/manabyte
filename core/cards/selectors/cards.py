@@ -23,9 +23,6 @@ class CardSelector:
         if q is not None:
             cards = filter_cards_from_query(q, cards)
 
-        for card in cards:
-            print(card.id, card.is_borderless)
-
         return cards[(page - 1) * limit : limit * page]
 
     @staticmethod
