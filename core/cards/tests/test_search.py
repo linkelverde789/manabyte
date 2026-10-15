@@ -1,5 +1,5 @@
 import pytest
-from django.db.models import Q, Subquery
+from django.db.models import Q
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK
 from sets.consts import SET_TYPES_TO_EXCLUDE
