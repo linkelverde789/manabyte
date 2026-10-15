@@ -46,6 +46,11 @@ def process_set(
 def _process_card(card_data, scryfall_set):
     prices = card_data.get("prices") or {}
 
+    border_color = (
+        card_data.get("border_color") is not None
+        and card_data.get("border_color").lower() == "borderless"
+    )
+
     card, _ = ScryfallCard.objects.update_or_create(
         external_id=card_data["id"],
         defaults={
@@ -60,6 +65,8 @@ def _process_card(card_data, scryfall_set):
             "price_foil": _decimal_price(prices.get("usd_foil")),
             "keywords": card_data.get("keywords", []),
             "layout": card_data.get("layout", "normal"),
+            "released_at": card_data.get("released_at", None),
+            "is_borderless": border_color,
         },
     )
 
