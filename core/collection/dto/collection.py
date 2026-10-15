@@ -56,3 +56,9 @@ class UpdateCollectionItemInput:
                 raise CollectionItemException("Condition can't be empty", "400")
 
         return self
+
+
+@dataclass
+class FilterCollectionParams:
+    q: str | None = None
+    sorting: str | None = None

@@ -16,7 +16,7 @@ export function FolderToolbar({
   term: string;
   onTermChange: (value: string) => void;
   sort: string;
-  onSortChange: (value: string) => void;
+  onSortChange: (value: "recent" | "price" | "name" | "quantity") => void;
   groupByType: boolean;
   onGroupByTypeChange: (value: boolean) => void;
   onExportFormatChange: (format: ExportFormat | null) => void;

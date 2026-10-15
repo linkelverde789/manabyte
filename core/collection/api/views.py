@@ -26,15 +26,26 @@ class CollectionItemView(ViewSet):
 
         params = request.query_params
 
+        folder_id = None
+
+        if "folder_id" in params:
+            folder_id = int(params.get("folder_id"))
+
+        q = params.get("q", None)
+
+        sorting = params.get("sorting", None)
+
         collection_items = None
 
         if "folder_id" in params:
             collection_items = ListCollectionItemFromFolderUseCase().execute(
-                user=user, folder_id=params["folder_id"]
+                user=user, q=q, folder_id=folder_id, sorting=sorting
             )
 
         else:
-            collection_items = ListCollectionItemFromUserUseCase().execute(user=user)
+            collection_items = ListCollectionItemFromUserUseCase().execute(
+                user=user, q=q, sorting=sorting
+            )
 
         return Response(
             CollectionItemResponseSerializer(

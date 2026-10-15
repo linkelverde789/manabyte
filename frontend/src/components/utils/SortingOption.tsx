@@ -11,7 +11,7 @@ export default function SortingOption({
   onSort,
 }: {
   sort: string;
-  onSort: (sort: string) => void;
+  onSort: (sort: "recent" | "price" | "name" | "quantity") => void;
 }) {
   return (
     <Select value={sort} onValueChange={onSort}>

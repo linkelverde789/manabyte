@@ -14,6 +14,14 @@ export function getCollectionItems(params: FilterCollectionParams) {
     searchParams.set("folder_id", String(params.folderId));
   }
 
+  if (params?.sorting !== undefined) {
+    searchParams.set("sorting", String(params.sorting));
+  }
+
+  if (params?.q !== undefined && params.q != "") {
+    searchParams.set("q", String(params.q));
+  }
+
   const queryString = searchParams.toString();
   return api<CollectionItem[]>(
     `/collection/${queryString ? `?${queryString}` : ""}`,
