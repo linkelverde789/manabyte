@@ -1,5 +1,6 @@
 from cards.models import ScryfallCard
 from django.db import models
+from django.utils import timezone
 from folder.models import Folder
 from users.models import User
 
@@ -28,3 +29,6 @@ class CollectionItem(models.Model):
     foil = models.BooleanField(default=False)
     language = models.CharField(max_length=10, default="en")
     condition = models.CharField(max_length=20, default="NM")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
