@@ -13,7 +13,9 @@ class CardSelector:
         q = filters.q
 
         cards = (
-            ScryfallCard.objects.all().order_by("oracle_id", "id").distinct("oracle_id")
+            ScryfallCard.objects.all()
+            .order_by("oracle_id", "is_borderless")
+            .distinct("oracle_id")
         )
 
         cards = exclude_some_sets(cards)
