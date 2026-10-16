@@ -1,6 +1,5 @@
 from cards.models import ScryfallCard
 from django.db import models
-from django.utils import timezone
 from folder.models import Folder
 from users.models import User
 
