@@ -84,13 +84,16 @@ export default function EditCard({
 
       <p className="text-sm text-muted-foreground">
         {selected.set.name} ({selected.set.code?.toUpperCase()}) #
-        {selected.collector_number} · {"C"}
-        {/* {selected.rarity} */}
+        {selected.collector_number} · {selected.rarity}
       </p>
 
       <div className="grid gap-6 sm:grid-cols-[200px_1fr]">
         <div className="mx-auto w-full max-w-[200px]">
-          <CardImage card={selected.card_faces} alt={selected.name} />
+          <CardImage
+            card={selected.card_faces}
+            layout={card.layout}
+            alt={selected.name}
+          />
         </div>
 
         <div className="space-y-5">
@@ -183,7 +186,11 @@ export default function EditCard({
                     isActive ? "ring-2 ring-primary" : "hover:bg-muted/40",
                   )}
                 >
-                  <CardImage card={printing.card_faces} alt={printing.name} />
+                  <CardImage
+                    card={printing.card_faces}
+                    layout={card.layout}
+                    alt={printing.name}
+                  />
 
                   <div className="px-0.5 text-[10px] leading-tight text-muted-foreground">
                     <div className="font-medium text-foreground">

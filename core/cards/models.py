@@ -5,21 +5,11 @@ from sets.models import ScryfallSet
 class ScryfallCard(models.Model):
     external_id = models.UUIDField(unique=True)
     oracle_id = models.UUIDField(db_index=True)
-
     name = models.CharField(max_length=255)
-
-    set = models.ForeignKey(
-        ScryfallSet,
-        on_delete=models.PROTECT,
-        related_name="cards",
-    )
-
     collector_number = models.CharField(max_length=50, blank=True)
     lang = models.CharField(max_length=10, default="en")
-
     can_nonfoil = models.BooleanField(default=True)
     can_foil = models.BooleanField(default=True)
-
     price_nonfoil = models.DecimalField(
         max_digits=12,
         decimal_places=2,
@@ -32,9 +22,14 @@ class ScryfallCard(models.Model):
     )
     layout = models.CharField(max_length=20, default="normal")
     is_borderless = models.BooleanField(default=False)
-
+    rarity = models.CharField(max_length=20, default="common")
     keywords = models.JSONField(default=list, blank=True)
     released_at = models.DateField(blank=True, null=True)
+    set = models.ForeignKey(
+        ScryfallSet,
+        on_delete=models.PROTECT,
+        related_name="cards",
+    )
 
     def __str__(self):
         return self.name

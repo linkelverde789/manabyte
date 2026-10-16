@@ -20,6 +20,8 @@ class ScryfallCardResponseSerializer(serializers.Serializer):
         max_digits=12,
         decimal_places=2,
     )
+    layout = serializers.CharField()
+    rarity = serializers.CharField()
     keywords = serializers.JSONField()
 
     set = ScryfallSetSerializer()

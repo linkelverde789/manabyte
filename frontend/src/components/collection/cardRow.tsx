@@ -77,6 +77,7 @@ export default function CardRow({
             card={card.card_faces}
             alt={card.name}
             foil={dataCard.foil}
+            layout={card.layout}
           />
         </div>
 

@@ -58,7 +58,11 @@ export default function CardSearch({
             onClick={() => setPicked(card)}
             className="group space-y-2 rounded-xl text-left transition hover:opacity-95"
           >
-            <CardImage card={card.card_faces} alt={card.name} />
+            <CardImage
+              card={card.card_faces}
+              layout={card.layout}
+              alt={card.name}
+            />
             <div className="space-y-0.5 px-0.5">
               <div className="line-clamp-1 text-sm font-medium">
                 {card.name}

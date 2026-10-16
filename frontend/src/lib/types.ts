@@ -1,8 +1,7 @@
 export interface Card {
-  oracle_id: string;
   external_id: string;
+  oracle_id: string;
   name: string;
-  set: Set;
   collector_number: string;
   lang: string;
   can_nonfoil: boolean;
@@ -10,22 +9,10 @@ export interface Card {
   price_nonfoil: number;
   price_foil: number;
   layout: string;
+  rarity: string;
   keywords: string[];
+  set: Set;
   card_faces: Face[];
-}
-
-export interface BaseCardInformation {
-  id: number;
-  quantity: number;
-  card: Card;
-}
-
-export interface Set {
-  external_id: string;
-  name: string;
-  code: string;
-  card_count: number;
-  icon_url: string;
 }
 
 export interface Face {
@@ -37,4 +24,18 @@ export interface Face {
   flavor_text: string;
   image_url: string;
   colors: string[];
+}
+
+export interface Set {
+  external_id: string;
+  name: string;
+  code: string;
+  card_count: number;
+  icon_url: string;
+}
+
+export interface BaseCardInformation {
+  id: number;
+  quantity: number;
+  card: Card;
 }
