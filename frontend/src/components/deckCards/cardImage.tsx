@@ -7,11 +7,13 @@ export function CardImage({
   alt,
   className,
   foil,
+  layout,
 }: {
   card: Face[];
   alt: string;
   className?: string;
   foil?: boolean;
+  layout?: string;
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -24,8 +26,12 @@ export function CardImage({
       : card.image_uris?.normal;
       */
 
+  const isArtSeries = layout && layout !== "art_series";
+
   let imageUrl =
-    card.length > 1 && isHovered ? card[1].image_url : card[0].image_url;
+    card.length > 1 && isArtSeries && isHovered
+      ? card[1].image_url
+      : card[0].image_url;
 
   return (
     <div

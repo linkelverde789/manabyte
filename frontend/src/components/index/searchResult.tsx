@@ -17,7 +17,11 @@ export default function SearchResults({
       className="group space-y-2 rounded-xl text-left transition hover:opacity-95"
     >
       <div className="relative aspect-[488/680] w-full overflow-hidden rounded-xl bg-muted/40 ring-1 ring-border">
-        <CardImage card={card.card_faces} alt={card.name} />
+        <CardImage
+          card={card.card_faces}
+          layout={card.layout}
+          alt={card.name}
+        />
       </div>
       <div className="space-y-0.5 px-0.5">
         <div className="line-clamp-1 text-sm font-medium">{card.name}</div>

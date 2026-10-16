@@ -80,6 +80,8 @@ export default function CardRow({
             card={card.card_faces}
             alt={card.name}
             className="rounded-md"
+            layout={card.layout}
+
             foil={card.can_foil && !card.can_nonfoil}
           />
         </div>

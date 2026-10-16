@@ -67,6 +67,7 @@ def _process_card(card_data, scryfall_set):
             "layout": card_data.get("layout", "normal"),
             "released_at": card_data.get("released_at", None),
             "is_borderless": border_color,
+            "rarity": card_data.get("rarity", "common"),
         },
     )
 
@@ -96,7 +97,7 @@ def _process_one_face(card, face_index, face_data, fallback=None):
             ),
             "oracle_text": face_data.get("oracle_text") or "",
             "flavor_text": face_data.get("flavor_text") or "",
-            "image_url": (image_uris.get("normal") or image_uris.get("large") or ""),
+            "image_url": (image_uris.get("crop") or image_uris.get("normal") or ""),
             "colors": colors,
         },
     )
