@@ -1,6 +1,6 @@
 from django.urls import path
 
-from stats.views import FolderStatsView, UserStatsView
+from stats.api.views import FolderStatsView, UserStatsView
 
 urlpatterns = [
     path("user/", UserStatsView.as_view(), name="user-stats"),
