@@ -34,6 +34,9 @@ export function useBulkCreateCollectionItem() {
       queryClient.invalidateQueries({
         queryKey: ["stats-folder"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["stats-collection"],
+      });
 
       toast.dismiss();
       toast.success(`List imported to this collection!`);
@@ -55,6 +58,9 @@ export function useCreateCollectionItem() {
       });
       queryClient.invalidateQueries({
         queryKey: ["stats-folder"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["stats-collection"],
       });
       toast.success(`Card added to collection!`);
     },
@@ -83,6 +89,9 @@ export function usePartialUpdateCollectionItem() {
       });
       queryClient.invalidateQueries({
         queryKey: ["stats-folder"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["stats-collection"],
       });
       toast.success(`Card updated!`);
     },
@@ -128,6 +137,9 @@ export function useDeleteCollectionItem() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["stats-folder"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["stats-collection"],
       });
       toast.success("Card deleted!");
     },

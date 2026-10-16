@@ -5,7 +5,7 @@ import { FolderRowSkeleton } from "#/components/collection/skeletons";
 import { useDeleteFolder, useListFolders } from "#/features/folders/hooks";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authenticated/collection")({
+export const Route = createFileRoute("/_authenticated/collection/")({
   component: RouteComponent,
 });
 

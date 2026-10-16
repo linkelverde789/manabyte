@@ -8,9 +8,14 @@ export interface CollectionStats {
   total: number;
 }
 
-export interface FolderStats {
-  folder_name: string;
+interface BasicStats {
   entries: number;
   cards: number;
   price: number;
 }
+
+export interface FolderStats extends BasicStats {
+  folder_name: string;
+}
+
+export interface CollectionStats extends BasicStats {}

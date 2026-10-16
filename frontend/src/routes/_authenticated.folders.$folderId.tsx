@@ -10,7 +10,7 @@ import { useFolderExport } from "#/features/exports/hooks";
 import { useGetFolder } from "#/features/folders/hooks";
 import { downloadFile } from "#/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { FolderHeader } from "#/components/collection/FolderHeader";
 import { FolderTabs } from "#/components/collection/FolderTabs";
 import { FolderToolbar } from "#/components/collection/FolderToolbar";

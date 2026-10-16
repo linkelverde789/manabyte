@@ -13,9 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated.collection'
 import { Route as AuthenticatedAlbumIndexRouteImport } from './routes/_authenticated.album.index'
 import { Route as AuthenticatedAlbumSetCodeRouteImport } from './routes/_authenticated.album.$setCode'
+import { Route as AuthenticatedCollectionIndexRouteImport } from './routes/_authenticated.collection.index'
+import { Route as AuthenticatedCollectionCardsRouteImport } from './routes/_authenticated.collection.cards'
 import { Route as AuthenticatedDecksIndexRouteImport } from './routes/_authenticated.decks.index'
 import { Route as AuthenticatedDecksDeckIdRouteImport } from './routes/_authenticated.decks.$deckId'
 import { Route as AuthenticatedFoldersFolderIdRouteImport } from './routes/_authenticated.folders.$folderId'
@@ -39,11 +40,6 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
-  id: '/collection',
-  path: '/collection',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedAlbumIndexRoute = AuthenticatedAlbumIndexRouteImport.update({
   id: '/album/',
   path: '/album/',
@@ -53,6 +49,18 @@ const AuthenticatedAlbumSetCodeRoute =
   AuthenticatedAlbumSetCodeRouteImport.update({
     id: '/album/$setCode',
     path: '/album/$setCode',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCollectionIndexRoute =
+  AuthenticatedCollectionIndexRouteImport.update({
+    id: '/collection/',
+    path: '/collection/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCollectionCardsRoute =
+  AuthenticatedCollectionCardsRouteImport.update({
+    id: '/collection/cards',
+    path: '/collection/cards',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedDecksIndexRoute = AuthenticatedDecksIndexRouteImport.update({
@@ -77,22 +85,24 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/search': typeof SearchRoute
-  '/collection': typeof AuthenticatedCollectionRoute
   '/album/$setCode': typeof AuthenticatedAlbumSetCodeRoute
+  '/collection/cards': typeof AuthenticatedCollectionCardsRoute
   '/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
   '/folders/$folderId': typeof AuthenticatedFoldersFolderIdRoute
   '/album/': typeof AuthenticatedAlbumIndexRoute
+  '/collection/': typeof AuthenticatedCollectionIndexRoute
   '/decks/': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/search': typeof SearchRoute
-  '/collection': typeof AuthenticatedCollectionRoute
   '/album/$setCode': typeof AuthenticatedAlbumSetCodeRoute
+  '/collection/cards': typeof AuthenticatedCollectionCardsRoute
   '/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
   '/folders/$folderId': typeof AuthenticatedFoldersFolderIdRoute
   '/album': typeof AuthenticatedAlbumIndexRoute
+  '/collection': typeof AuthenticatedCollectionIndexRoute
   '/decks': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRoutesById {
@@ -101,11 +111,12 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/search': typeof SearchRoute
-  '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/album/$setCode': typeof AuthenticatedAlbumSetCodeRoute
+  '/_authenticated/collection/cards': typeof AuthenticatedCollectionCardsRoute
   '/_authenticated/decks/$deckId': typeof AuthenticatedDecksDeckIdRoute
   '/_authenticated/folders/$folderId': typeof AuthenticatedFoldersFolderIdRoute
   '/_authenticated/album/': typeof AuthenticatedAlbumIndexRoute
+  '/_authenticated/collection/': typeof AuthenticatedCollectionIndexRoute
   '/_authenticated/decks/': typeof AuthenticatedDecksIndexRoute
 }
 export interface FileRouteTypes {
@@ -114,22 +125,24 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/search'
-    | '/collection'
     | '/album/$setCode'
+    | '/collection/cards'
     | '/decks/$deckId'
     | '/folders/$folderId'
     | '/album/'
+    | '/collection/'
     | '/decks/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/search'
-    | '/collection'
     | '/album/$setCode'
+    | '/collection/cards'
     | '/decks/$deckId'
     | '/folders/$folderId'
     | '/album'
+    | '/collection'
     | '/decks'
   id:
     | '__root__'
@@ -137,11 +150,12 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/search'
-    | '/_authenticated/collection'
     | '/_authenticated/album/$setCode'
+    | '/_authenticated/collection/cards'
     | '/_authenticated/decks/$deckId'
     | '/_authenticated/folders/$folderId'
     | '/_authenticated/album/'
+    | '/_authenticated/collection/'
     | '/_authenticated/decks/'
   fileRoutesById: FileRoutesById
 }
@@ -182,13 +196,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/collection': {
-      id: '/_authenticated/collection'
-      path: '/collection'
-      fullPath: '/collection'
-      preLoaderRoute: typeof AuthenticatedCollectionRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/album/': {
       id: '/_authenticated/album/'
       path: '/album'
@@ -201,6 +208,20 @@ declare module '@tanstack/react-router' {
       path: '/album/$setCode'
       fullPath: '/album/$setCode'
       preLoaderRoute: typeof AuthenticatedAlbumSetCodeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/collection/': {
+      id: '/_authenticated/collection/'
+      path: '/collection'
+      fullPath: '/collection/'
+      preLoaderRoute: typeof AuthenticatedCollectionIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/collection/cards': {
+      id: '/_authenticated/collection/cards'
+      path: '/collection/cards'
+      fullPath: '/collection/cards'
+      preLoaderRoute: typeof AuthenticatedCollectionCardsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/decks/': {
@@ -228,20 +249,22 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedAlbumSetCodeRoute: typeof AuthenticatedAlbumSetCodeRoute
+  AuthenticatedCollectionCardsRoute: typeof AuthenticatedCollectionCardsRoute
   AuthenticatedDecksDeckIdRoute: typeof AuthenticatedDecksDeckIdRoute
   AuthenticatedFoldersFolderIdRoute: typeof AuthenticatedFoldersFolderIdRoute
   AuthenticatedAlbumIndexRoute: typeof AuthenticatedAlbumIndexRoute
+  AuthenticatedCollectionIndexRoute: typeof AuthenticatedCollectionIndexRoute
   AuthenticatedDecksIndexRoute: typeof AuthenticatedDecksIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedAlbumSetCodeRoute: AuthenticatedAlbumSetCodeRoute,
+  AuthenticatedCollectionCardsRoute: AuthenticatedCollectionCardsRoute,
   AuthenticatedDecksDeckIdRoute: AuthenticatedDecksDeckIdRoute,
   AuthenticatedFoldersFolderIdRoute: AuthenticatedFoldersFolderIdRoute,
   AuthenticatedAlbumIndexRoute: AuthenticatedAlbumIndexRoute,
+  AuthenticatedCollectionIndexRoute: AuthenticatedCollectionIndexRoute,
   AuthenticatedDecksIndexRoute: AuthenticatedDecksIndexRoute,
 }
 
