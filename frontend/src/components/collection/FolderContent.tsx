@@ -26,7 +26,7 @@ export function FolderContent({
   function handleDeleteItem(dataCardId: number) {
     deleteCollectorItem.mutate(dataCardId);
 
-    if (deckRows.length == 1) {
+    if (deckRows.length == 1 && page > 1) {
       onChangePage(page - 1);
     }
   }

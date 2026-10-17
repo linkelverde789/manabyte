@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import { CardImage } from "../deckCards/cardImage";
 import { Button } from "../ui/button";
 
-import {
-  useDeleteCollectionItem,
-  usePartialUpdateCollectionItem,
-} from "#/features/collection/hooks";
+import { usePartialUpdateCollectionItem } from "#/features/collection/hooks";
 
 import { type UpdateCardData } from "../dialogs/EditCardDialog";
 import ShowPrice from "./showPrice";
