@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getFolderStats, getStats } from "./api";
+import { getCollectionStats, getFolderStats, getStats } from "./api";
 
 export function useGetStats() {
   return useQuery({
@@ -12,5 +12,12 @@ export function useGetFolderStats(folderId: number) {
   return useQuery({
     queryKey: ["stats-folder", folderId],
     queryFn: () => getFolderStats(folderId),
+  });
+}
+
+export function useGetCollectionStats() {
+  return useQuery({
+    queryKey: ["stats-collection"],
+    queryFn: () => getCollectionStats(),
   });
 }

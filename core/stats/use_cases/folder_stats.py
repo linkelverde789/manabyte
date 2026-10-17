@@ -12,3 +12,8 @@ class FolderStatsUseCase:
             raise FolderException(f"Folder: {folder_id} not found", "404")
 
         return StatsSelector.get_folder_stats(folder)
+
+
+class CollectionStatsUseCase:
+    def execute(self, user: User):
+        return StatsSelector.get_collection_stats(user)

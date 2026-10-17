@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import { CardImage } from "../deckCards/cardImage";
 import { Button } from "../ui/button";
 
-import {
-  useDeleteCollectionItem,
-  usePartialUpdateCollectionItem,
-} from "#/features/collection/hooks";
+import { usePartialUpdateCollectionItem } from "#/features/collection/hooks";
 
 import { type UpdateCardData } from "../dialogs/EditCardDialog";
 import ShowPrice from "./showPrice";
@@ -20,13 +17,13 @@ import type { CollectionItem } from "#/features/collection/types";
 export default function CardRow({
   dataCard,
   card,
+  onDelete,
 }: {
   dataCard: CollectionItem;
   card: Card;
+  onDelete: (dataCardId: number) => void;
 }) {
   const partialUpdateCollectorItem = usePartialUpdateCollectionItem();
-
-  const deleteCollectorItem = useDeleteCollectionItem();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [initialTab, setInitialTab] = useState<"preview" | "edit">("preview");
@@ -39,7 +36,7 @@ export default function CardRow({
   function handleQuantity(nextQuantity: number) {
     if (nextQuantity < 1) {
       setQuantity(0);
-      deleteCollectorItem.mutate(dataCard.id);
+      onDelete(dataCard.id);
       return;
     }
 
@@ -165,7 +162,7 @@ export default function CardRow({
               className="ml-auto h-7 w-7 text-muted-foreground hover:text-destructive"
               onClick={(e) => {
                 e.stopPropagation();
-                deleteCollectorItem.mutate(dataCard.id);
+                onDelete(dataCard.id);
               }}
             >
               <Trash2 className="h-3.5 w-3.5" />

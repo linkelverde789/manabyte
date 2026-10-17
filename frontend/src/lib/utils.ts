@@ -2,8 +2,6 @@ import type { ClassValue } from "clsx";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { BaseCardInformation, Card } from "./types";
-import type { DeckCard } from "#/features/deckCards/types";
-import type { CollectionItem } from "#/features/collection/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
