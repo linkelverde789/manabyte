@@ -1,4 +1,4 @@
-import { CollectionHeader } from "#/components/collection/CollectionHeader";
+import { FolderListHeader } from "#/components/collection/FolderListHeader";
 import { FolderRow } from "#/components/collection/FolderRow";
 import NewFolderDialog from "#/components/collection/newFolderDialog";
 import { FolderRowSkeleton } from "#/components/collection/skeletons";
@@ -16,7 +16,7 @@ function RouteComponent() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <CollectionHeader
+        <FolderListHeader
           folderCount={folders?.length ?? 0}
           isLoading={isLoading}
         />

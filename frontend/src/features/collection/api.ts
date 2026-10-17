@@ -1,4 +1,5 @@
 import { api } from "#/api/manabyte";
+import type { PaginatedResult } from "#/lib/types";
 import type {
   BulkCreateCollectionItemData,
   CollectionItem,
@@ -22,8 +23,16 @@ export function getCollectionItems(params: FilterCollectionParams) {
     searchParams.set("q", String(params.q));
   }
 
+  if (params?.page !== undefined) {
+    searchParams.set("page", String(params.page));
+  }
+
+  if (params?.limit !== undefined) {
+    searchParams.set("limit", String(params.limit));
+  }
+
   const queryString = searchParams.toString();
-  return api<CollectionItem[]>(
+  return api<PaginatedResult<CollectionItem>>(
     `/collection/${queryString ? `?${queryString}` : ""}`,
   );
 }

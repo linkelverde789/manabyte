@@ -1,3 +1,4 @@
+import type { SortingOptions } from "#/lib/types";
 import {
   Select,
   SelectItem,
@@ -11,7 +12,7 @@ export default function SortingOption({
   onSort,
 }: {
   sort: string;
-  onSort: (sort: "recent" | "price" | "name" | "quantity") => void;
+  onSort: (sort: SortingOptions) => void;
 }) {
   return (
     <Select value={sort} onValueChange={onSort}>

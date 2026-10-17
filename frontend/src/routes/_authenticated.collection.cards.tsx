@@ -10,11 +10,11 @@ import { useCollectionExport } from "#/features/exports/hooks";
 import { downloadFile } from "#/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CompleteCollectionHeader } from "#/components/collection/FolderHeader";
 import { FolderTabs } from "#/components/collection/FolderTabs";
 import { FolderToolbar } from "#/components/collection/FolderToolbar";
 import { FolderContent } from "#/components/collection/FolderContent";
 import { toast } from "sonner";
+import { CompleteCollectionHeader } from "#/components/collection/CompleteCollectionHeader";
 export const Route = createFileRoute("/_authenticated/collection/cards")({
   component: RouteComponent,
 });
@@ -30,8 +30,6 @@ export function SearchCards({
 function RouteComponent() {
   const [exportType, setExportType] = useState<ExportFormat | null>(null);
 
-  const [groupByType, setGroupByType] = useState(false);
-
   const { mutateAsync: bulkCreateCollectionItem } =
     useBulkCreateCollectionItem();
 
@@ -43,11 +41,20 @@ function RouteComponent() {
   const [term, setTerm] = useState("");
   const [debounced, setDebounced] = useState("");
 
+  const [page, setPage] = useState(1);
+
   const [tab, setTab] = useState<"main" | "search">("main");
   const { data: cards, isLoading } = useGetCollectionItems({
     q: debounced,
     sorting,
+    page: page,
+    limit: 60,
   });
+
+  function handleSorting(sorting: "recent" | "price" | "name" | "quantity") {
+    setSort(sorting);
+    setPage(1);
+  }
 
   const { data: exportData } = useCollectionExport({
     format: exportType,
@@ -55,8 +62,9 @@ function RouteComponent() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
+      setPage(1);
       setDebounced(term.trim());
-    }, 350);
+    }, 500);
 
     return () => clearTimeout(timeout);
   }, [term]);
@@ -80,11 +88,12 @@ function RouteComponent() {
       quantity: data.quantity,
       foil: data.foil,
       language: data.language,
-      condition: "MN",
+      condition: "NM",
     });
+    setPage(1);
   }
 
-  const total = cards?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
+  const total = cards?.data.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
@@ -97,12 +106,13 @@ function RouteComponent() {
               row.card.foil === true &&
               (row.card.nonfoil !== true || row.foil === true),
             language: row.card.lang,
-            condition: "MN",
+            condition: "NM",
           }));
 
           toast.loading("Importing list...");
 
           await bulkCreateCollectionItem({ items: data });
+          setPage(1);
         }}
       />
 
@@ -116,17 +126,17 @@ function RouteComponent() {
               term={term}
               onTermChange={setTerm}
               sort={sorting}
-              onSortChange={setSort}
-              groupByType={groupByType}
-              onGroupByTypeChange={setGroupByType}
+              onSortChange={handleSorting}
               onExportFormatChange={setExportType}
             />
 
             <FolderContent
               isLoading={isLoading}
               isResolvingCards={isLoading}
-              deckRows={cards ?? []}
-              groupByType={groupByType}
+              deckRows={cards?.data ?? []}
+              page={page}
+              onChangePage={setPage}
+              totalPages={cards?.pages ?? 1}
             />
           </>
         }

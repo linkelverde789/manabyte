@@ -47,7 +47,7 @@ def test_bulk_create_collection_item(auth_client):
     )
     assert res.status_code == HTTP_201_CREATED
 
-    assert len(res.data) == 10
+    assert len(res.data["data"]) == 10
 
 
 @pytest.mark.django_db
@@ -79,19 +79,21 @@ def test_partial_update_collection_item(user, auth_client):
         format="json",
     )
 
-    assert res.data["card"]["external_id"] != str(collectionItem.card.external_id)
-    assert res.data["quantity"] != collectionItem.quantity
-    assert res.data["language"] != collectionItem.language
-    assert res.data["foil"] != collectionItem.foil
-    assert res.data["condition"] != collectionItem.condition
+    data = res.data
+
+    assert data["card"]["external_id"] != str(collectionItem.card.external_id)
+    assert data["quantity"] != collectionItem.quantity
+    assert data["language"] != collectionItem.language
+    assert data["foil"] != collectionItem.foil
+    assert data["condition"] != collectionItem.condition
 
     collectionItem.refresh_from_db()
 
-    assert res.data["card"]["external_id"] == str(collectionItem.card.external_id)
-    assert res.data["quantity"] == collectionItem.quantity
-    assert res.data["language"] == collectionItem.language
-    assert res.data["foil"] == collectionItem.foil
-    assert res.data["condition"] == collectionItem.condition
+    assert data["card"]["external_id"] == str(collectionItem.card.external_id)
+    assert data["quantity"] == collectionItem.quantity
+    assert data["language"] == collectionItem.language
+    assert data["foil"] == collectionItem.foil
+    assert data["condition"] == collectionItem.condition
 
 
 @pytest.mark.django_db
@@ -117,7 +119,7 @@ def test_list_collection_item(user, auth_client):
     res = auth_client.get(reverse("collection-list"))
 
     assert res.status_code == HTTP_200_OK
-    assert len(res.data) == 10
+    assert len(res.data["data"]) == 10
 
 
 @pytest.mark.django_db
@@ -135,7 +137,7 @@ def test_destroy_collection_item(user, auth_client):
     res = auth_client.get(reverse("collection-list"))
 
     assert res.status_code == HTTP_200_OK
-    assert len(res.data) == 1
+    assert len(res.data["data"]) == 1
 
     res = auth_client.delete(
         reverse("collection-detail", kwargs={"pk": collection_item.id})
@@ -146,4 +148,4 @@ def test_destroy_collection_item(user, auth_client):
     res = auth_client.get(reverse("collection-list"))
 
     assert res.status_code == HTTP_200_OK
-    assert len(res.data) == 0
+    assert len(res.data["data"]) == 0

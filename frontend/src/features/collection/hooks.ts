@@ -8,7 +8,6 @@ import {
 } from "./api";
 import type {
   BulkCreateCollectionItemData,
-  CollectionItem,
   CreateCollectionItemData,
   FilterCollectionParams,
   PartialUpdateCollectionItemData,
@@ -107,34 +106,14 @@ export function useDeleteCollectionItem() {
   return useMutation({
     mutationFn: (cardId: number) => deleteCollectionItem(cardId),
 
-    onMutate: async (cardId) => {
-      await queryClient.cancelQueries({
-        queryKey: ["collection"],
-      });
-
-      const previousCollections = queryClient.getQueriesData<CollectionItem[]>({
-        queryKey: ["collection"],
-      });
-
-      queryClient.setQueriesData<CollectionItem[]>(
-        { queryKey: ["collection"] },
-        (old) => old?.filter((item) => item.id !== cardId),
-      );
-
-      return { previousCollections };
-    },
-
-    onError: (error, _cardId, context) => {
-      context?.previousCollections.forEach(([queryKey, data]) => {
-        if (data !== undefined) {
-          queryClient.setQueryData(queryKey, data);
-        }
-      });
-
+    onError: (error) => {
       toast.error(`${error}`);
     },
 
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["collection"],
+      });
       queryClient.invalidateQueries({
         queryKey: ["stats-folder"],
       });
@@ -147,10 +126,10 @@ export function useDeleteCollectionItem() {
 }
 
 export function useCollectionTotal(folderId: number) {
-  const { data } = useGetCollectionItems({ folderId });
+  const { data: res } = useGetCollectionItems({ folderId });
 
   return {
-    total: data?.reduce((total, item) => total + item.quantity, 0) ?? 0,
-    entries: data?.length,
+    total: res?.data.reduce((total, item) => total + item.quantity, 0) ?? 0,
+    entries: res?.data.length,
   };
 }
