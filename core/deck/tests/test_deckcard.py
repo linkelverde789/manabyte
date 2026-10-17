@@ -54,7 +54,7 @@ def test_create_card(user, auth_client):
 
 @pytest.mark.django_db
 def test_create_card_bulk(user, auth_client):
-    scryfall_cards = ScryfallCard.objects.all()[0:10]
+    scryfall_cards = ScryfallCard.objects.all()[:10]
 
     deck = Deck.objects.create(name="Deck 1", user=user, format="Commander")
     cards = []

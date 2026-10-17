@@ -1,4 +1,7 @@
+import math
+
 import pytest
+from cards.consts import SEARCH_LIMIT
 from cards.models import ScryfallCard
 from collection.models import CollectionItem
 from django.urls import reverse
@@ -27,7 +30,7 @@ def test_create_collection_item(auth_client):
 def test_bulk_create_collection_item(auth_client):
     data = []
 
-    cards = ScryfallCard.objects.all()[0:10]
+    cards = ScryfallCard.objects.all()[:10]
 
     for item in range(10):
         data.append(
@@ -100,7 +103,7 @@ def test_partial_update_collection_item(user, auth_client):
 def test_list_collection_item(user, auth_client):
     data = []
 
-    cards = ScryfallCard.objects.all()[0:10]
+    cards = ScryfallCard.objects.all()[:10]
 
     for item in range(10):
         data.append(
@@ -120,6 +123,46 @@ def test_list_collection_item(user, auth_client):
 
     assert res.status_code == HTTP_200_OK
     assert len(res.data["data"]) == 10
+
+
+@pytest.mark.django_db
+def test_pagination_collection_item(user, auth_client):
+
+    object_count = 100
+
+    cards = ScryfallCard.objects.all()[:object_count]
+
+    data = []
+
+    for card in cards:
+        data.append(
+            CollectionItem(
+                card=card,
+                quantity=1,
+                foil=False,
+                language="en",
+                condition="Near Mint",
+                user=user,
+            )
+        )
+
+    CollectionItem.objects.bulk_create(data)
+
+    res = auth_client.get(reverse("collection-list"))
+
+    data = res.data
+
+    assert len(data["data"]) == SEARCH_LIMIT
+    assert data["count"] == object_count
+    assert data["pages"] == math.ceil(object_count / SEARCH_LIMIT)
+
+    res = auth_client.get(reverse("collection-list"), {"page": 2}, format="json")
+
+    data = res.data
+
+    assert len(data["data"]) == object_count - SEARCH_LIMIT
+    assert data["count"] == object_count
+    assert data["pages"] == math.ceil(object_count / SEARCH_LIMIT)
 
 
 @pytest.mark.django_db
