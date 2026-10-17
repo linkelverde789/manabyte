@@ -1,8 +1,8 @@
 import AlbumCardSlot from "#/components/album/AlbumCardSlot";
 import { SetHeader } from "#/components/album/SetHeader";
-import { SetPaginator } from "#/components/album/SetPaginator";
 import { SetProgress } from "#/components/album/SetProgress";
 import { SetAlbumSkeleton } from "#/components/album/skeletons";
+import { Paginator } from "#/components/utils/paginators/Paginator";
 import { useListAlbum } from "#/features/album/hooks";
 import { useGetSetInformation } from "#/features/scryfall/hooks";
 import { createFileRoute } from "@tanstack/react-router";
@@ -54,22 +54,14 @@ function RouteComponent() {
         }
       />
 
-      <SetPaginator
-        page={page}
-        totalPages={totalPages}
-        onChangePage={setPage}
-      />
+      <Paginator page={page} totalPages={totalPages} onChangePage={setPage} />
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {result.map((card) => (
           <AlbumCardSlot key={card.external_id} card={card} />
         ))}
       </div>
-      <SetPaginator
-        page={page}
-        totalPages={totalPages}
-        onChangePage={setPage}
-      />
+      <Paginator page={page} totalPages={totalPages} onChangePage={setPage} />
     </div>
   );
 }

@@ -1,4 +1,10 @@
-from collection.api.serializers import CollectionItemResponseSerializer
+import math
+
+from cards.consts import SEARCH_LIMIT
+from collection.api.serializers import (
+    CollectionItemResponseSerializer,
+    CollectionItemSerializer,
+)
 from collection.use_cases.bulk_create_collection_item import (
     BulkCreateCollectionItemUseCase,
 )
@@ -18,40 +24,64 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from rest_framework.viewsets import ViewSet
 
 
+def _generate_paginated_response(items, limit: int, page: int):
+    start = (page - 1) * limit
+    end = start + limit
+    response = items[start:end]
+
+    total = (
+        items.count()
+        if hasattr(items, "count") and not isinstance(items, list)
+        else len(items)
+    )
+
+    return {"data": response, "pages": math.ceil(total / limit), "count": items.count()}
+
+
 class CollectionItemView(ViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
 
     def list(self, request):
         user = request.user
-
         params = request.query_params
 
-        folder_id = None
+        folder_id = params.get("folder_id")
+        q = params.get("q")
+        sorting = params.get("sorting")
 
-        if "folder_id" in params:
-            folder_id = int(params.get("folder_id"))
+        page = int(params.get("page", 1))
+        limit = int(params.get("limit", SEARCH_LIMIT))
 
-        q = params.get("q", None)
-
-        sorting = params.get("sorting", None)
-
-        collection_items = None
-
-        if "folder_id" in params:
-            collection_items = ListCollectionItemFromFolderUseCase().execute(
-                user=user, q=q, folder_id=folder_id, sorting=sorting
+        if page < 1 or limit < 1:
+            return Response(
+                {"detail": "page and limit must be positive integers."},
+                status=400,
             )
 
+        if folder_id is not None:
+            collection_items = ListCollectionItemFromFolderUseCase().execute(
+                user=user,
+                q=q,
+                folder_id=int(folder_id),
+                sorting=sorting,
+            )
         else:
             collection_items = ListCollectionItemFromUserUseCase().execute(
-                user=user, q=q, sorting=sorting
+                user=user,
+                q=q,
+                sorting=sorting,
             )
 
-        return Response(
-            CollectionItemResponseSerializer(
-                collection_items, many=True, context={"request": request}
-            ).data
+        data = _generate_paginated_response(
+            items=collection_items, limit=limit, page=page
         )
+
+        serializer = CollectionItemResponseSerializer(
+            data,
+            context={"request": request},
+        )
+
+        return Response(serializer.data)
 
     def create(self, request):
         user = request.user
@@ -68,7 +98,7 @@ class CollectionItemView(ViewSet):
         )
 
         return Response(
-            CollectionItemResponseSerializer(
+            CollectionItemSerializer(
                 collection_item, context={"request": request}
             ).data,
             status=HTTP_201_CREATED,
@@ -79,14 +109,16 @@ class CollectionItemView(ViewSet):
         user = request.user
         data = request.data
 
-        result = BulkCreateCollectionItemUseCase().execute(
-            user=user, folder_id=data["folder_id"], items=data["items"]
+        items = BulkCreateCollectionItemUseCase().execute(
+            user=user,
+            folder_id=data.get("folder_id", None),
+            items=data["items"],
         )
 
+        data = _generate_paginated_response(items=items, limit=60, page=1)
+
         return Response(
-            CollectionItemResponseSerializer(
-                result, many=True, context={"request": request}
-            ).data,
+            CollectionItemResponseSerializer(data, context={"request": request}).data,
             status=HTTP_201_CREATED,
         )
 
@@ -99,9 +131,7 @@ class CollectionItemView(ViewSet):
         )
 
         return Response(
-            CollectionItemResponseSerializer(
-                collection_item, context={"request": request}
-            ).data
+            CollectionItemSerializer(collection_item, context={"request": request}).data
         )
 
     def destroy(self, request, pk):

@@ -14,13 +14,13 @@ from cards.utils.utils import check_name_in_response
 def test_limit_and_page_search(api_client):
     res = api_client.get(reverse("search"))
 
-    # Should return the first 75 cards on the database
+    # Should return the first 60 cards on the database
     qs = (
         ScryfallCard.objects.all()
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
         .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
-    )[0:SEARCH_LIMIT]
+    )[:SEARCH_LIMIT]
 
     data = res.data
 
@@ -54,7 +54,7 @@ def test_simple_search(api_client):
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
         .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
-    )[0:SEARCH_LIMIT]
+    )[:SEARCH_LIMIT]
 
     res = api_client.get(reverse("search"), {"q": f'"{name}"'}, format="json")
 
@@ -135,7 +135,7 @@ def test_set_search(api_client):
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
         .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
-    )[0:SEARCH_LIMIT]
+    )[:SEARCH_LIMIT]
 
     res = api_client.get(
         reverse("search"), {"q": f"set_code:{set_code}"}, format="json"
@@ -151,7 +151,7 @@ def test_set_search(api_client):
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
         .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
-    )[0:SEARCH_LIMIT]
+    )[:SEARCH_LIMIT]
 
     res = api_client.get(
         reverse("search"), {"q": f'set_name:"{set_name}"'}, format="json"
@@ -172,7 +172,7 @@ def test_set_search(api_client):
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
         .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
-    )[0:SEARCH_LIMIT]
+    )[:SEARCH_LIMIT]
 
     res = api_client.get(reverse("search"), {"q": f"set:{set_name}"}, format="json")
 
@@ -203,7 +203,7 @@ def test_keyword_search(api_client):
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
         .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
-    )[0:SEARCH_LIMIT]
+    )[:SEARCH_LIMIT]
 
     assert len(res.data) == qs.count()
 
@@ -219,7 +219,7 @@ def text_color_search(api_client):
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
         .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
-    )[0:SEARCH_LIMIT]
+    )[:SEARCH_LIMIT]
 
     res = api_client(reverse("search"), {"q": f"color:{color}"}, format="json")
 
@@ -244,7 +244,7 @@ def test_exclude_field_filters(api_client):
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
         .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
-    )[0:SEARCH_LIMIT]
+    )[:SEARCH_LIMIT]
 
     strict_result = api_client.get(
         reverse("search"), {"q": f'name:{name} -name:"{excluded_name}"'}, format="json"
@@ -266,7 +266,7 @@ def test_exclude_field_filters(api_client):
         .order_by("oracle_id", "id")
         .distinct("oracle_id")
         .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
-    )[0:SEARCH_LIMIT]
+    )[:SEARCH_LIMIT]
 
     relaxed_result = api_client.get(
         reverse("search"), {"q": f"name:{name}"}, format="json"

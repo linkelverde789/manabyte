@@ -1,6 +1,6 @@
 from django.db.models import Q
 
-SEARCH_LIMIT = 75
+SEARCH_LIMIT = 60
 FIELD_LOOKUPS = {
     "name": lambda value: Q(name__icontains=value) | Q(faces__name__icontains=value),
     "type": lambda value: Q(faces__type_line__icontains=value),

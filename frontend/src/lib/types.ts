@@ -39,3 +39,11 @@ export interface BaseCardInformation {
   quantity: number;
   card: Card;
 }
+
+export type SortingOptions = "recent" | "price" | "name" | "quantity";
+
+export interface PaginatedResult<T> {
+  data: T[];
+  pages: number;
+  count: number;
+}

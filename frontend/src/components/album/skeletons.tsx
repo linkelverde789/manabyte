@@ -1,3 +1,5 @@
+import { PaginatorSkeleton } from "../utils/paginators/skeletons";
+
 function AlbumCardSkeleton() {
   return (
     <div className="group flex flex-col items-center gap-1.5">
@@ -41,21 +43,6 @@ function SetProgressSkeleton() {
   );
 }
 
-function SetPaginatorSkeleton() {
-  return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-border bg-card px-5 py-3 shadow-sm">
-      <div className="h-9 w-24 animate-pulse rounded-lg bg-muted" />
-
-      <div className="flex items-center gap-2">
-        <div className="h-4 w-12 animate-pulse rounded bg-muted" />
-        <div className="h-4 w-8 animate-pulse rounded bg-muted" />
-      </div>
-
-      <div className="h-9 w-20 animate-pulse rounded-lg bg-muted" />
-    </div>
-  );
-}
-
 export function SetAlbumSkeleton() {
   return (
     <div
@@ -67,7 +54,7 @@ export function SetAlbumSkeleton() {
 
       <SetProgressSkeleton />
 
-      <SetPaginatorSkeleton />
+      <PaginatorSkeleton />
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {Array.from({ length: 20 }).map((_, index) => (
@@ -75,7 +62,7 @@ export function SetAlbumSkeleton() {
         ))}
       </div>
 
-      <SetPaginatorSkeleton />
+      <PaginatorSkeleton />
     </div>
   );
 }

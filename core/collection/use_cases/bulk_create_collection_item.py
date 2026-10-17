@@ -8,11 +8,13 @@ from users.models import User
 
 
 class BulkCreateCollectionItemUseCase:
-    def execute(self, items, user: User, folder_id: int | None = None):
+    def execute(self, items, user: User, folder_id: str | None = None):
 
         folder = None
         if folder_id is not None:
-            folder = FolderSelector.get_folder_from_user(user=user, folder_id=folder_id)
+            folder = FolderSelector.get_folder_from_user(
+                user=user, folder_id=int(folder_id)
+            )
 
             if folder is None:
                 raise FolderException(f"Folder: {folder_id} not found", "404")
@@ -31,5 +33,8 @@ class BulkCreateCollectionItemUseCase:
         ]
 
         CollectionItemService.bulk_create_collection_item(data=bulk_dto)
+
+        if folder is None:
+            return CollectionSelector.list_collection_item_from_user(user=user)
 
         return CollectionSelector.list_collection_item_from_folder(folder=folder)
