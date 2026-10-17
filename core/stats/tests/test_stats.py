@@ -20,7 +20,7 @@ def test_get_user_stats(auth_client, user):
     items = 10
     total_cards = items * (items + 1) / 2
 
-    cards = ScryfallCard.objects.all()[0:items]
+    cards = ScryfallCard.objects.all()[:items]
 
     for item in range(items):
         collection.append(
@@ -61,7 +61,7 @@ def test_get_user_folder_stats(auth_client, user):
 
     items = 10
 
-    cards = ScryfallCard.objects.all().distinct("external_id")[0:items]
+    cards = ScryfallCard.objects.all().distinct("external_id")[:items]
 
     folder_name = "Test name"
 

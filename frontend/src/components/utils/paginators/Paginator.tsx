@@ -1,9 +1,9 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function SetPaginator({
+export function Paginator({
   page,
-  onChangePage,
   totalPages,
+  onChangePage,
 }: {
   page: number;
   totalPages: number;
@@ -29,7 +29,7 @@ export function SetPaginator({
         onClick={() => {
           onChangePage(page + 1);
         }}
-        disabled={page === totalPages}
+        disabled={page == totalPages}
         type="button"
         className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-amber-100"
       >

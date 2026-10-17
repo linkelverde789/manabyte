@@ -1,66 +1,93 @@
-import { groupCardsByType } from "#/lib/utils";
 import EmptyDeck from "../deckCards/emptyDeck";
 import CardRow from "./cardRow";
 import { ItemRowSkeleton } from "./skeletons";
 import type { CollectionItem } from "#/features/collection/types";
+import { PaginatorSkeleton } from "../utils/paginators/skeletons";
+import { Paginator } from "../utils/paginators/Paginator";
+import { useDeleteCollectionItem } from "#/features/collection/hooks";
 
 export function FolderContent({
   isLoading,
   isResolvingCards,
   deckRows,
-  groupByType,
+  page,
+  totalPages,
+  onChangePage,
 }: {
   isLoading: boolean;
   isResolvingCards: boolean;
   deckRows: CollectionItem[];
-  groupByType: boolean;
+  page: number;
+  totalPages: number;
+  onChangePage: (page: number) => void;
 }) {
+  const deleteCollectorItem = useDeleteCollectionItem();
+
+  function handleDeleteItem(dataCardId: number) {
+    deleteCollectorItem.mutate(dataCardId);
+
+    if (deckRows.length == 1 && page > 1) {
+      onChangePage(page - 1);
+    }
+  }
+
   if (isLoading || isResolvingCards) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 15 }).map((_, index) => (
-          <ItemRowSkeleton key={index} />
-        ))}
+      <div>
+        <div
+          className="mx-auto max-w-6xl space-y-6 px-4 py-10"
+          aria-busy="true"
+          aria-label="Loading set album"
+        >
+          <PaginatorSkeleton />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 15 }).map((_, index) => (
+            <ItemRowSkeleton key={index} />
+          ))}
+        </div>
       </div>
     );
   }
 
   if (!isResolvingCards && deckRows.length === 0) {
-    return <EmptyDeck />;
-  }
-
-  if (groupByType) {
-    return <GroupedCards data={deckRows} />;
+    return (
+      <div
+        className="mx-auto max-w-6xl space-y-6 px-4 py-10"
+        aria-busy="true"
+        aria-label="Loading set album"
+      >
+        <EmptyDeck />
+      </div>
+    );
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {deckRows.map((item) => (
-        <CardRow key={item.id} card={item.card} dataCard={item} />
-      ))}
-    </div>
-  );
-}
-
-function GroupedCards({ data }: { data: CollectionItem[] }) {
-  const deckRows = data.map((item) => {
-    return { dataCard: item, card: item.card };
-  });
-  const grouped = groupCardsByType(deckRows);
-
-  return (
-    <div className="space-y-6">
-      {Object.entries(grouped).map(([type, rows]) => (
-        <div key={type}>
-          <h2 className="mb-2 text-lg font-semibold">{type}</h2>
-
-          <div className="space-y-2">
-            {rows.map(({ card, dataCard }) => (
-              <CardRow key={dataCard.id} card={card} dataCard={dataCard} />
-            ))}
-          </div>
-        </div>
-      ))}
+    <div>
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
+        <Paginator
+          page={page}
+          totalPages={totalPages}
+          onChangePage={onChangePage}
+        />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {deckRows.map((item) => (
+          <CardRow
+            key={item.id}
+            card={item.card}
+            dataCard={item}
+            onDelete={handleDeleteItem}
+          />
+        ))}
+      </div>
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
+        <Paginator
+          page={page}
+          totalPages={totalPages}
+          onChangePage={onChangePage}
+        />
+      </div>
     </div>
   );
 }

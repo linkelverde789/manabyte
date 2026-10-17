@@ -40,4 +40,6 @@ export interface FilterCollectionParams {
   folderId?: string | number;
   sorting?: string;
   q?: string;
+  page?: number;
+  limit?: number;
 }

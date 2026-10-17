@@ -5,10 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from stats.api.serializers import (
+    CollectionStatsResponseSerializer,
     FolderStatsResponseSerializer,
     UserStatsResponseSerializer,
 )
-from stats.use_cases.folder_stats import FolderStatsUseCase
+from stats.use_cases.folder_stats import CollectionStatsUseCase, FolderStatsUseCase
 from stats.use_cases.user_stats import UserStatsUseCase
 
 
@@ -33,4 +34,16 @@ class FolderStatsView(APIView):
 
         return Response(
             FolderStatsResponseSerializer(data, context={"request": request}).data
+        )
+
+
+class CollectionStatsView(APIView):
+    permission_classes = [IsAuthenticated]  # noqa: RUF012
+
+    def get(self, request):
+
+        data = CollectionStatsUseCase().execute(user=request.user)
+
+        return Response(
+            CollectionStatsResponseSerializer(data, context={"request": request}).data
         )

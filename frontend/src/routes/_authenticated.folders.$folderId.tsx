@@ -10,12 +10,13 @@ import { useFolderExport } from "#/features/exports/hooks";
 import { useGetFolder } from "#/features/folders/hooks";
 import { downloadFile } from "#/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { FolderHeader } from "#/components/collection/FolderHeader";
 import { FolderTabs } from "#/components/collection/FolderTabs";
 import { FolderToolbar } from "#/components/collection/FolderToolbar";
 import { FolderContent } from "#/components/collection/FolderContent";
 import { toast } from "sonner";
+import type { SortingOptions } from "#/lib/types";
 
 export function SearchCards({
   onCreate,
@@ -34,32 +35,30 @@ function RouteComponent() {
   const folderId = parseInt(id);
 
   const { data: folder } = useGetFolder(folderId);
-
   const [exportType, setExportType] = useState<ExportFormat | null>(null);
+  const [page, setPage] = useState(1);
+  const [sorting, setSort] = useState<SortingOptions>("recent");
+  const [term, setTerm] = useState("");
+  const [debounced, setDebounced] = useState("");
+  const [tab, setTab] = useState<"main" | "search">("main");
 
   const { data: exportData } = useFolderExport({
     folderId,
     format: exportType,
   });
 
-  const [groupByType, setGroupByType] = useState(false);
+  const createCollectionItem = useCreateCollectionItem();
 
   const { mutateAsync: bulkCreateCollectionItem } =
     useBulkCreateCollectionItem();
 
-  const createCollectionItem = useCreateCollectionItem();
-
-  const [sorting, setSort] = useState<"recent" | "price" | "name" | "quantity">(
-    "recent",
-  );
-  const [term, setTerm] = useState("");
-  const [debounced, setDebounced] = useState("");
   const { data: collectionItems, isLoading } = useGetCollectionItems({
     folderId,
     sorting,
     q: debounced,
+    limit: 60,
+    page,
   });
-  const [tab, setTab] = useState<"main" | "search">("main");
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -90,13 +89,13 @@ function RouteComponent() {
       quantity: data.quantity,
       foil: data.foil,
       language: data.language,
-      condition: "MN",
+      condition: "NM",
       folder_id: folderId,
     });
   }
 
   const total =
-    collectionItems?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
+    collectionItems?.data.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
@@ -110,7 +109,7 @@ function RouteComponent() {
               row.card.foil === true &&
               (row.card.nonfoil !== true || row.foil === true),
             language: row.card.lang,
-            condition: "MN",
+            condition: "NM",
           }));
 
           toast.loading("Importing list...");
@@ -130,16 +129,16 @@ function RouteComponent() {
               onTermChange={setTerm}
               sort={sorting}
               onSortChange={setSort}
-              groupByType={groupByType}
-              onGroupByTypeChange={setGroupByType}
               onExportFormatChange={setExportType}
             />
 
             <FolderContent
+              page={page}
+              onChangePage={setPage}
+              totalPages={collectionItems?.pages ?? 1}
               isLoading={isLoading}
               isResolvingCards={isLoading}
-              deckRows={collectionItems ?? []}
-              groupByType={groupByType}
+              deckRows={collectionItems?.data ?? []}
             />
           </>
         }

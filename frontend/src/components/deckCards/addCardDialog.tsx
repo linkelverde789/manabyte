@@ -51,7 +51,7 @@ export function AddCardDialog({
       scryfall_id: selected?.external_id,
       foil,
       language: selected?.lang,
-      condition: "MN",
+      condition: "NM",
     });
     setSelected(card);
     setShowStyles(false);
