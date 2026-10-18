@@ -53,7 +53,7 @@ export default function CardSearch({
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         {(results ?? []).map((card) => (
           <button
-            key={card.external_id}
+            key={card.id}
             type="button"
             onClick={() => setPicked(card)}
             className="group space-y-2 rounded-xl text-left transition hover:opacity-95"

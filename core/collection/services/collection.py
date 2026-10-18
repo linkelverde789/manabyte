@@ -23,7 +23,7 @@ class CollectionItemService:
     @staticmethod
     @transaction.atomic
     def bulk_create_collection_item(data: [CreateCollectionItemInput]):
-        CollectionItem.objects.bulk_create(
+        return CollectionItem.objects.bulk_create(
             [
                 CollectionItem(
                     user=item.user,

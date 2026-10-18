@@ -42,7 +42,7 @@ export function DeckContent({ deck }: { deck: Deck }) {
           <div className="space-y-2">
             {rows.map((card) => (
               <MemoizedCardRow
-                key={card.card.external_id}
+                key={card.dataCard.id}
                 card={card.card}
                 dataCard={card.dataCard}
                 deckId={deck.id}

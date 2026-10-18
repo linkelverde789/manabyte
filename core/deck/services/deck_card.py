@@ -19,7 +19,7 @@ class DeckCardService:
     @transaction.atomic
     @staticmethod
     def bulk_create_deck_card(data: [CreateDeckCardInput]):
-        DeckCard.objects.bulk_create(
+        items = DeckCard.objects.bulk_create(
             [
                 DeckCard(
                     deck=item.deck,
@@ -30,6 +30,8 @@ class DeckCardService:
                 for item in data
             ]
         )
+
+        return items
 
     @transaction.atomic
     @staticmethod
