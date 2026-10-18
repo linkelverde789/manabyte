@@ -1,6 +1,6 @@
 from django.urls import path
 
-from events.views import EventsFromUserViewSet, ProfileEventsViewSet
+from events.api.views import EventsFromUserViewSet, ProfileEventsViewSet
 
 urlpatterns = [
     path("type/<str:event_type>", EventsFromUserViewSet.as_view(), name="user-events"),

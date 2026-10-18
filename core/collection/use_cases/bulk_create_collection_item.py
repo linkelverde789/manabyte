@@ -32,7 +32,7 @@ class BulkCreateCollectionItemUseCase:
             for item in items
         ]
 
-        CollectionItemService.bulk_create_collection_item(data=bulk_dto)
+        items = CollectionItemService.bulk_create_collection_item(data=bulk_dto)
 
         if folder is None:
             return CollectionSelector.list_collection_item_from_user(user=user)
