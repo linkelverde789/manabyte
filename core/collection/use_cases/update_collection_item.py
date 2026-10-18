@@ -70,3 +70,5 @@ class UpdateCollectionItemUseCase:
             data_before=model_to_dict(frozen_item),
             data_after=model_to_dict(updated_item),
         )
+
+        return updated_item
