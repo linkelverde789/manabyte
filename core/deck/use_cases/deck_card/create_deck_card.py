@@ -5,6 +5,8 @@ from deck.exceptions import DeckException
 from deck.selectors.deck import DeckSelector
 from deck.selectors.deck_card import DeckCardSelector
 from deck.services.deck_card import DeckCardService
+from events.consts import CARD_ADDED, DECK_TYPE_EVENT
+from events.utils.create_event import CreateEventForCreateActionUseCase
 from users.models import User
 
 
@@ -27,6 +29,14 @@ class CreateDeckCardUseCase:
             deck=deck, card=card, quantity=quantity, zone=zone
         ).validate()
 
-        DeckCardService.create_deck_card(data=create_deck_card_dto)
+        deck_card = DeckCardService.create_deck_card(data=create_deck_card_dto)
+
+        CreateEventForCreateActionUseCase().execute(
+            user=user,
+            type=CARD_ADDED,
+            aggregate_type=DECK_TYPE_EVENT,
+            aggregate_id=deck_id,
+            data_after=deck_card,
+        )
 
         return DeckCardSelector.list_cards_from_deck(deck=deck)

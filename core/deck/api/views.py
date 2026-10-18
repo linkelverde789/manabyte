@@ -122,11 +122,10 @@ class DeckCardsView(ViewSet):
         user = request.user
         data = request.data
 
-        deck = GetDeckForUserUseCase().execute(user=user, deck_id=deck_id)
-
         card = UpdateDeckCardUseCase().execute(
             card_id=pk,
-            deck=deck,
+            deck_id=deck_id,
+            user=user,
             scryfall_id=data.get("scryfall_id", None),
             quantity=data.get("quantity", None),
             zone=data.get("zone", None),

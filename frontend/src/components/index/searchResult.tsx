@@ -11,7 +11,7 @@ export default function SearchResults({
 }) {
   return cards?.map((card) => (
     <button
-      key={card.external_id}
+      key={card.id}
       type="button"
       onClick={() => onPicked(card)}
       className="group space-y-2 rounded-xl text-left transition hover:opacity-95"

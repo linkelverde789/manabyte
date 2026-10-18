@@ -1,4 +1,5 @@
 export interface Card {
+  id: number;
   external_id: string;
   oracle_id: string;
   name: string;

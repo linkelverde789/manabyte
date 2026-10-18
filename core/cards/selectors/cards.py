@@ -44,3 +44,7 @@ class CardSelector:
     @staticmethod
     def get_cards_from_user_collection(user: User):
         return ScryfallCard.objects.filter(collectionitem__user=user)
+
+    @staticmethod
+    def get_card_from_id(card_id: int):
+        return ScryfallCard.objects.filter(id=card_id).first()

@@ -5,6 +5,7 @@ from sets.api.serializers import ScryfallSetSerializer
 
 
 class ScryfallCardResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     external_id = serializers.UUIDField()
     oracle_id = serializers.UUIDField()
     name = serializers.CharField()

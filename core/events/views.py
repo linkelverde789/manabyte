@@ -7,18 +7,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from users.models import User
 
-from events.consts import ALLOWED_EVENT_TYPES, EVENT_LIMIT
+from events.consts import ALLOWED_AGGREGATE_TYPES, EVENT_LIMIT
 from events.models import Event
 from events.serializers import EventResponseSerializer, ProfileEventsResponseSerializer
 
 
 class EventsFromUserViewSet(APIView):
-    permission_classes = [IsAuthenticated]  # noqa: RUF012
-
     def get(self, request, event_type: str):
-        user = request.user
+        user = User.objects.filter(id=1).first()
 
-        if event_type not in ALLOWED_EVENT_TYPES:
+        if event_type not in ALLOWED_AGGREGATE_TYPES:
             raise ValidationError({"event_type": "Type not allowed."})
 
         date_param = request.query_params.get("date")
