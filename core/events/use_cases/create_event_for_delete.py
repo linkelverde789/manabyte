@@ -1,5 +1,6 @@
-from events.models import EventItem
-from events.utils import basic_checks, create_event
+from cards.selectors.cards import CardSelector
+from events.services.events import EventServices
+from events.utils import basic_checks
 from users.models import User
 
 
@@ -15,15 +16,16 @@ class CreateEventForDeleteActionUseCase:
 
         basic_checks(type=type, aggregate_type=aggregate_type)
 
-        event = create_event(
-            type=type,
-            aggregate_type=aggregate_type,
+        card = CardSelector.get_card_from_id(data_before["card"])
+        event = EventServices.create_event(
             user=user,
+            type=type,
             aggregate_id=aggregate_id,
+            aggregate_type=aggregate_type,
         )
 
-        EventItem.objects.create(
+        EventServices.create_event_item(
             event=event,
-            card_id=data_before["card"],
+            card=card,
             data_before=data_before,
         )

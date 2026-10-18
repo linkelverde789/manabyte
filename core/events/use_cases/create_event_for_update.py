@@ -1,4 +1,6 @@
+from cards.selectors.cards import CardSelector
 from events.models import EventItem
+from events.services.events import EventServices
 from events.utils import basic_checks, create_event
 from users.models import User
 
@@ -63,16 +65,18 @@ class CreateEventForUpdateActionUseCase:
     ):
         basic_checks(type=type, aggregate_type=aggregate_type)
 
-        event = create_event(
-            type=type,
-            aggregate_type=aggregate_type,
+        event = EventServices.create_event(
             user=user,
+            type=type,
             aggregate_id=aggregate_id,
+            aggregate_type=aggregate_type,
         )
 
-        EventItem.objects.create(
+        card = CardSelector.get_card_from_id(data_after["card"])
+
+        EventServices.create_event_item(
             event=event,
-            card_id=data_after["card"],
+            card=card,
             data_before=data_before,
             data_after=data_after,
             values_changed=_generate_changed_values(
