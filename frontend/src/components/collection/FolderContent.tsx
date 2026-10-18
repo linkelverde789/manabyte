@@ -2,8 +2,8 @@ import EmptyDeck from "../deckCards/emptyDeck";
 import CardRow from "./cardRow";
 import { ItemRowSkeleton } from "./skeletons";
 import type { CollectionItem } from "#/features/collection/types";
-import { PaginatorSkeleton } from "../utils/paginators/skeletons";
-import { Paginator } from "../utils/paginators/Paginator";
+import { PaginatorSkeleton } from "../paginators/skeletons";
+import { Paginator } from "../paginators/Paginator";
 import { useDeleteCollectionItem } from "#/features/collection/hooks";
 
 export function FolderContent({

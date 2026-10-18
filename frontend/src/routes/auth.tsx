@@ -3,17 +3,19 @@ import { Input } from "#/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
 import { useAuth } from "#/contexts/AuthContext";
 import { Label } from "@radix-ui/react-label";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { LogIn, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { UserProfile } from "#/components/auth/Profile";
+import { AuthSkeleton } from "#/components/auth/skeletons";
 
 export const Route = createFileRoute("/auth")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { user, logout, login, register } = useAuth();
+  const { user, logout, login, register, loading } = useAuth();
   const navigate = useNavigate();
   const [signInForm, setSignInForm] = useState({ email: "", password: "" });
   const [signUpForm, setSignUpForm] = useState({
@@ -23,28 +25,12 @@ function RouteComponent() {
     password_confirm: "",
   });
 
+  if (loading) {
+    return <AuthSkeleton />;
+  }
+
   if (user) {
-    return (
-      <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Hi, {user.username}
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">{user.email}</p>
-        <div className="mt-8 flex justify-center gap-3">
-          <Button asChild>
-            <Link to="/decks">My decks</Link>
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => {
-              logout();
-            }}
-          >
-            Sign out
-          </Button>
-        </div>
-      </div>
-    );
+    return <UserProfile user={user} onLogOut={logout} />;
   }
 
   const handle = async (fn: () => Promise<void>, message: string) => {

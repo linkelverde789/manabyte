@@ -2,7 +2,7 @@ import AlbumCardSlot from "#/components/album/AlbumCardSlot";
 import { SetHeader } from "#/components/album/SetHeader";
 import { SetProgress } from "#/components/album/SetProgress";
 import { SetAlbumSkeleton } from "#/components/album/skeletons";
-import { Paginator } from "#/components/utils/paginators/Paginator";
+import { Paginator } from "#/components/paginators/Paginator";
 import { useListAlbum } from "#/features/album/hooks";
 import { useGetSetInformation } from "#/features/scryfall/hooks";
 import { createFileRoute } from "@tanstack/react-router";

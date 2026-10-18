@@ -60,7 +60,7 @@ class ProfileEventsViewSet(APIView):
 
         data = {
             "today": Event.objects.filter(user=user, created_at__date=today).order_by(
-                "created_at"
+                "-created_at"
             )[:5],
             "yesterday": Event.objects.filter(
                 user=user, created_at__date=yesterday

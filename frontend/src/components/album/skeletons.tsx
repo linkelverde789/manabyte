@@ -1,4 +1,4 @@
-import { PaginatorSkeleton } from "../utils/paginators/skeletons";
+import { PaginatorSkeleton } from "../paginators/skeletons";
 
 function AlbumCardSkeleton() {
   return (
