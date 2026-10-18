@@ -3,6 +3,13 @@ from cards.selectors.cards import CardSelector
 from collection.dto.collection import CreateCollectionItemInput
 from collection.models import CollectionItem
 from collection.services.collection import CollectionItemService
+from events.consts import (
+    CARD_ADDED,
+    COLLECTION_TYPE_EVENT,
+)
+from events.use_cases.create_event_for_create import (
+    CreateEventForCreateActionUseCase,
+)
 from folder.exceptions import FolderException
 from folder.selectors.folder import FolderSelector
 from users.models import User
@@ -43,4 +50,14 @@ class CreateCollectionItemUseCase:
             language=language,
         ).validate()
 
-        return CollectionItemService.create_collection_item(data=input_dto)
+        item = CollectionItemService.create_collection_item(data=input_dto)
+
+        CreateEventForCreateActionUseCase().execute(
+            user=user,
+            type=CARD_ADDED,
+            aggregate_id=folder.id if folder is not None else None,
+            aggregate_type=COLLECTION_TYPE_EVENT,
+            data_after=item,
+        )
+
+        return item

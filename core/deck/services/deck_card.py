@@ -55,7 +55,3 @@ class DeckCardService:
     @staticmethod
     def delete_deck_card(card: DeckCard) -> None:
         card.delete()
-
-
-def pruebas(cards):
-    return

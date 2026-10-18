@@ -2,6 +2,8 @@ from cards.selectors.cards import CardSelector
 from collection.dto.collection import CreateCollectionItemInput
 from collection.selectors.collection import CollectionSelector
 from collection.services.collection import CollectionItemService
+from events.consts import CARDS_BULK_ADDED, COLLECTION_TYPE_EVENT
+from events.use_cases.create_event_for_bulk import CreateEventForBulkActionUseCase
 from folder.exceptions import FolderException
 from folder.selectors.folder import FolderSelector
 from users.models import User
@@ -33,6 +35,14 @@ class BulkCreateCollectionItemUseCase:
         ]
 
         items = CollectionItemService.bulk_create_collection_item(data=bulk_dto)
+
+        CreateEventForBulkActionUseCase().execute(
+            user=user,
+            type=CARDS_BULK_ADDED,
+            aggregate_type=COLLECTION_TYPE_EVENT,
+            aggregate_id=folder.id if folder is not None else None,
+            data_after=items,
+        )
 
         if folder is None:
             return CollectionSelector.list_collection_item_from_user(user=user)

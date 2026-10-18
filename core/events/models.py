@@ -28,7 +28,7 @@ class Event(models.Model):
     )
 
     aggregate_type = models.CharField(max_length=100, choices=AGGREGATE_TYPE_CHOICES)
-    aggregate_id = models.CharField(max_length=100)
+    aggregate_id = models.CharField(max_length=100, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
