@@ -3,7 +3,6 @@ from collection.dto.collection import (
     UpdateCollectionItemInput,
 )
 from collection.models import CollectionItem
-from deck.services.deck_card import pruebas
 from django.db import transaction
 
 
@@ -24,7 +23,7 @@ class CollectionItemService:
     @staticmethod
     @transaction.atomic
     def bulk_create_collection_item(data: [CreateCollectionItemInput]):
-        items = CollectionItem.objects.bulk_create(
+        return CollectionItem.objects.bulk_create(
             [
                 CollectionItem(
                     user=item.user,
@@ -38,7 +37,6 @@ class CollectionItemService:
                 for item in data
             ]
         )
-        pruebas(items)
 
     @staticmethod
     @transaction.atomic

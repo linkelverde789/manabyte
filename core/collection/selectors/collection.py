@@ -3,7 +3,6 @@ from cards.utils.utils import filter_cards_from_query
 from collection.consts import SORTING_OPTIONS
 from collection.dto.collection import FilterCollectionParams
 from collection.models import CollectionItem
-from deck.services.deck_card import pruebas
 from django.db.models import Case, DecimalField, F, When
 from folder.models import Folder
 from users.models import User
@@ -66,7 +65,6 @@ class CollectionSelector:
         items = CollectionItem.objects.filter(folder=folder).select_related(
             "card", "card__set"
         )
-        pruebas(items)
 
         if filters:
             items = _apply_filters(items=items, filters=filters)
