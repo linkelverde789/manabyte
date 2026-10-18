@@ -1,7 +1,6 @@
 from cards.selectors.cards import CardSelector
-from events.models import EventItem
 from events.services.events import EventServices
-from events.utils import basic_checks, create_event
+from events.utils import basic_checks
 from users.models import User
 
 

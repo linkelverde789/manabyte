@@ -2,7 +2,6 @@ import pytest
 from cards.models import ScryfallCard
 from deck.models import Deck, DeckCard
 from django.urls import reverse
-
 from events.consts import (
     CARD_ADDED,
     CARD_REMOVED,
