@@ -14,7 +14,7 @@ class CreateEventForBulkActionUseCase:
         type: str,
         aggregate_type: str,
         aggregate_id: str | None,
-        data_after: [CollectionItem] | [DeckCard],
+        data_after: list[CollectionItem] | list[DeckCard],
     ):
 
         basic_checks(type=type, aggregate_type=aggregate_type)
