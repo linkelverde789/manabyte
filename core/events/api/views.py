@@ -1,20 +1,23 @@
 from datetime import datetime, timedelta
 
 from django.utils import timezone
+from events.api.serializers import (
+    EventResponseSerializer,
+    ProfileEventsResponseSerializer,
+)
+from events.consts import ALLOWED_AGGREGATE_TYPES, EVENT_LIMIT
+from events.models import Event
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from users.models import User
-
-from events.consts import ALLOWED_AGGREGATE_TYPES, EVENT_LIMIT
-from events.models import Event
-from events.serializers import EventResponseSerializer, ProfileEventsResponseSerializer
 
 
 class EventsFromUserViewSet(APIView):
+    permission_classes = [IsAuthenticated]  # noqa: RUF012
+
     def get(self, request, event_type: str):
-        user = User.objects.filter(id=1).first()
+        user = request.user
 
         if event_type not in ALLOWED_AGGREGATE_TYPES:
             raise ValidationError({"event_type": "Type not allowed."})
@@ -46,8 +49,10 @@ class EventsFromUserViewSet(APIView):
 
 
 class ProfileEventsViewSet(APIView):
+    permission_classes = [IsAuthenticated]  # noqa: RUF012
+
     def get(self, request):
-        user = User.objects.filter(id=1).first()
+        user = request.user
 
         today = timezone.localdate()
 
@@ -56,10 +61,10 @@ class ProfileEventsViewSet(APIView):
         data = {
             "today": Event.objects.filter(user=user, created_at__date=today).order_by(
                 "created_at"
-            )[:3],
+            )[:5],
             "yesterday": Event.objects.filter(
                 user=user, created_at__date=yesterday
-            ).order_by("-created_at")[:3],
+            ).order_by("-created_at")[:5],
         }
 
         return Response(

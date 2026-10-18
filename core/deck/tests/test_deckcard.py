@@ -1,5 +1,3 @@
-import uuid
-
 import pytest
 from cards.models import ScryfallCard
 from django.urls import reverse

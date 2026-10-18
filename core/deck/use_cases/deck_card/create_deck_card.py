@@ -6,7 +6,9 @@ from deck.selectors.deck import DeckSelector
 from deck.selectors.deck_card import DeckCardSelector
 from deck.services.deck_card import DeckCardService
 from events.consts import CARD_ADDED, DECK_TYPE_EVENT
-from events.utils.create_event import CreateEventForCreateActionUseCase
+from events.use_cases.create_event_for_create import (
+    CreateEventForCreateActionUseCase,
+)
 from users.models import User
 
 

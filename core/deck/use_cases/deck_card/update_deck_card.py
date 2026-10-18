@@ -9,7 +9,9 @@ from deck.selectors.deck_card import DeckCardSelector
 from deck.services.deck_card import DeckCardService
 from django.forms.models import model_to_dict
 from events.consts import CARD_UPDATED, DECK_TYPE_EVENT
-from events.utils.create_event import CreateEventForUpdateActionUseCase
+from events.use_cases.create_event_for_update import (
+    CreateEventForUpdateActionUseCase,
+)
 from users.models import User
 
 
