@@ -1,6 +1,3 @@
-# Create your views here.
-
-
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
