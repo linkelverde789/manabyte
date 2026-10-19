@@ -4,7 +4,7 @@ import { Input } from "../ui/input";
 import SearchResults from "../index/searchResult";
 import type { Card } from "#/lib/types";
 import { useCardSearch } from "#/features/utils/hooks";
-import { CardPreviewDialog } from "../dialogs/CardPreviewDialog";
+import { CardPreviewDialog } from "../dialogs/Dialogs/CardPreviewDialog";
 
 export default function CardSearch({
   autoFocus,

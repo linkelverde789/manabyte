@@ -6,6 +6,7 @@ import type { Deck } from "#/features/decks/types";
 import { groupCardsByType } from "#/lib/utils";
 
 import { useDeckCards } from "#/features/deckCards/hooks";
+import type { DeckCard } from "#/features/deckCards/types";
 
 export function DeckContent({ deck }: { deck: Deck }) {
   const { data: cards, isLoading: isLoadingCards } = useDeckCards(deck.id);

@@ -2,7 +2,7 @@ import AlbumCardSlot from "#/components/album/AlbumCardSlot";
 import { SetHeader } from "#/components/album/SetHeader";
 import { SetProgress } from "#/components/album/SetProgress";
 import { SetAlbumSkeleton } from "#/components/album/skeletons";
-import { CardPreviewDialog } from "#/components/dialogs/CardPreviewDialog";
+import { CardPreviewDialog } from "#/components/dialogs/Dialogs/CardPreviewDialog";
 import { Paginator } from "#/components/paginators/Paginator";
 import { useListAlbum } from "#/features/album/hooks";
 import { useGetSetInformation } from "#/features/scryfall/hooks";

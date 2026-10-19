@@ -8,8 +8,10 @@ import { cn } from "#/lib/utils";
 import { Layers, Minus, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { CardImage } from "./cardImage";
-import StylePicker from "./stylePicker";
-import type { BaseCardInformation, Card } from "#/lib/types";
+import type { DeckCard } from "#/features/deckCards/types";
+import type { UpdateDeckCard } from "../dialogs/Base/EditCollectionCard";
+import GeneralDeckDialog from "../dialogs/GeneralDialog/GeneralDeckDialog";
+import type { Card } from "#/lib/types";
 
 export default function CardRow({
   card,
@@ -17,43 +19,31 @@ export default function CardRow({
   deckId,
 }: {
   card: Card;
-  dataCard: BaseCardInformation;
+  dataCard: DeckCard;
   deckId: number;
 }) {
   const [openStyles, setOpenStyles] = useState(false);
-
+  const [open, setOpen] = useState(false);
   const deleteCard = useDeleteDeckCard(deckId);
   const updateCard = usePartialUpdateDeckCard(deckId);
 
   const isUpdating = deleteCard.isPending || updateCard.isPending;
 
-  function handleUpdate(scryfall_id: string, cardId: number) {
-    updateCard.mutate({
-      cardId: cardId,
-      data: { scryfall_id: scryfall_id },
-    });
-  }
-
-  function handleUpdateQuantity(quantity: number) {
+  function handleUpdate(data: UpdateDeckCard) {
     if (isUpdating) {
       return;
     }
 
-    if (quantity < 1) {
+    if (data.quantity && data.quantity < 1) {
       deleteCard.mutate(dataCard.id);
       return;
     }
-
-    if (quantity === dataCard.quantity) {
-      return;
-    }
-
     updateCard.mutate({
       cardId: dataCard.id,
-      data: {
-        quantity,
-      },
+      data: { ...data },
     });
+
+    setOpen(false);
   }
 
   function handleDelete() {
@@ -69,8 +59,12 @@ export default function CardRow({
   return (
     <div className="space-y-2">
       <div
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(true);
+        }}
         className={cn(
-          "flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2",
+          "cursor-pointer flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2",
           "transition-colors hover:bg-muted/30",
           isUpdating && "pointer-events-none opacity-60",
         )}
@@ -119,7 +113,10 @@ export default function CardRow({
             size="icon"
             variant="outline"
             className="h-7 w-7"
-            onClick={() => handleUpdateQuantity(dataCard.quantity - 1)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleUpdate({ quantity: dataCard.quantity - 1 });
+            }}
             disabled={isUpdating}
             aria-label={`Remove one ${card.name} `}
           >
@@ -138,7 +135,11 @@ export default function CardRow({
             size="icon"
             variant="outline"
             className="h-7 w-7"
-            onClick={() => handleUpdateQuantity(dataCard.quantity + 1)}
+            onClick={(e) => {
+              e.stopPropagation();
+
+              handleUpdate({ quantity: dataCard.quantity + 1 });
+            }}
             disabled={isUpdating}
             aria-label={`Add one ${card.name} `}
           >
@@ -150,7 +151,10 @@ export default function CardRow({
             size="icon"
             variant="ghost"
             className="h-7 w-7 text-muted-foreground hover:text-destructive"
-            onClick={handleDelete}
+            onClick={(e) => {
+              e.stopPropagation;
+              handleDelete;
+            }}
             disabled={isUpdating}
             aria-label={`Delete ${card.name} `}
           >
@@ -159,7 +163,7 @@ export default function CardRow({
         </div>
       </div>
 
-      {openStyles && (
+      {/* {openStyles && (
         <div className="rounded-lg border border-border bg-muted/20 p-3">
           <div className="text-xs text-muted-foreground">
             {openStyles && (
@@ -171,7 +175,15 @@ export default function CardRow({
             )}
           </div>
         </div>
-      )}
+      )} */}
+      <GeneralDeckDialog
+        card={card}
+        dataCard={dataCard}
+        open={open}
+        initialTab="preview"
+        onOpenChange={setOpen}
+        onUpdate={handleUpdate}
+      />
     </div>
   );
 }

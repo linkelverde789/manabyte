@@ -1,20 +1,13 @@
 import type { CollectionItem } from "#/features/collection/types";
 import type { Card } from "#/lib/types";
 
-import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "../../ui/dialog";
 
-import EditCard from "./EditCard";
+import EditCollectionCard, {
+  type UpdateCollectionCard,
+} from "../Base/EditCollectionCard";
 
-export interface UpdateCardData {
-  scryfall_id?: string;
-  quantity?: number;
-  foil?: boolean;
-  condition?: string;
-  language?: string;
-  folder?: number;
-}
-
-export function EditCardDialog({
+export function EditDeckCardDialog({
   card,
   dataCard,
   open,
@@ -25,14 +18,18 @@ export function EditCardDialog({
   dataCard: CollectionItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onUpdate: (data: UpdateCardData) => void;
+  onUpdate: (data: UpdateCollectionCard) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader></DialogHeader>
 
-        <EditCard card={card} dataCard={dataCard} onUpdate={onUpdate} />
+        <EditCollectionCard
+          card={card}
+          dataCard={dataCard}
+          onUpdate={onUpdate}
+        />
       </DialogContent>
     </Dialog>
   );

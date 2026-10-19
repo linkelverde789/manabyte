@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 
-import { Dialog, DialogContent } from "../ui/dialog";
+import { Dialog, DialogContent } from "../../ui/dialog";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 
 import type { CollectionItem } from "#/features/collection/types";
 
-import type { UpdateCardData } from "./EditCardDialog";
-import { CardPreview } from "./CardPreview";
-import EditCard from "./EditCard";
 import type { Card } from "#/lib/types";
+import { CardPreview } from "../Base/CardPreview";
+import EditCollectionCard, {
+  type UpdateCollectionCard,
+} from "../Base/EditCollectionCard";
 
-export default function GeneralDialog({
+export default function GeneralCollectionDialog({
   card,
   dataCard,
   open,
@@ -24,7 +25,7 @@ export default function GeneralDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialTab?: "preview" | "edit";
-  onUpdate: (data: UpdateCardData) => void;
+  onUpdate: (data: UpdateCollectionCard) => void;
 }) {
   const [tab, setTab] = useState<"preview" | "edit">(initialTab);
 
@@ -52,7 +53,11 @@ export default function GeneralDialog({
           </TabsContent>
 
           <TabsContent value="edit" className="mt-6">
-            <EditCard card={card} dataCard={dataCard} onUpdate={onUpdate} />
+            <EditCollectionCard
+              card={card}
+              dataCard={dataCard}
+              onUpdate={onUpdate}
+            />
           </TabsContent>
         </Tabs>
       </DialogContent>
