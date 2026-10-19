@@ -4,16 +4,16 @@ import ManaCost from "../search/manaCost";
 
 export default function SearchResults({
   cards,
-  onPicked,
+  onPickCard,
 }: {
   cards?: Card[];
-  onPicked: (card: Card) => void;
+  onPickCard: (card: Card) => void;
 }) {
   return cards?.map((card) => (
     <button
       key={card.id}
       type="button"
-      onClick={() => onPicked(card)}
+      onClick={() => onPickCard(card)}
       className="group space-y-2 rounded-xl text-left transition hover:opacity-95"
     >
       <div className="relative aspect-[488/680] w-full overflow-hidden rounded-xl bg-muted/40 ring-1 ring-border">
