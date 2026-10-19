@@ -1,11 +1,25 @@
 import { CheckCircle2, Sparkles, Lock } from "lucide-react";
 import { CardImage } from "../deckCards/cardImage";
 import type { AlbumCard } from "#/features/album/types";
+import type { Card } from "#/lib/types";
 
-export default function AlbumCardSlot({ card }: { card: AlbumCard }) {
+export default function AlbumCardSlot({
+  card,
+  onPickCard,
+}: {
+  card: AlbumCard;
+  onPickCard: (card: Card) => void;
+}) {
+  function handleClick() {
+    onPickCard(card);
+  }
+
   if (card.quantity > 0) {
     return (
-      <div className="group flex flex-col items-center gap-1.5">
+      <div
+        className="group flex flex-col items-center gap-1.5"
+        onClick={() => handleClick()}
+      >
         <div className="relative w-full overflow-hidden rounded-xl ring-1 ring-border shadow-md transition-transform duration-200 group-hover:-translate-y-1">
           <CardImage
             card={card.card_faces}
@@ -41,7 +55,10 @@ export default function AlbumCardSlot({ card }: { card: AlbumCard }) {
   }
 
   return (
-    <div className="group flex flex-col items-center gap-1.5 opacity-80">
+    <div
+      className="group flex flex-col items-center gap-1.5 opacity-80"
+      onClick={() => handleClick()}
+    >
       <div className="relative w-full overflow-hidden rounded-xl border border-dashed border-border bg-muted/30">
         <CardImage
           card={card.card_faces}
