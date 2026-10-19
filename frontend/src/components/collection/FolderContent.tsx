@@ -63,7 +63,7 @@ export function FolderContent({
   }
 
   return (
-    <div>
+    <>
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
         <Paginator
           page={page}
@@ -88,6 +88,6 @@ export function FolderContent({
           onChangePage={onChangePage}
         />
       </div>
-    </div>
+    </>
   );
 }

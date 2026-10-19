@@ -6,10 +6,9 @@ import { useCreateDeckCard } from "#/features/deckCards/hooks";
 import type { ExportFormat } from "#/features/exports/types";
 import { useDeckExport } from "#/features/exports/hooks";
 import { downloadFile } from "#/lib/utils";
-import type { CreateDeckCardData, DeckCard } from "#/features/deckCards/types";
+import type { CreateDeckCardData } from "#/features/deckCards/types";
 import { Export } from "../utils/Export";
 import { DeckContent } from "../deckCards/DeckContent";
-import type { Card } from "#/lib/types";
 
 export default function DeckBody({ deck }: { deck: Deck }) {
   const [tab, setTab] = useState<"main" | "search">("main");

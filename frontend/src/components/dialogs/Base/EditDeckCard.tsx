@@ -12,6 +12,14 @@ import { CardImage } from "#/components/deckCards/cardImage";
 import { Label } from "#/components/ui/labels";
 import { Input } from "#/components/ui/input";
 import { Button } from "#/components/ui/button";
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "#/components/ui/select";
+import { ZONE_FORMAT, type ZoneFormat } from "#/features/decks/types";
 export default function EditCollectionCard({
   card,
   dataCard,
@@ -92,23 +100,25 @@ export default function EditCollectionCard({
                 }
               />
             </div>
-            <div className="w-24 space-y-2">
+            <div className="w-35 space-y-2">
               <Label htmlFor="zone">Zone</Label>
 
-              <Input
-                id="zone"
-                type="text"
+              <Select
                 value={zone}
-                onChange={(e) => setZone(e.target.value)}
-              />
+                onValueChange={(value) => setZone(value as ZoneFormat)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ZONE_FORMAT.map((format) => (
+                    <SelectItem key={format} value={format}>
+                      {format.charAt(0).toUpperCase() + format.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-
-          <div className="flex gap-2">
-            <Button onClick={submit} className="flex-1">
-              Save changes
-            </Button>
-
             <Button
               type="button"
               variant="outline"
@@ -117,6 +127,12 @@ export default function EditCollectionCard({
               <Layers className="mr-2 h-4 w-4" />
 
               {showStyles ? "Hide styles" : "Other styles"}
+            </Button>
+          </div>
+
+          <div className="flex gap-2">
+            <Button onClick={submit} className="flex-1">
+              Save changes
             </Button>
           </div>
         </div>

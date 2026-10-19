@@ -22,19 +22,6 @@ import {
 import { useCreateFolder } from "#/features/folders/hooks";
 import { FOLDER_FORMATS, type FolderFormat } from "#/features/folders/types";
 
-export const DECK_FORMATS = [
-  "Commander",
-  "Modern",
-  "Standard",
-  "Pioneer",
-  "Legacy",
-  "Pauper",
-  "Limited",
-  "Casual",
-] as const;
-
-export type DeckFormat = (typeof DECK_FORMATS)[number];
-
 export default function NewDeckDialog() {
   const navigate = useNavigate();
   const createFolder = useCreateFolder();
