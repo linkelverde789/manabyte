@@ -27,30 +27,43 @@ function RouteComponent() {
         <NewDeckDialog />
       </div>
 
-      <div className=" grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {isLoading || !decks ? (
-          Array.from({ length: 5 }).map((_, index) => (
-            <DeckRowSkeleton key={index} />
-          ))
-        ) : (
-          <DeckListContent decks={decks} />
-        )}
-      </div>
+      <DeckListContent decks={decks} isLoading={isLoading} />
     </div>
   );
 }
 
-export function DeckListContent({ decks }: { decks: Deck[] }) {
+export function DeckListContent({
+  decks,
+  isLoading,
+}: {
+  decks: Deck[] | undefined;
+  isLoading: boolean;
+}) {
   const deleteDeck = useDeleteDeck();
   function handleDeleteDeck(deckId: number) {
     deleteDeck.mutate(deckId);
   }
+  if (isLoading || !decks) {
+    return (
+      <div className=" grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 12 }).map((_, index) => (
+          <DeckRowSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
 
-  if (decks.length == 0) {
+  if (decks?.length === 0) {
     return <EmptyDecks />;
   }
 
-  return decks.map((deck) => {
-    return <DeckRow key={deck.id} deck={deck} onDelete={handleDeleteDeck} />;
-  });
+  return (
+    <div className=" grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {decks.map((deck) => {
+        return (
+          <DeckRow key={deck.id} deck={deck} onDelete={handleDeleteDeck} />
+        );
+      })}
+    </div>
+  );
 }
