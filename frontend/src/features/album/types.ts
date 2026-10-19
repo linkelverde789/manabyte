@@ -1,11 +1,6 @@
-import type { Face } from "#/lib/types";
+import type { Card } from "#/lib/types";
 
-export interface AlbumCard {
-  external_id: string;
-  oracle_id: string;
-  name: string;
-  collector_number: string;
-  card_faces: Face[];
+export interface AlbumCard extends Card {
   quantity: number;
   foil: boolean;
   condition: string;
