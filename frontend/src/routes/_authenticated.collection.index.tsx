@@ -2,8 +2,10 @@ import { FolderListHeader } from "#/components/collection/FolderListHeader";
 import { FolderRow } from "#/components/collection/FolderRow";
 import NewFolderDialog from "#/components/collection/newFolderDialog";
 import { FolderRowSkeleton } from "#/components/collection/skeletons";
+import { Button } from "#/components/ui/button";
 import { useDeleteFolder, useListFolders } from "#/features/folders/hooks";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Eye } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/collection/")({
   component: RouteComponent,
@@ -12,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/collection/")({
 function RouteComponent() {
   const { data: folders, isLoading } = useListFolders();
   const deleteFolder = useDeleteFolder();
+  const navigate = useNavigate();
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
@@ -20,7 +23,20 @@ function RouteComponent() {
           folderCount={folders?.length ?? 0}
           isLoading={isLoading}
         />
-        <NewFolderDialog />
+
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => {
+              navigate({
+                to: "/collection/cards",
+              });
+            }}
+          >
+            <Eye />
+            Complete collection
+          </Button>
+          <NewFolderDialog />
+        </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading

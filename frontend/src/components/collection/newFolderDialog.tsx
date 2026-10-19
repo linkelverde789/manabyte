@@ -1,4 +1,4 @@
-import { Pencil, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -22,7 +22,7 @@ import {
 import { useCreateFolder } from "#/features/folders/hooks";
 import { FOLDER_FORMATS, type FolderFormat } from "#/features/folders/types";
 
-export default function NewDeckDialog() {
+export default function NewFolderDialog() {
   const navigate = useNavigate();
   const createFolder = useCreateFolder();
   const [open, setOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function NewDeckDialog() {
   function handleCreate() {
     createFolder.mutate(
       {
-        name: name || "Untitled Deck",
+        name: name || "Untitled Folder",
         type: format || "Collection",
       },
       {
