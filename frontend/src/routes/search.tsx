@@ -1,4 +1,5 @@
 import CardSearch from "#/components/search/cardSearch";
+import { SearchSyntax } from "#/components/search/Syntax";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/search")({
@@ -18,6 +19,7 @@ function RouteComponent() {
           </p>
         </div>
       </div>
+      <SearchSyntax />
       <CardSearch autoFocus />
     </div>
   );
