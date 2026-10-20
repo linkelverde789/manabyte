@@ -17,12 +17,21 @@ export function useDeckCards(deckId: number) {
   });
 }
 
-export function useCreateDeckCard(deckId: number) {
+export function useCreateDeckCard() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateDeckCardData) => createDeckCard(deckId, data),
-    onSuccess: async () => {
+    mutationFn: ({
+      deckId,
+      data,
+    }: {
+      deckId: number;
+      data: CreateDeckCardData;
+    }) => createDeckCard(deckId, data),
+
+    onSuccess: async (_, variables) => {
+      const { deckId } = variables;
+
       await queryClient.invalidateQueries({
         queryKey: ["cards", deckId],
       });
@@ -30,8 +39,10 @@ export function useCreateDeckCard(deckId: number) {
       await queryClient.refetchQueries({
         queryKey: ["deck", deckId],
       });
-      toast.success(`Card added to the deck!`);
+
+      toast.success("Card added to the deck!");
     },
+
     onError: (error) => {
       toast.error(`${error}`);
     },

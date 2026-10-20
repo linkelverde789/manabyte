@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import ManaCost from "../search/manaCost";
-import { Button } from "../ui/button";
 import { processOracleText } from "#/lib/utils";
 import type { Card, Face } from "#/lib/types";
+import ManaCost from "#/components/search/manaCost";
+import { Button } from "#/components/ui/button";
 
 export function CardPreview({ card }: { card: Card }) {
   const [transform, setTransform] = useState(false);

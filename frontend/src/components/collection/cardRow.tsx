@@ -6,13 +6,13 @@ import { Button } from "../ui/button";
 
 import { usePartialUpdateCollectionItem } from "#/features/collection/hooks";
 
-import { type UpdateCardData } from "../dialogs/EditCardDialog";
 import ShowPrice from "./showPrice";
 
 import ManaCost from "../search/manaCost";
-import GeneralDialog from "../dialogs/GeneralDialog";
+import GeneralCollectionDialog from "../dialogs/GeneralDialog/GeneralCollectionDialog";
 import type { Card } from "#/lib/types";
 import type { CollectionItem } from "#/features/collection/types";
+import type { UpdateCollectionCard } from "../dialogs/Base/EditCollectionCard";
 
 export default function CardRow({
   dataCard,
@@ -48,7 +48,7 @@ export default function CardRow({
     });
   }
 
-  function handleUpdate(data: UpdateCardData) {
+  function handleUpdate(data: UpdateCollectionCard) {
     partialUpdateCollectorItem.mutate({
       cardId: dataCard.id,
       data: {
@@ -171,7 +171,7 @@ export default function CardRow({
         </div>
       </div>
 
-      <GeneralDialog
+      <GeneralCollectionDialog
         card={card}
         dataCard={dataCard}
         open={openDialog}

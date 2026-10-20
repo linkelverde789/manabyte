@@ -2,30 +2,35 @@ import { useEffect, useState } from "react";
 
 import type { CollectionItem } from "#/features/collection/types";
 
-import { Input } from "../ui/input";
-import { Switch } from "../ui/switch";
-import { Button } from "../ui/button";
-import { Label } from "../ui/labels";
-
-import ManaCost from "../search/manaCost";
-import { CardImage } from "../deckCards/cardImage";
-
 import { Layers, Loader2, Sparkles } from "lucide-react";
 
 import { cn } from "#/lib/utils";
 import type { Card } from "#/lib/types";
 import { useListPrints } from "#/features/utils/hooks";
+import ManaCost from "#/components/search/manaCost";
+import { CardImage } from "#/components/deckCards/cardImage";
+import { Label } from "#/components/ui/labels";
+import { Input } from "#/components/ui/input";
+import { Switch } from "#/components/ui/switch";
+import { Button } from "#/components/ui/button";
 
 export interface UpdateCardData {
   scryfall_id?: string;
   quantity?: number;
+}
+
+export interface UpdateDeckCard extends UpdateCardData {
+  zone?: string;
+}
+
+export interface UpdateCollectionCard extends UpdateCardData {
   foil?: boolean;
   condition?: string;
   language?: string;
   folder?: number;
 }
 
-export default function EditCard({
+export default function EditCollectionCard({
   card,
   dataCard,
   onUpdate,
@@ -33,7 +38,7 @@ export default function EditCard({
 }: {
   card: Card | null;
   dataCard: CollectionItem | null;
-  onUpdate: (data: UpdateCardData) => void;
+  onUpdate: (data: UpdateCollectionCard) => void;
   onClose?: () => void;
 }) {
   const [selected, setSelected] = useState<Card | null>(card);

@@ -21,12 +21,15 @@ export default function DeckBody({ deck }: { deck: Deck }) {
     format: exportFormat,
   });
 
-  const createDeckCard = useCreateDeckCard(deck.id);
+  const createDeckCard = useCreateDeckCard();
 
   function handleCreate(data: CreateDeckCardData) {
     createDeckCard.mutate({
-      scryfall_id: data.scryfall_id,
-      quantity: data.quantity,
+      data: {
+        scryfall_id: data.scryfall_id,
+        quantity: data.quantity,
+      },
+      deckId: deck.id,
     });
   }
 

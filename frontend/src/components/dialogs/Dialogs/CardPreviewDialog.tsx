@@ -1,6 +1,6 @@
 import type { Card } from "#/lib/types";
-import { Dialog, DialogContent } from "../ui/dialog";
-import { CardPreview } from "./CardPreview";
+import { Dialog, DialogContent } from "../../ui/dialog";
+import { CardPreview } from "../Base/CardPreview";
 
 export function CardPreviewDialog({
   open,

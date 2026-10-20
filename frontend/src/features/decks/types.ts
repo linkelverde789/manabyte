@@ -12,3 +12,24 @@ export interface CreateDeckData {
   name: string;
   format: string;
 }
+export const DECK_FORMATS = [
+  "Standard",
+  "Pioneer",
+  "Modern",
+  "Legacy",
+  "Vintage",
+  "Commander",
+  "Oathbreaker",
+  "Alchemy",
+  "Historic",
+  "Brawl",
+  "Comp. Brawl",
+  "Timeless",
+  "Pauper",
+  "Penny",
+] as const;
+
+export const ZONE_FORMAT = ["mainboard", "sideboard", "commander"] as const;
+export type ZoneFormat = (typeof ZONE_FORMAT)[number];
+
+export type DeckFormat = (typeof DECK_FORMATS)[number];

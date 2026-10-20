@@ -13,7 +13,7 @@ def _generate_changed_values(data_before: dict, data_after: dict):
             "to": data_after["quantity"],
         }
 
-    if data_before["card"] is not data_after["card"]:
+    if data_before["card"] != data_after["card"]:
         data_changed["card"] = {
             "from": data_before["card"],
             "to": data_after["card"],
