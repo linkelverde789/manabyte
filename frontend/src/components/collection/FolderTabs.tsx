@@ -1,3 +1,4 @@
+import { SearchSyntax } from "../search/Syntax";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 export function FolderTabs({
@@ -31,6 +32,7 @@ export function FolderTabs({
       </TabsContent>
 
       <TabsContent value="search" className="mt-6">
+        <div className="mb-3">{<SearchSyntax />}</div>
         {searchContent}
       </TabsContent>
     </Tabs>

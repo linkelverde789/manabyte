@@ -9,6 +9,7 @@ import { downloadFile } from "#/lib/utils";
 import type { CreateDeckCardData } from "#/features/deckCards/types";
 import { Export } from "../utils/Export";
 import { DeckContent } from "../deckCards/DeckContent";
+import { SearchSyntax } from "../search/Syntax";
 
 export default function DeckBody({ deck }: { deck: Deck }) {
   const [tab, setTab] = useState<"main" | "search">("main");
@@ -61,6 +62,7 @@ export default function DeckBody({ deck }: { deck: Deck }) {
         </div>
       </TabsContent>
       <TabsContent value="search" className="mt-6">
+        <div className="mb-3">{<SearchSyntax />}</div>
         <CardSearch onCreate={handleCreate} />
       </TabsContent>
     </Tabs>
