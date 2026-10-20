@@ -38,6 +38,7 @@ export function getCollectionItems(params: FilterCollectionParams) {
 }
 
 export function createCollectionItem(data: CreateCollectionItemData) {
+  console.log(data);
   return api<CollectionItem>("/collection/", {
     method: "POST",
     body: JSON.stringify(data),

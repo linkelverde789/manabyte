@@ -4,7 +4,7 @@ import { Input } from "../ui/input";
 import SearchResults from "../index/searchResult";
 import type { Card } from "#/lib/types";
 import { useCardSearch } from "#/features/utils/hooks";
-import { CardPreviewDialog } from "../dialogs/Dialogs/CardPreviewDialog";
+import GeneralSearchDialog from "../dialogs/GeneralDialog/GeneralSearchDialog";
 
 export default function CardSearch({
   autoFocus,
@@ -56,7 +56,7 @@ export default function CardSearch({
         </div>
       </div>
       {picked && (
-        <CardPreviewDialog onOpenChange={setOpen} open={open} card={picked} />
+        <GeneralSearchDialog onOpenChange={setOpen} open={open} card={picked} />
       )}
     </>
   );

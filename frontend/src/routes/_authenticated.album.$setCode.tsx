@@ -2,7 +2,7 @@ import AlbumCardSlot from "#/components/album/AlbumCardSlot";
 import { SetHeader } from "#/components/album/SetHeader";
 import { SetProgress } from "#/components/album/SetProgress";
 import { SetAlbumSkeleton } from "#/components/album/skeletons";
-import { CardPreviewDialog } from "#/components/dialogs/Dialogs/CardPreviewDialog";
+import GeneralSearchDialog from "#/components/dialogs/GeneralDialog/GeneralSearchDialog";
 import { Paginator } from "#/components/paginators/Paginator";
 import { useListAlbum } from "#/features/album/hooks";
 import { useGetSetInformation } from "#/features/scryfall/hooks";
@@ -78,7 +78,7 @@ function RouteComponent() {
         <Paginator page={page} totalPages={totalPages} onChangePage={setPage} />
       </div>
       {picked && (
-        <CardPreviewDialog card={picked} onOpenChange={setOpen} open={open} />
+        <GeneralSearchDialog onOpenChange={setOpen} open={open} card={picked} />
       )}
     </>
   );
