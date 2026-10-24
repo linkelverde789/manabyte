@@ -101,7 +101,7 @@ function RouteComponent() {
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
       <FolderHeader
         folderId={folderId}
-        onImport={async (rows) => {
+        onImport={async (rows, allowMerge) => {
           const data = rows.map((row) => ({
             scryfall_id: row.scryfall_id,
             quantity: row.quantity,
@@ -112,7 +112,11 @@ function RouteComponent() {
 
           toast.loading("Importing list...");
 
-          await bulkCreateCollectionItem({ items: data, folder_id: folderId });
+          await bulkCreateCollectionItem({
+            items: data,
+            folder_id: folderId,
+            allow_merge: allowMerge,
+          });
         }}
       />
 

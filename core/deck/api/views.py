@@ -97,10 +97,11 @@ class DeckCardsView(ViewSet):
     def bulk_create(self, request, deck_id=None):
         user = request.user
 
-        cards_data = request.data
+        cards_data = request.data["items"]
+        allow_merge = bool(request.data.get("allow_merge", False))
 
         cards = BulkCreateDeckCardUseCase().execute(
-            deck_id=deck_id, user=user, data=cards_data
+            deck_id=deck_id, user=user, data=cards_data, allow_merge=allow_merge
         )
 
         return Response(

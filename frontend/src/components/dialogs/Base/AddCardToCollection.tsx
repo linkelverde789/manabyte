@@ -140,7 +140,6 @@ export default function AddCardToCollection({
               </Select>
             </div>
 
-            {/* Segunda fila */}
             <div className="flex w-full flex-wrap items-center gap-4 pt-2">
               <div className="flex items-center gap-2">
                 <Switch

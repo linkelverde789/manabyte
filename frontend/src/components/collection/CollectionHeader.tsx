@@ -1,4 +1,5 @@
-import { ImportDialog, type ResolvedRow } from "../deckCards/importDialog";
+import type { ResolvedRow } from "#/features/imports/types";
+import { ImportDialog } from "../imports/ImportDialog";
 
 export function CollectionHeader({
   price,
@@ -11,7 +12,7 @@ export function CollectionHeader({
   entries: number;
   cards: number;
   name: string;
-  onImport: (rows: ResolvedRow[]) => Promise<void>;
+  onImport: (rows: ResolvedRow[], allowMerge: boolean) => Promise<void>;
 }) {
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">

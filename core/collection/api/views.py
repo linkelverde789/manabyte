@@ -108,11 +108,13 @@ class CollectionItemView(ViewSet):
     def bulk_create(self, request):
         user = request.user
         data = request.data
+        allow_merge = bool(data.get("allow_merge", False))
 
         items = BulkCreateCollectionItemUseCase().execute(
             user=user,
             folder_id=data.get("folder_id", None),
             items=data["items"],
+            allow_merge=allow_merge,
         )
 
         data = _generate_paginated_response(items=items, limit=60, page=1)

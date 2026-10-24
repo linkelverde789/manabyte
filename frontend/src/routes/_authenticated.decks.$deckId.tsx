@@ -8,8 +8,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { ArrowLeft } from "lucide-react";
 
-import { ImportDialog } from "#/components/deckCards/importDialog";
 import DeckBody from "#/components/decks/DeckBody";
+import { ImportDialog } from "#/components/imports/ImportDialog";
 
 export const Route = createFileRoute("/_authenticated/decks/$deckId")({
   component: RouteComponent,
@@ -61,13 +61,16 @@ function RouteComponent() {
             title={`Paste a list into ${deck?.name}`}
             description="Import cards from a decklist. One card per line."
             confirmLabel="Add to deck"
-            onConfirm={async (rows) => {
+            onConfirm={async (rows, allowMerge) => {
               const data = rows.map((row) => ({
                 scryfall_id: row.scryfall_id,
                 quantity: row.quantity,
               }));
 
-              await bulkCreateDeckCard(data);
+              await bulkCreateDeckCard({
+                items: data,
+                allow_merge: allowMerge,
+              });
             }}
           />
         </div>

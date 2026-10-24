@@ -5,9 +5,12 @@ import {
   deleteDeckCard,
   getDeckCards,
   partialUpdateDeckCard,
-  type PartialUpdateDeckCardData,
 } from "./api";
-import type { CreateDeckCardData } from "./types";
+import type {
+  CreateBulkDeckCardData,
+  CreateDeckCardData,
+  PartialUpdateDeckCardData,
+} from "./types";
 import { toast } from "sonner";
 
 export function useDeckCards(deckId: number) {
@@ -53,7 +56,7 @@ export function useBulkCreateDeckCard(deckId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateDeckCardData[]) =>
+    mutationFn: (data: CreateBulkDeckCardData) =>
       bulkCreateDeckCard(deckId, data),
     onSuccess: async () => {
       await queryClient.invalidateQueries({

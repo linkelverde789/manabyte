@@ -192,3 +192,31 @@ def test_destroy_collection_item(user, auth_client):
 
     assert res.status_code == HTTP_200_OK
     assert len(res.data["data"]) == 0
+
+
+@pytest.mark.django_db
+def test_merge_bulk(auth_client):
+    data = []
+
+    card = ScryfallCard.objects.first()
+
+    for item in range(10):
+        data.append(
+            {
+                "scryfall_id": card.external_id,
+                "quantity": 1,
+                "foil": True,
+                "language": "en",
+                "condition": "PSA",
+            }
+        )
+
+    res = auth_client.post(
+        reverse("collection-bulk-create"),
+        {"items": data, "folder_id": None, "allow_merge": True},
+        format="json",
+    )
+    assert res.status_code == HTTP_201_CREATED
+
+    assert len(res.data["data"]) == 1
+    assert res.data["data"][0]["quantity"] == 10
