@@ -10,16 +10,26 @@ from users.models import User
 
 
 class BulkCreateCollectionItemUseCase:
-    def execute(self, items, user: User, folder_id: str | None = None):
-
+    def execute(
+        self,
+        items,
+        user: User,
+        folder_id: str | None = None,
+        allow_merge: bool = False,
+    ):
         folder = None
+
         if folder_id is not None:
             folder = FolderSelector.get_folder_from_user(
-                user=user, folder_id=int(folder_id)
+                user=user,
+                folder_id=int(folder_id),
             )
 
             if folder is None:
-                raise FolderException(f"Folder: {folder_id} not found", "404")
+                raise FolderException(
+                    f"Folder: {folder_id} not found",
+                    "404",
+                )
 
         bulk_dto = [
             CreateCollectionItemInput(
@@ -34,14 +44,21 @@ class BulkCreateCollectionItemUseCase:
             for item in items
         ]
 
-        items = CollectionItemService.bulk_create_collection_item(data=bulk_dto)
+        if allow_merge:
+            result = CollectionItemService.bulk_merge_collection_item(
+                data=bulk_dto,
+            )
+        else:
+            result = CollectionItemService.bulk_create_collection_item(
+                data=bulk_dto,
+            )
 
         CreateEventForBulkActionUseCase().execute(
             user=user,
             type=CARDS_BULK_ADDED,
             aggregate_type=COLLECTION_TYPE_EVENT,
             aggregate_id=folder.id if folder is not None else None,
-            data_after=items,
+            data_after=result,
         )
 
         if folder is None:

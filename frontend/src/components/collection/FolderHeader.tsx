@@ -1,3 +1,4 @@
+import type { ResolvedRow } from "#/features/imports/types";
 import { useGetFolderStats } from "#/features/stats/hooks";
 import { CollectionHeader } from "./CollectionHeader";
 
@@ -5,7 +6,7 @@ export function FolderHeader({
   onImport,
   folderId,
 }: {
-  onImport: (rows: any[]) => Promise<void>;
+  onImport: (rows: ResolvedRow[], allowMerge: boolean) => Promise<void>;
   folderId: number;
 }) {
   const { data: folderStats, isLoading } = useGetFolderStats(folderId);

@@ -1,10 +1,11 @@
+import type { ResolvedRow } from "#/features/imports/types";
 import { useGetCollectionStats } from "#/features/stats/hooks";
 import { CollectionHeader } from "./CollectionHeader";
 
 export function CompleteCollectionHeader({
   onImport,
 }: {
-  onImport: (rows: any[]) => Promise<void>;
+  onImport: (rows: ResolvedRow[], allowMerge: boolean) => Promise<void>;
 }) {
   const { data: collectionStats, isLoading } = useGetCollectionStats();
 

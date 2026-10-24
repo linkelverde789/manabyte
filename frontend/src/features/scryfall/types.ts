@@ -252,3 +252,10 @@ export interface ScryfallSet {
   card_count: number;
   icon_svg_uri: string;
 }
+
+export interface ScryfallCollectionIdentifier {
+  id?: string;
+  name?: string;
+  set?: string;
+  collector_number?: number | string;
+}

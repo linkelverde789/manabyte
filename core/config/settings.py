@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "fixtures",
     "sets",
     "events",
+    "imports",
 ]
 
 AUTH_USER_MODEL = "users.User"

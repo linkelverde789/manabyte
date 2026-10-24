@@ -22,6 +22,10 @@ class SetSelector:
         return ScryfallSet.objects.all().order_by("name")
 
     @staticmethod
+    def get_set_by_code(set_code: str) -> ScryfallSet | None:
+        return ScryfallSet.objects.filter(code__iexact=set_code).first()
+
+    @staticmethod
     def list_cards_from_set(set_code: str):
         cards = list(
             ScryfallCard.objects.filter(set__code=set_code).prefetch_related("faces")

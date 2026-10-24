@@ -67,7 +67,9 @@ def test_create_card_bulk(user, auth_client):
         )
 
     res = auth_client.post(
-        reverse("card-bulk-create", kwargs={"deck_id": deck.id}), cards, format="json"
+        reverse("card-bulk-create", kwargs={"deck_id": deck.id}),
+        {"items": cards},
+        format="json",
     )
 
     assert res.status_code == HTTP_201_CREATED
@@ -122,3 +124,33 @@ def test_delete_card(user, auth_client):
 
     res = auth_client.get(reverse("card-list", kwargs={"deck_id": deck.id}))
     assert len(res.data) == 0
+
+
+@pytest.mark.django_db
+def test_merge_bulk(user, auth_client):
+    data = []
+
+    deck = Deck.objects.create(user=user, name="Deck 1", format="commander")
+
+    card = ScryfallCard.objects.first()
+
+    for item in range(10):
+        data.append(
+            {
+                "scryfall_id": card.external_id,
+                "quantity": 1,
+                "foil": True,
+                "language": "en",
+                "condition": "PSA",
+            }
+        )
+
+    res = auth_client.post(
+        reverse("card-bulk-create", kwargs={"deck_id": deck.id}),
+        {"items": data, "allow_merge": True},
+        format="json",
+    )
+    assert res.status_code == HTTP_201_CREATED
+
+    assert len(res.data) == 1
+    assert res.data[0]["quantity"] == 10
