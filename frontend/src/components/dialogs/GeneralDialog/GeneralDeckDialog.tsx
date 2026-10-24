@@ -6,9 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 
 import type { Card } from "#/lib/types";
 import { CardPreview } from "../Base/CardPreview";
-import { type UpdateDeckCard } from "../Base/EditCollectionCard";
 import EditDeckCard from "../Base/EditDeckCard";
 import type { DeckCard } from "#/features/deckCards/types";
+import type { UpdateDeckCard } from "#/features/utils/types";
 
 export default function GeneralDeckDialog({
   card,

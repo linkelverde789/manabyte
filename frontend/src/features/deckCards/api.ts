@@ -1,5 +1,9 @@
 import { api } from "../../api/manabyte";
-import type { CreateDeckCardData, DeckCard } from "./types";
+import type {
+  CreateDeckCardData,
+  DeckCard,
+  PartialUpdateDeckCardData,
+} from "./types";
 
 export function getDeckCards(deckId: number) {
   return api<DeckCard[]>(`/deck/${deckId}/cards/`);
@@ -17,11 +21,6 @@ export function bulkCreateDeckCard(deckId: number, data: CreateDeckCardData[]) {
     method: "POST",
     body: JSON.stringify(data),
   });
-}
-
-export interface PartialUpdateDeckCardData {
-  quantity?: number;
-  scryfall_id?: string;
 }
 
 export function partialUpdateDeckCard(

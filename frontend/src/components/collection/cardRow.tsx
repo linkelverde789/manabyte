@@ -12,7 +12,7 @@ import ManaCost from "../search/manaCost";
 import GeneralCollectionDialog from "../dialogs/GeneralDialog/GeneralCollectionDialog";
 import type { Card } from "#/lib/types";
 import type { CollectionItem } from "#/features/collection/types";
-import type { UpdateCollectionCard } from "../dialogs/Base/EditCollectionCard";
+import type { UpdateCollectionCard } from "#/features/utils/types";
 
 export default function CardRow({
   dataCard,

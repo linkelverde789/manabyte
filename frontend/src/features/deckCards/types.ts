@@ -11,3 +11,8 @@ export interface BaseCreateCardData {
 export interface CreateDeckCardData extends BaseCreateCardData {
   zone?: string;
 }
+
+export interface PartialUpdateDeckCardData {
+  quantity?: number;
+  scryfall_id?: string;
+}

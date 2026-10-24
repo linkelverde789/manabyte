@@ -77,7 +77,6 @@ class ImportViewSet(APIView):
                         )
                     return result
 
-        # Fall back to a name-based search when no exact match exists.
         queryset = ScryfallCard.objects.all()
 
         if name:

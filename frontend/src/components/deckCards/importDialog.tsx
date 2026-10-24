@@ -18,21 +18,7 @@ import { useState } from "react";
 import { ScryfallImport } from "../imports/ScryfallImport";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { NormalImport } from "../imports/NormalImport";
-
-export interface ResolvedRow {
-  quantity: number;
-  foil?: boolean;
-  scryfall_id: string;
-}
-
-export interface ParsedLine {
-  raw: string;
-  quantity: number;
-  name: string;
-  set?: string;
-  collectorNumber?: string;
-  foil?: boolean;
-}
+import type { ResolvedRow } from "#/features/imports/types";
 
 export function ImportDialog({
   title,

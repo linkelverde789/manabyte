@@ -8,9 +8,8 @@ import type { CollectionItem } from "#/features/collection/types";
 
 import type { Card } from "#/lib/types";
 import { CardPreview } from "../Base/CardPreview";
-import EditCollectionCard, {
-  type UpdateCollectionCard,
-} from "../Base/EditCollectionCard";
+import EditCollectionCard from "../Base/EditCollectionCard";
+import type { UpdateCollectionCard } from "#/features/utils/types";
 
 export default function GeneralCollectionDialog({
   card,

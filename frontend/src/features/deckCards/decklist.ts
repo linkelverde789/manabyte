@@ -1,11 +1,4 @@
-export interface ParsedLine {
-  raw: string;
-  quantity: number;
-  name: string;
-  set?: string;
-  collectorNumber?: string;
-  foil?: boolean;
-}
+import type { ParsedLine } from "../utils/types";
 
 export function parseDecklist(text: string): ParsedLine[] {
   const result: ParsedLine[] = [];

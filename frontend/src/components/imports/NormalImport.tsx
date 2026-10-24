@@ -3,37 +3,10 @@ import { Textarea } from "#/components/ui/textarea";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
-import { api } from "#/api/manabyte";
 import type { Card } from "#/lib/types";
-import type { ResolvedRow } from "../deckCards/importDialog";
-import { Dialog, DialogContent } from "../ui/dialog";
-import { CardPicker } from "../dialogs/Base/CardPicker";
-
-export interface ImportData {
-  cards: Card[];
-  extra: {
-    foil: boolean;
-    quantity: number;
-  };
-  warning?: string;
-}
-
-export function check(text: string) {
-  return api<ImportData[]>("/imports/", {
-    method: "POST",
-    body: JSON.stringify({ content: text }),
-  });
-}
-
-export function useCheckImport() {
-  return useMutation({
-    mutationFn: (data: string) => check(data),
-    onError: (error) => {
-      toast.error(String(error));
-    },
-  });
-}
+import { CardPickerDialog } from "../dialogs/Dialogs/CardPickerDialog";
+import { useCheckImport } from "#/features/imports/hooks";
+import type { ImportData, ResolvedRow } from "#/features/imports/types";
 
 type SelectedImportCard = {
   card: Card;
@@ -72,9 +45,7 @@ export function NormalImport({
       const response = await checkImport.mutateAsync(text);
       setResult(response);
       setSelectedCards({});
-    } catch {
-      // Error toast handled by the mutation.
-    }
+    } catch {}
   }
 
   async function confirm() {
@@ -107,7 +78,6 @@ export function NormalImport({
         continue;
       }
 
-      // No hay coincidencias o el usuario todavía no ha elegido.
       toast.warning(`Please select a card for line ${index + 1}`);
       return;
     }
@@ -117,7 +87,6 @@ export function NormalImport({
       onChangeOpen(false);
     } catch (error) {
       toast.error("Failed to import cards");
-      console.error(error);
     }
   }
 
@@ -264,29 +233,5 @@ export function NormalImport({
         }}
       />
     </>
-  );
-}
-
-export function CardPickerDialog({
-  open,
-  onOpenChange,
-  cards,
-  onSelect,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  cards: Card[];
-  onSelect: (card: Card) => void;
-}) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] max-w-5xl overflow-y-auto p-4 sm:max-w-5xl">
-        <CardPicker
-          cards={cards}
-          onSelect={onSelect}
-          onOpenChange={onOpenChange}
-        />
-      </DialogContent>
-    </Dialog>
   );
 }
