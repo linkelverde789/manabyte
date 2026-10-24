@@ -8,9 +8,9 @@ import { Minus, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { CardImage } from "./cardImage";
 import type { DeckCard } from "#/features/deckCards/types";
-import type { UpdateDeckCard } from "../dialogs/Base/EditCollectionCard";
 import type { Card } from "#/lib/types";
 import GeneralDeckDialog from "../dialogs/GeneralDialog/GeneralDeckDialog";
+import type { UpdateDeckCard } from "#/features/utils/types";
 
 export default function CardRow({
   card,

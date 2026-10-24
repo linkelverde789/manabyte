@@ -29,4 +29,5 @@ urlpatterns = [
     path("api/cards/", include("cards.urls")),
     path("api/sets/", include("sets.urls")),
     path("api/events/", include("events.urls")),
+    path("api/imports/", include("imports.urls")),
 ]

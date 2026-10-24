@@ -1,17 +1,18 @@
 import { Button } from "#/components/ui/button";
 import { Textarea } from "#/components/ui/textarea";
-
-import { AlertTriangle, Check, Loader2 } from "lucide-react";
-
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { useState } from "react";
-
-import { parseDecklist, type ParsedLine } from "#/features/deckCards/decklist";
-import type { ScryfallCard } from "#/features/scryfall/types";
-
-import { useLoadCollection } from "#/features/scryfall/hooks";
-import { searchCardFuzzy } from "#/features/scryfall/api";
 import { toast } from "sonner";
-import type { ResolvedRow } from "../deckCards/importDialog";
+import type { Card } from "#/lib/types";
+import { CardPickerDialog } from "../dialogs/Dialogs/CardPickerDialog";
+import { useCheckImport } from "#/features/imports/hooks";
+import type { ImportData, ResolvedRow } from "#/features/imports/types";
+
+type SelectedImportCard = {
+  card: Card;
+  quantity: number;
+  foil: boolean;
+};
 
 export function NormalImport({
   onConfirm,
@@ -22,147 +23,215 @@ export function NormalImport({
   onConfirm: (rows: ResolvedRow[]) => Promise<void>;
   onChangeOpen: (value: boolean) => void;
 }) {
-  const [result, setResult] = useState<{
-    resolved: ResolvedRow[];
-    failed: ParsedLine[];
+  const [selectedCards, setSelectedCards] = useState<
+    Record<number, SelectedImportCard>
+  >({});
+
+  const [picker, setPicker] = useState<{
+    index: number;
+    cards: Card[];
   } | null>(null);
 
+  const [result, setResult] = useState<ImportData[] | null>(null);
   const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
+  const checkImport = useCheckImport();
+
+  const busy = checkImport.isPending;
+
+  async function review() {
+    if (!text.trim()) return;
+
+    try {
+      const response = await checkImport.mutateAsync(text);
+      setResult(response);
+      setSelectedCards({});
+    } catch {}
+  }
 
   async function confirm() {
-    if (!result) {
+    if (!result) return;
+
+    const rows: ResolvedRow[] = [];
+
+    for (const [index, item] of result.entries()) {
+      const selected = selectedCards[index];
+
+      if (selected) {
+        rows.push({
+          quantity: selected.quantity,
+          foil: selected.foil,
+          scryfall_id: selected.card.external_id,
+        });
+
+        continue;
+      }
+
+      if (item.cards.length === 1) {
+        const card = item.cards[0];
+
+        rows.push({
+          quantity: item.extra.quantity,
+          foil: item.extra.foil,
+          scryfall_id: card.external_id,
+        });
+
+        continue;
+      }
+
+      toast.warning(`Please select a card for line ${index + 1}`);
       return;
     }
 
-    setBusy(true);
-
     try {
-      await onConfirm(result.resolved);
-
+      await onConfirm(rows);
       onChangeOpen(false);
-      setResult(null);
-      setText("");
     } catch (error) {
-      toast.error(`${error}`);
-    } finally {
-      setBusy(false);
+      toast.error("Failed to import cards");
     }
   }
 
-  function review() {
-    toast.info("WIP");
-  }
+  const warningResult = result?.flatMap((item, index) =>
+    item.warning ? [{ ...item, originalIndex: index }] : [],
+  );
 
   return (
-    <div className="flex max-h-[85vh] flex-col">
-      {/* Body */}
-      <div className="overflow-y-auto px-6 py-5">
-        <div className="space-y-4">
-          {/* Textarea */}
-          <div className="space-y-2">
-            <Textarea
-              rows={10}
-              value={text}
-              placeholder={`4 Horn of Gondor (LTR) 240`}
-              onChange={(e) => setText(e.target.value)}
-              className="min-h-56 resize-y border-border bg-background font-mono text-sm leading-relaxed placeholder:text-muted-foreground/60"
-            />
+    <>
+      <div className="flex max-h-[85vh] flex-col">
+        <div className="overflow-y-auto px-6 py-5">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Textarea
+                rows={10}
+                value={text}
+                placeholder="4 Horn of Gondor (LTR) 240"
+                onChange={(e) => {
+                  setText(e.target.value);
+                  setResult(null);
+                }}
+                className="min-h-56 resize-y border-border bg-background font-mono text-sm leading-relaxed placeholder:text-muted-foreground/60"
+              />
 
-            <p className="text-xs leading-relaxed text-muted-foreground">
-              One card per line. Quantity, set code and collector number are
-              optional.
-            </p>
-          </div>
-
-          {/* Result */}
-          {result && (
-            <div className="rounded-lg border border-border bg-muted/20">
-              {/* Result header */}
-              <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-                <Check className="h-4 w-4 text-primary" />
-
-                <span className="text-sm font-medium">
-                  {result.resolved.length} lines matched
-                </span>
-
-                <span className="text-sm text-muted-foreground">
-                  ({result.resolved.reduce((sum, row) => sum + row.quantity, 0)}{" "}
-                  cards)
-                </span>
-              </div>
-
-              {result.failed.length > 0 && (
-                <div className="border-b border-border px-4 py-3">
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-
-                    <div className="min-w-0 space-y-1">
-                      <p className="text-sm font-medium text-destructive">
-                        {result.failed.length}{" "}
-                        {result.failed.length === 1
-                          ? "line could not be matched"
-                          : "lines could not be matched"}
-                      </p>
-
-                      <ul className="space-y-1 font-mono text-xs text-muted-foreground">
-                        {result.failed.map((line, index) => (
-                          <li key={index} className="break-words">
-                            {line.raw.trim()}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Resolved cards */}
-              <div className="max-h-56 overflow-y-auto">
-                {result.resolved.map((row, index) => (
-                  <div
-                    key={`${row.card.id}-${index}`}
-                    className="flex items-center justify-between gap-4 border-b border-border/50 px-4 py-3 last:border-b-0"
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span className="w-8 shrink-0 text-right font-mono text-sm text-muted-foreground">
-                        {row.quantity}×
-                      </span>
-
-                      <span className="truncate text-sm font-medium">
-                        {row.card.name}
-                      </span>
-                    </div>
-
-                    <span className="shrink-0 font-mono text-xs uppercase text-muted-foreground">
-                      {row.card.set} #{row.card.collector_number}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                One card per line. Quantity, set code and collector number are
+                optional.
+              </p>
             </div>
+
+            {warningResult && (
+              <div className="max-h-80 space-y-2 overflow-y-auto pr-2">
+                {warningResult.map((item) => {
+                  const index = item.originalIndex;
+                  const selected = selectedCards[index];
+
+                  return (
+                    <button
+                      key={`${item.cards[0]?.id ?? "unmatched"}-${index}`}
+                      type="button"
+                      disabled={item.cards.length === 0}
+                      onClick={() => {
+                        setPicker({
+                          index,
+                          cards: item.cards,
+                        });
+                      }}
+                      className="flex w-full items-center gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {selected ? (
+                        <>
+                          <img
+                            src={selected.card.card_faces[0]?.image_url}
+                            alt={selected.card.name}
+                            className="h-16 w-12 rounded object-contain"
+                          />
+
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium">{selected.card.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {selected.card.set.name} · #
+                              {selected.card.collector_number}
+                            </p>
+                            <p className="text-xs text-primary">Selected</p>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium">
+                            {item.cards[0]?.name ?? "Unmatched card"}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.cards.length} candidates · Click to choose
+                          </p>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {result !== null && warningResult?.length === 0 && (
+              <div className="flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-4">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground">
+                    Everything looks good!
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    All cards were matched successfully. You're ready to import.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 border-t border-border px-6 py-4">
+          <Button
+            onClick={review}
+            disabled={busy || !text.trim()}
+            variant={result !== null ? "outline" : "default"}
+          >
+            {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {result !== null ? "Check again" : "Check list"}
+          </Button>
+
+          {result !== null && result.some((item) => item.cards.length > 0) && (
+            <Button onClick={confirm} disabled={busy}>
+              {confirmLabel}
+            </Button>
           )}
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-end gap-2 border-t border-border px-6 py-4">
-        <Button
-          onClick={review}
-          disabled={busy || !text.trim()}
-          variant={result ? "outline" : "default"}
-        >
-          {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      <CardPickerDialog
+        open={picker !== null}
+        onOpenChange={(open) => {
+          if (!open) setPicker(null);
+        }}
+        cards={picker?.cards ?? []}
+        onSelect={(card) => {
+          if (picker === null) return;
 
-          {result ? "Check again" : "Check list"}
-        </Button>
+          const index = picker.index;
+          const item = result?.[index];
 
-        {result && (
-          <Button onClick={confirm} disabled={!result.resolved.length || busy}>
-            {confirmLabel}
-          </Button>
-        )}
-      </div>
-    </div>
+          if (!item) return;
+
+          setSelectedCards((previous) => ({
+            ...previous,
+            [index]: {
+              card,
+              quantity: item.extra.quantity,
+              foil: item.extra.foil,
+            },
+          }));
+
+          setPicker(null);
+        }}
+      />
+    </>
   );
 }

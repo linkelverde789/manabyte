@@ -1,9 +1,9 @@
 import type { DeckCard } from "#/features/deckCards/types";
+import type { UpdateDeckCard } from "#/features/utils/types";
 import type { Card } from "#/lib/types";
 
 import { Dialog, DialogContent, DialogHeader } from "../../ui/dialog";
 
-import { type UpdateDeckCard } from "../Base/EditCollectionCard";
 import EditDeckCard from "../Base/EditDeckCard";
 
 export function EditDeckCardDialog({

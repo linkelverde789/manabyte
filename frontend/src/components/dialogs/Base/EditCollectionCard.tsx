@@ -13,22 +13,7 @@ import { Label } from "#/components/ui/labels";
 import { Input } from "#/components/ui/input";
 import { Switch } from "#/components/ui/switch";
 import { Button } from "#/components/ui/button";
-
-export interface UpdateCardData {
-  scryfall_id?: string;
-  quantity?: number;
-}
-
-export interface UpdateDeckCard extends UpdateCardData {
-  zone?: string;
-}
-
-export interface UpdateCollectionCard extends UpdateCardData {
-  foil?: boolean;
-  condition?: string;
-  language?: string;
-  folder?: number;
-}
+import type { UpdateCollectionCard } from "#/features/utils/types";
 
 export default function EditCollectionCard({
   card,

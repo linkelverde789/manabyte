@@ -1,11 +1,10 @@
 import type { CollectionItem } from "#/features/collection/types";
+import type { UpdateCollectionCard } from "#/features/utils/types";
 import type { Card } from "#/lib/types";
 
 import { Dialog, DialogContent, DialogHeader } from "../../ui/dialog";
 
-import EditCollectionCard, {
-  type UpdateCollectionCard,
-} from "../Base/EditCollectionCard";
+import EditCollectionCard from "../Base/EditCollectionCard";
 
 export function EditDeckCardDialog({
   card,

@@ -15,7 +15,6 @@ export interface ParsedLine {
   collectorNumber?: string | undefined;
   zone: "main" | "side" | "commander";
 }
-
 const HEADERS: Record<string, "main" | "side" | "commander"> = {
   deck: "main",
   mazo: "main",

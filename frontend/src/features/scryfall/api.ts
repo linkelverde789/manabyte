@@ -1,6 +1,7 @@
 import { api } from "#/api/scryfall";
 import type {
   ScryfallCard,
+  ScryfallCollectionIdentifier,
   ScryfallResult,
   ScryfallSet,
   ScryfallSetList,
@@ -19,13 +20,6 @@ export function randomCard() {
 
 export function loadSingleCard(scryfallId: number) {
   return api<ScryfallCard>(`/cards/${scryfallId}`);
-}
-
-export interface ScryfallCollectionIdentifier {
-  id?: string;
-  name?: string;
-  set?: string;
-  collector_number?: number | string;
 }
 
 export function loadCollection(identifiers: ScryfallCollectionIdentifier[]) {

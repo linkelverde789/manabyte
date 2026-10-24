@@ -22,21 +22,8 @@ import type { ScryfallCard } from "#/features/scryfall/types";
 import { useLoadCollection } from "#/features/scryfall/hooks";
 import { searchCardFuzzy } from "#/features/scryfall/api";
 import { toast } from "sonner";
-
-interface ResolvedRow {
-  quantity: number;
-  foil?: boolean;
-  card: ScryfallCard;
-}
-
-export interface ParsedLine {
-  raw: string;
-  quantity: number;
-  name: string;
-  set?: string;
-  collectorNumber?: string;
-  foil?: boolean;
-}
+import type { ResolvedRowScryfall } from "#/features/imports/types";
+import type { ParsedLine } from "#/features/utils/types";
 
 export function ImportDialog({
   title,
@@ -48,7 +35,7 @@ export function ImportDialog({
   title: string;
   description: string;
   confirmLabel: string;
-  onConfirm: (rows: ResolvedRow[]) => Promise<void>;
+  onConfirm: (rows: ResolvedRowScryfall[]) => Promise<void>;
   trigger?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -58,7 +45,7 @@ export function ImportDialog({
   const { mutateAsync: loadCollection } = useLoadCollection();
 
   const [result, setResult] = useState<{
-    resolved: ResolvedRow[];
+    resolved: ResolvedRowScryfall[];
     failed: ParsedLine[];
   } | null>(null);
 
@@ -277,7 +264,7 @@ async function resolveLines(
   lines: ParsedLine[],
   loadCollection: ReturnType<typeof useLoadCollection>["mutateAsync"],
 ) {
-  const resolved: ResolvedRow[] = [];
+  const resolved: ResolvedRowScryfall[] = [];
   const failed: ParsedLine[] = [];
 
   const withCode = lines.filter((line) => line.set && line.collectorNumber);
@@ -308,8 +295,9 @@ async function resolveLines(
       if (card) {
         resolved.push({
           quantity: line.quantity,
-          card,
           foil: line.foil,
+          card,
+          scryfall_id: card.id,
         });
       } else {
         failed.push(line);
@@ -326,6 +314,7 @@ async function resolveLines(
           quantity: line.quantity,
           card,
           foil: line.foil,
+          scryfall_id: card.id,
         });
       } else {
         failed.push(line);
