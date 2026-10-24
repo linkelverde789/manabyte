@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 
 import { useState } from "react";
 
-import { parseDecklist, type ParsedLine } from "#/features/deckCards/decklist";
+import { parseDecklist } from "#/features/deckCards/decklist";
 import type { ScryfallCard } from "#/features/scryfall/types";
 
 import { useLoadCollection } from "#/features/scryfall/hooks";
@@ -16,6 +16,7 @@ import type {
   ResolvedRowScryfall,
 } from "#/features/imports/types";
 import { ScryfallImportResult } from "../utils/ScryfallImportResult";
+import type { ParsedLine } from "#/features/utils/types";
 
 export function ScryfallImport({
   onConfirm,

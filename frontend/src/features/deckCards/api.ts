@@ -1,5 +1,6 @@
 import { api } from "../../api/manabyte";
 import type {
+  CreateBulkDeckCardData,
   CreateDeckCardData,
   DeckCard,
   PartialUpdateDeckCardData,
@@ -16,7 +17,10 @@ export function createDeckCard(deckId: number, data: CreateDeckCardData) {
   });
 }
 
-export function bulkCreateDeckCard(deckId: number, data: CreateDeckCardData[]) {
+export function bulkCreateDeckCard(
+  deckId: number,
+  data: CreateBulkDeckCardData,
+) {
   return api<DeckCard[]>(`/deck/${deckId}/cards/bulk/`, {
     method: "POST",
     body: JSON.stringify(data),

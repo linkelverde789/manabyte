@@ -175,7 +175,9 @@ def test_create_event_when_bulk_create_deckcard(user, auth_client):
         )
 
     auth_client.post(
-        reverse("card-bulk-create", kwargs={"deck_id": deck.id}), cards, format="json"
+        reverse("card-bulk-create", kwargs={"deck_id": deck.id}),
+        {"items": cards},
+        format="json",
     )
 
     res = auth_client.get(

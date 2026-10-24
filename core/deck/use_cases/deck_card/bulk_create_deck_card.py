@@ -10,7 +10,7 @@ from users.models import User
 
 
 class BulkCreateDeckCardUseCase:
-    def execute(self, deck_id: int, user: User, data):
+    def execute(self, deck_id: int, user: User, data, allow_merge: bool = False):
 
         deck = DeckSelector.get_deck_by_user(deck_id=deck_id, user=user)
 
@@ -27,7 +27,10 @@ class BulkCreateDeckCardUseCase:
             for card in data
         ]
 
-        items = DeckCardService.bulk_create_deck_card(create_data_dto)
+        if allow_merge:
+            items = DeckCardService.bulk_merge_deck_card(create_data_dto)
+        else:
+            items = DeckCardService.bulk_create_deck_card(create_data_dto)
 
         CreateEventForBulkActionUseCase().execute(
             user=user,

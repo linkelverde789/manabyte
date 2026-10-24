@@ -18,6 +18,7 @@ export interface BulkCreateCollectionItem extends BaseCreateCardData {
 export interface BulkCreateCollectionItemData {
   items: BulkCreateCollectionItem[];
   folder_id?: number;
+  allow_merge?: boolean;
 }
 
 export interface CreateCollectionItemData extends BaseCreateCardData {

@@ -1,6 +1,7 @@
 from deck.dto.deck_card import CreateDeckCardInput, UpdateDeckCardInput
 from deck.models import DeckCard
 from django.db import transaction
+from django.db.models import F
 
 
 class DeckCardService:
@@ -32,6 +33,34 @@ class DeckCardService:
         )
 
         return items
+
+    @transaction.atomic
+    @staticmethod
+    def bulk_merge_deck_card(data: [CreateDeckCardInput]):
+        result = []
+
+        for item in data:
+            card = (
+                DeckCard.objects.select_for_update()
+                .filter(deck=item.deck, card=item.card, zone=item.zone)
+                .first()
+            )
+
+            if card is not None:
+                DeckCard.objects.filter(pk=card.pk).update(
+                    quantity=F("quantity") + item.quantity
+                )
+                card.refresh_from_db()
+                result.append(card)
+            else:
+                card = DeckCard.objects.create(
+                    deck=item.deck,
+                    card=item.card,
+                    quantity=item.quantity,
+                    zone=item.zone,
+                )
+
+        return result
 
     @transaction.atomic
     @staticmethod
