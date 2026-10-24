@@ -6,6 +6,12 @@ from rest_framework.exceptions import ValidationError
 from sets.consts import SET_TYPES_TO_EXCLUDE
 
 
+def check_name_in_response(data: list, qs):
+    """This is a auxiliar function for test."""
+    for index, card in enumerate(qs):
+        assert card.name == data[index]["name"]
+
+
 def collector_number_sort_key(card):
     value = card.collector_number.strip()
     match = re.match(r"^(\d+)(.*)$", value)
@@ -16,11 +22,6 @@ def collector_number_sort_key(card):
         return (0, number, suffix)
 
     return (1, 0, value.lower())
-
-
-def check_name_in_response(data: list, qs):
-    for index, card in enumerate(qs):
-        assert card.name == data[index]["name"]
 
 
 def filter_cards_from_query(q, cards):

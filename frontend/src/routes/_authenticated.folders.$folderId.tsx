@@ -112,8 +112,6 @@ function RouteComponent() {
 
           toast.loading("Importing list...");
 
-          console.log(data);
-
           await bulkCreateCollectionItem({ items: data, folder_id: folderId });
         }}
       />
