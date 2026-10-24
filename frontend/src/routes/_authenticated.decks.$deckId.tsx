@@ -63,7 +63,7 @@ function RouteComponent() {
             confirmLabel="Add to deck"
             onConfirm={async (rows) => {
               const data = rows.map((row) => ({
-                scryfall_id: row.card.id,
+                scryfall_id: row.scryfall_id,
                 quantity: row.quantity,
               }));
 

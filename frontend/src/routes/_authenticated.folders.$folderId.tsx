@@ -103,16 +103,16 @@ function RouteComponent() {
         folderId={folderId}
         onImport={async (rows) => {
           const data = rows.map((row) => ({
-            scryfall_id: row.card.id,
+            scryfall_id: row.scryfall_id,
             quantity: row.quantity,
-            foil:
-              row.card.foil === true &&
-              (row.card.nonfoil !== true || row.foil === true),
-            language: row.card.lang,
+            foil: row.foil ?? false,
+            language: "en",
             condition: "NM",
           }));
 
           toast.loading("Importing list...");
+
+          console.log(data);
 
           await bulkCreateCollectionItem({ items: data, folder_id: folderId });
         }}

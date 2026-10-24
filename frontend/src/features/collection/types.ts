@@ -1,5 +1,5 @@
 import type { BaseCardInformation } from "#/lib/types";
-import type { CreateDeckCardData } from "../deckCards/types";
+import type { BaseCreateCardData } from "../deckCards/types";
 import type { Folder } from "../folders/types";
 
 export interface CollectionItem extends BaseCardInformation {
@@ -9,7 +9,7 @@ export interface CollectionItem extends BaseCardInformation {
   condition: string;
 }
 
-export interface BulkCreateCollectionItem extends CreateDeckCardData {
+export interface BulkCreateCollectionItem extends BaseCreateCardData {
   language: string;
   foil: boolean;
   condition: string;
@@ -20,7 +20,7 @@ export interface BulkCreateCollectionItemData {
   folder_id?: number;
 }
 
-export interface CreateCollectionItemData extends CreateDeckCardData {
+export interface CreateCollectionItemData extends BaseCreateCardData {
   language: string;
   foil: boolean;
   condition: string;

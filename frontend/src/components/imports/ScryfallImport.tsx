@@ -13,6 +13,10 @@ import { searchCardFuzzy } from "#/features/scryfall/api";
 import { toast } from "sonner";
 import type { ResolvedRow } from "../deckCards/importDialog";
 
+export interface ResolvedRowScryfall extends ResolvedRow {
+  card: ScryfallCard;
+}
+
 export function ScryfallImport({
   onConfirm,
   confirmLabel,
@@ -23,7 +27,7 @@ export function ScryfallImport({
   onChangeOpen: (value: boolean) => void;
 }) {
   const [result, setResult] = useState<{
-    resolved: ResolvedRow[];
+    resolved: ResolvedRowScryfall[];
     failed: ParsedLine[];
   } | null>(null);
 
@@ -140,7 +144,7 @@ export function ScryfallImport({
               <div className="max-h-56 overflow-y-auto">
                 {result.resolved.map((row, index) => (
                   <div
-                    key={`${row.card.id}-${index}`}
+                    key={`${row.scryfall_id}-${index}`}
                     className="flex items-center justify-between gap-4 border-b border-border/50 px-4 py-3 last:border-b-0"
                   >
                     <div className="flex min-w-0 items-center gap-3">
@@ -190,7 +194,7 @@ async function resolveLines(
   lines: ParsedLine[],
   loadCollection: ReturnType<typeof useLoadCollection>["mutateAsync"],
 ) {
-  const resolved: ResolvedRow[] = [];
+  const resolved: ResolvedRowScryfall[] = [];
   const failed: ParsedLine[] = [];
 
   const withCode = lines.filter((line) => line.set && line.collectorNumber);
@@ -221,8 +225,9 @@ async function resolveLines(
       if (card) {
         resolved.push({
           quantity: line.quantity,
-          card,
           foil: line.foil,
+          card,
+          scryfall_id: card.id,
         });
       } else {
         failed.push(line);
@@ -239,6 +244,7 @@ async function resolveLines(
           quantity: line.quantity,
           card,
           foil: line.foil,
+          scryfall_id: card.id,
         });
       } else {
         failed.push(line);

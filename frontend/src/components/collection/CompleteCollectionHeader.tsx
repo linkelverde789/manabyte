@@ -1,10 +1,11 @@
 import { useGetCollectionStats } from "#/features/stats/hooks";
+import type { ResolvedRow } from "../deckCards/importDialog";
 import { CollectionHeader } from "./CollectionHeader";
 
 export function CompleteCollectionHeader({
   onImport,
 }: {
-  onImport: (rows: any[]) => Promise<void>;
+  onImport: (rows: ResolvedRow[]) => Promise<void>;
 }) {
   const { data: collectionStats, isLoading } = useGetCollectionStats();
 

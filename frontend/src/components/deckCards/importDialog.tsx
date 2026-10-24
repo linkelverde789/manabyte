@@ -15,8 +15,6 @@ import { X, ClipboardList } from "lucide-react";
 
 import { useState } from "react";
 
-import type { ScryfallCard } from "#/features/scryfall/types";
-
 import { ScryfallImport } from "../imports/ScryfallImport";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { NormalImport } from "../imports/NormalImport";
@@ -24,7 +22,7 @@ import { NormalImport } from "../imports/NormalImport";
 export interface ResolvedRow {
   quantity: number;
   foil?: boolean;
-  card: ScryfallCard;
+  scryfall_id: string;
 }
 
 export interface ParsedLine {
