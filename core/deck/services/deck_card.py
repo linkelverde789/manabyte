@@ -51,7 +51,6 @@ class DeckCardService:
                     quantity=F("quantity") + item.quantity
                 )
                 card.refresh_from_db()
-                result.append(card)
             else:
                 card = DeckCard.objects.create(
                     deck=item.deck,
@@ -59,6 +58,8 @@ class DeckCardService:
                     quantity=item.quantity,
                     zone=item.zone,
                 )
+
+            result.append(card)
 
         return result
 
