@@ -67,54 +67,47 @@ export default function GeneralSearchDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
-        {!decks || !printings || !folders ? (
-          <div className="py-8 text-center text-sm text-muted-foreground">
-            Loading card data...
-          </div>
-        ) : (
-          <Tabs
-            value={tab}
-            onValueChange={(value) => setTab(value as SearchTab)}
-          >
-            <TabsList>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
+        <Tabs value={tab} onValueChange={(value) => setTab(value as SearchTab)}>
+          <TabsList>
+            <TabsTrigger value="preview">Preview</TabsTrigger>
 
-              <TabsTrigger value="deck">Deck</TabsTrigger>
+            {decks && <TabsTrigger value="deck">Deck</TabsTrigger>}
 
+            {folders && (
               <TabsTrigger value="collection">Collection</TabsTrigger>
-            </TabsList>
+            )}
+          </TabsList>
 
-            <TabsContent value="preview" className="mt-6">
-              <CardPreview card={selected} />
-            </TabsContent>
+          <TabsContent value="preview" className="mt-6">
+            <CardPreview card={selected} />
+          </TabsContent>
 
-            <TabsContent value="deck" className="mt-6">
-              <AddCardToDeck
-                card={selected}
-                decks={decks}
-                printings={printings}
-                showStyles={showStyles}
-                onCreate={handleCreateDeck}
-                onChangeCard={setSelected}
-                onShowStyles={setShowStyles}
-                onClose={handleClose}
-              />
-            </TabsContent>
+          <TabsContent value="deck" className="mt-6">
+            <AddCardToDeck
+              card={selected}
+              decks={decks ?? []}
+              printings={printings ?? []}
+              showStyles={showStyles}
+              onCreate={handleCreateDeck}
+              onChangeCard={setSelected}
+              onShowStyles={setShowStyles}
+              onClose={handleClose}
+            />
+          </TabsContent>
 
-            <TabsContent value="collection" className="mt-6">
-              <AddCardToCollection
-                card={selected}
-                folders={folders}
-                printings={printings}
-                showStyles={showStyles}
-                onCreate={handleCreateCollectionItem}
-                onChangeCard={setSelected}
-                onShowStyles={setShowStyles}
-                onClose={handleClose}
-              />
-            </TabsContent>
-          </Tabs>
-        )}
+          <TabsContent value="collection" className="mt-6">
+            <AddCardToCollection
+              card={selected}
+              folders={folders ?? []}
+              printings={printings ?? []}
+              showStyles={showStyles}
+              onCreate={handleCreateCollectionItem}
+              onChangeCard={setSelected}
+              onShowStyles={setShowStyles}
+              onClose={handleClose}
+            />
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

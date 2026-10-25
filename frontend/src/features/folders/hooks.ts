@@ -2,18 +2,25 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFolder, deleteFolder, getFolder, listFolders } from "./api";
 import type { CreateFolderData } from "./types";
 import { toast } from "sonner";
+import { useAuth } from "#/contexts/AuthContext";
 
 export function useListFolders() {
+  const { isAuthenticated, loading } = useAuth();
+
   return useQuery({
     queryKey: ["folders"],
     queryFn: listFolders,
+    enabled: isAuthenticated && !loading,
   });
 }
 
 export function useGetFolder(folderId: number) {
+  const { isAuthenticated, loading } = useAuth();
+
   return useQuery({
     queryKey: ["folders", folderId],
     queryFn: () => getFolder(folderId),
+    enabled: isAuthenticated && !loading,
   });
 }
 
