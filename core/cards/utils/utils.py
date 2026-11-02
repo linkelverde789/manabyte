@@ -2,6 +2,7 @@ import re
 import shlex
 
 from cards.consts import FIELD_LOOKUPS
+from django.db.models import Q
 from rest_framework.exceptions import ValidationError
 from sets.consts import SET_TYPES_TO_EXCLUDE
 
@@ -22,6 +23,21 @@ def collector_number_sort_key(card):
         return (0, number, suffix)
 
     return (1, 0, value.lower())
+
+
+def build_field_query(field, value):
+    lookup = FIELD_LOOKUPS[field]
+    values = [item.strip() for item in value.split(",") if item.strip()]
+
+    if not values:
+        return Q()
+
+    condition = lookup(values[0])
+
+    for item in values[1:]:
+        condition |= lookup(item)
+
+    return condition
 
 
 def filter_cards_from_query(q, cards):
@@ -73,7 +89,7 @@ def _parse_token(token):
 def _parse_fields(parsed, cards):
 
     for field, value, negated in parsed:
-        condition = FIELD_LOOKUPS[field](value)
+        condition = build_field_query(field, value)
 
         if negated:
             cards = cards.exclude(condition)

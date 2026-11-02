@@ -11,6 +11,26 @@ from cards.utils.utils import check_name_in_response
 
 
 @pytest.mark.django_db
+def test_multiple_values_search(api_client):
+    qs = (
+        ScryfallCard.objects.filter(
+            Q(set__code__iexact="fdn") | Q(set__code__iexact="ltr"),
+            faces__colors__icontains="R",
+        )
+        .order_by("oracle_id", "id")
+        .distinct("oracle_id")
+        .exclude(set__type__in=SET_TYPES_TO_EXCLUDE)
+    )[:SEARCH_LIMIT]
+
+    res = api_client.get(reverse("search"), {"q": "set:fdn,ltr color:r"}, format="json")
+
+    assert res.status_code == HTTP_200_OK
+
+    assert len(res.data) == qs.count()
+    check_name_in_response(res.data, qs)
+
+
+@pytest.mark.django_db
 def test_limit_and_page_search(api_client):
     res = api_client.get(reverse("search"))
 
