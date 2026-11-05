@@ -17,7 +17,9 @@ export default function GeneralInfo(props: { userLogged: boolean }) {
   return (
     <section className="space-y-6">
       <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs uppercase tracking-widest text-muted-foreground">
-        <Sparkles className="h-3.5 w-3.5 text-primary" /> Powered by Scryfall
+        <Sparkles className="h-3.5 w-3.5 text-primary" /> Powered by{" "}
+        <p className="underline">Scryfall</p> &{" "}
+        <p className="underline">Cardmarket</p>
       </span>
       <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
         Build decks and track every card you own.

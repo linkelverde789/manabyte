@@ -61,13 +61,14 @@ def _process_card(card_data, scryfall_set):
             "lang": card_data.get("lang", "en"),
             "can_foil": card_data.get("foil", card_data.get("can_foil", True)),
             "can_nonfoil": card_data.get("nonfoil", card_data.get("can_nonfoil", True)),
-            "price_nonfoil": _decimal_price(prices.get("usd")),
-            "price_foil": _decimal_price(prices.get("usd_foil")),
+            "price_nonfoil": _decimal_price(prices.get("eur")),
+            "price_foil": _decimal_price(prices.get("eur_foil")),
             "keywords": card_data.get("keywords", []),
             "layout": card_data.get("layout", "normal"),
             "released_at": card_data.get("released_at", None),
             "is_borderless": border_color,
             "rarity": card_data.get("rarity", "common"),
+            "cardmarket_id": card_data.get("cardmarket_id", None),
         },
     )
 
