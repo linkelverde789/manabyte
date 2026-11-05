@@ -5,6 +5,7 @@ from sets.models import ScryfallSet
 class ScryfallCard(models.Model):
     external_id = models.UUIDField(unique=True)
     oracle_id = models.UUIDField(db_index=True)
+    cardmarket_id = models.CharField(blank=True, null=True)
     name = models.CharField(max_length=255)
     collector_number = models.CharField(max_length=50, blank=True)
     lang = models.CharField(max_length=10, default="en")

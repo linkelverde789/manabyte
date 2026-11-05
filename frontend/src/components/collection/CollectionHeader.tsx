@@ -37,7 +37,7 @@ export function CollectionHeader({
         <p className="text-xs uppercase tracking-widest text-muted-foreground">
           Collection value
         </p>
-        <p className="text-2xl font-semibold text-primary">${price}</p>
+        <p className="text-2xl font-semibold text-primary">{price}€</p>
       </div>
     </div>
   );
